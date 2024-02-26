@@ -1,133 +1,114 @@
-#include <string>
-#include <vector>
 #include "raylib-cpp.hpp"
 #include "raylib-assert.h"
+#include <string>
+#include <vector>
+#include <filesystem>
+#include <catch2/catch_approx.hpp>
+#include <catch2/catch_test_macros.hpp>
 
-int main(int argc, char *argv[]) {
-    TraceLog(LOG_INFO, "---------------------");
-    TraceLog(LOG_INFO, "TEST: raylib-cpp test");
+/// @TODO: split into more test cases
+TEST_CASE( "Vector", "[core]" ) {
+    raylib::Vector2 position(50, 100);
+    REQUIRE(position.GetX() == position.x);
+    position.x = 150;
+    REQUIRE(position.GetX() == 150);
+    position.SetX(300);
+    REQUIRE(position.GetX() == 300);
 
+    raylib::Vector2 speed(10, 10);
+    position += speed;
+    REQUIRE(position.x == 310);
+    REQUIRE(raylib::Window::IsReady() == false);
+
+    raylib::Vector2 size{50, 100};
+    raylib::Vector2 halfsize = size / 2.0F;
+
+    REQUIRE(size.x == 50);
+    REQUIRE(size.y == 100);
+    REQUIRE(halfsize.x == 25);
+    REQUIRE(halfsize.y == 50);
+
+    raylib::Vector2 doublesize = size * 2.0F;
+    REQUIRE(size.x == 50);
+    REQUIRE(doublesize.x == 100);
+}
+
+TEST_CASE( "Color", "[core]" ) {
+    raylib::Color color = RED;
+    REQUIRE(color.ToInt() == ::ColorToInt(RED));
+
+    color = RAYWHITE;
+    ::Color raylibColor = RAYWHITE;
+    REQUIRE(color.r == raylibColor.r);
+}
+
+TEST_CASE( "Math", "[core]" ) {
+    raylib::Vector2 direction(50, 50);
+    raylib::Vector2 newDirection = direction.Rotate(30);
+    REQUIRE(static_cast<int>(newDirection.x) == 57);
+}
+
+TEST_CASE( "Image", "[image]" ) {
     // Get a path to where the executable is so file loading is relative.
-    std::string path = "";
-    if (argc > 0) {
-        path = GetDirectoryPath(argv[0]);
-    }
+    //std::string path = (argc > 0) ? GetDirectoryPath(argv[0]) : 0;
 
-    // Vector
-    {
-        raylib::Vector2 position(50, 100);
-        AssertEqual(position.GetX(), position.x);
-        position.x = 150;
-        AssertEqual(position.GetX(), 150);
-        position.SetX(300);
-        AssertEqual(position.GetX(), 300);
+    SECTION("Loading"){
+        raylib::Image image("resources/feynman.png");
+        REQUIRE(image.IsReady());
 
-        raylib::Vector2 speed(10, 10);
-        position += speed;
-        AssertEqual(position.x, 310);
-        AssertEqual(raylib::Window::IsReady(), false);
-
-        raylib::Vector2 size{50, 100};
-        raylib::Vector2 halfsize = size / 2.0f;
-
-        AssertEqual(size.x, 50);
-        AssertEqual(size.y, 100);
-        AssertEqual(halfsize.x, 25);
-        AssertEqual(halfsize.y, 50);
-
-        raylib::Vector2 doublesize = size * 2.0f;
-        AssertEqual(size.x, 50);
-        AssertEqual(doublesize.x, 100);
-    }
-
-    // Color
-    {
-        raylib::Color color = RED;
-        AssertEqual(color.ToInt(), ::ColorToInt(RED));
-        color = RAYWHITE;
-        ::Color raylibColor = RAYWHITE;
-        AssertEqual(color.r, raylibColor.r);
-    }
-
-    // Math
-    {
-        raylib::Vector2 direction(50, 50);
-        raylib::Vector2 newDirection = direction.Rotate(30);
-        AssertEqual((int)newDirection.x, 57);
-    }
-
-    // Image
-    {
-        // Loading
-        raylib::Image image(path + "/resources/feynman.png");
-        Assert(image.IsReady());
-
-        // Chaining
-        image.Crop(100, 100)
-            .Resize(50, 50);
-        AssertEqual(image.GetWidth(), 50);
-        AssertEqual(image.GetHeight(), 50);
-    }
-
-    // Keyboard
-    {
-        AssertNot(raylib::Keyboard::IsKeyPressed(KEY_MINUS));
-    }
-
-    // raylib::LoadDirectoryFiles()
-    {
-        std::vector<std::string> files = raylib::LoadDirectoryFiles(::GetWorkingDirectory());
-        Assert(files.size() > 3);
-    }
-
-    // raylib::TextReplace()
-    {
-        std::string input = "Hello World!";
-        std::string output = raylib::TextReplace(input, "World", "Moon");
-        AssertEqual(output, "Hello Moon!");
-    }
-
-    // raylib::TextInsert()
-    {
-        std::string input = "Hello World!";
-        std::string output = raylib::TextInsert(input, "Good!", 0);
-        AssertEqual(output, "Good! World!");
-    }
-
-    // raylib::TextSubtext()
-    {
-        std::string input = "Hello World!";
-        std::string output = raylib::TextSubtext(input, 6, 5);
-        AssertEqual(output, "World");
-    }
-
-    // TextSplit
-    {
-        std::vector<std::string> output = raylib::TextSplit("Hello|How|Are|You", '|');
-        AssertEqual(output.size(), 4);
-        AssertEqual(output[1], "How");
-    }
-
-    // Wave
-    {
-        raylib::Wave wave(path + "/resources/weird.wav");
-        Assert(wave.IsReady(), "Expected wave to be loaded correctly");
-    }
-
-    // RaylibException
-    {
-        bool passed = false;
-        try {
-            raylib::Texture texture("notfound.png");
+        SECTION("Chaining"){
+            image.Crop(100, 100)
+                .Resize(50, 50);
+            REQUIRE(image.GetWidth() == 50);
+            REQUIRE(image.GetHeight() == 50);
         }
-        catch (raylib::RaylibException& error) {
-            error.TraceLog(LOG_INFO);
-            passed = true;
-        }
-        Assert(passed, "Expected to have a RaylibException to be thrown");
     }
+}
 
-    TraceLog(LOG_INFO, "TEST: raylib-cpp test");
-    TraceLog(LOG_INFO, "---------------------");
-    return 0;
+TEST_CASE( "Keyboard", "[core]" ) {
+    REQUIRE(!raylib::Keyboard::IsKeyPressed(KEY_MINUS));
+}
+
+
+TEST_CASE( "raylib::LoadDirectoryFiles", "[core][raylib-cpp]" ) {
+    std::vector<std::string> files = raylib::LoadDirectoryFiles(::GetWorkingDirectory());
+    REQUIRE(files.size() > 3);
+}
+
+TEST_CASE( "raylib::TextReplace", "[core][raylib-cpp]" ) {
+    std::string input = "Hello World!";
+    std::string output = raylib::TextReplace(input, "World", "Moon");
+    REQUIRE(output == "Hello Moon!");
+}
+
+TEST_CASE( "raylib::TextInsert", "[core][raylib-cpp]" ) {
+    std::string input = "Hello World!";
+    std::string output = raylib::TextInsert(input, "Good!", 0);
+    REQUIRE(output == "Good! World!");
+}
+
+TEST_CASE( "raylib::TextSubtext", "[core][raylib-cpp]" ) {
+    std::string input = "Hello World!";
+    std::string output = raylib::TextSubtext(input, 6, 5);
+    REQUIRE(output == "World");
+}
+
+TEST_CASE( "raylib::TextSplit", "[core][raylib-cpp]" ) {
+    std::vector<std::string> output = raylib::TextSplit("Hello|How|Are|You", '|');
+    REQUIRE(output.size() == 4);
+    REQUIRE(output[1] == "How");
+}
+
+TEST_CASE( "Wave", "[audio]" ) {
+    // Get a path to where the executable is so file loading is relative.
+    //std::string path = (argc > 0) ? GetDirectoryPath(argv[0]) : 0;
+
+    raylib::Wave wave("resources/weird.wav");
+    REQUIRE(wave.IsReady()); // "Expected wave to be loaded correctly"
+}
+
+TEST_CASE( "Texture", "[texture]" ) {
+    REQUIRE_THROWS([](){
+        raylib::Texture texture("notfound.png");
+    }());
 }
