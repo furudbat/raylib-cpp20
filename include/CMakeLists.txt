@@ -48,6 +48,7 @@ set(RAYLIB_CPP_HEADERS
 
 # Include Directory
 target_include_directories(raylib_cpp INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/)
+target_compile_features(raylib_cpp INTERFACE cxx_std_20)
 
 # Set the header files as install files.
 install(FILES

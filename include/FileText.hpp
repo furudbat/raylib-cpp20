@@ -39,6 +39,11 @@ class FileText {
         return data;
     }
 
+    [[nodiscard]] std::string_view ToStringView() const { return {data}; }
+    explicit operator std::string_view() const {
+        return {data};
+    }
+
     void Load(const std::string& fileName) { Load(fileName.c_str()); }
     void Load(const char* fileName) {
         data = ::LoadFileText(fileName);
