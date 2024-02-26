@@ -47,17 +47,17 @@ class Text {
      * @param font Font to initialize.
      * @param spacing The spacing of the text.
      */
-    Text(
-            const std::string& text = "",
-            float fontSize = 10,
-            const ::Color& color = WHITE,
-            const ::Font& font = ::GetFontDefault(),
-            float spacing = 0) :
-            text(text),
-            fontSize(fontSize),
-            color(color),
-            font(font),
-            spacing(spacing) {
+    explicit Text(
+            const std::string& pText = "",
+            float pFontSize = 10.0F,
+            const ::Color& pColor = WHITE,
+            const ::Font& pFont = ::GetFontDefault(),
+            float pSpacing = 0.0F) :
+            text(pText),
+            fontSize(pFontSize),
+            color(pColor),
+            font(pFont),
+            spacing(pSpacing) {
         // Nothing.
     }
 
@@ -70,17 +70,17 @@ class Text {
      * @param spacing The spacing of the text.
      * @param color The color of the font.
      */
-    Text(
-            const ::Font& font,
-            const std::string& text = "",
-            float fontSize = 10,
-            float spacing = 0,
-            const ::Color& color = WHITE) :
-            text(text),
-            fontSize(fontSize),
-            color(color),
-            font(font),
-            spacing(spacing) {
+    explicit Text(
+            const ::Font& pFont,
+            const std::string& pText = "",
+            float pFontSize = 10.0F,
+            float pSpacing = 0,
+            ::Color pColor = WHITE) :
+            text(pText),
+            fontSize(pFontSize),
+            color(pColor),
+            font(pFont),
+            spacing(pSpacing) {
         // Nothing.
     }
 
@@ -128,7 +128,7 @@ class Text {
     /**
      * Measure string size for Font
      */
-    Vector2 MeasureEx() const {
+    [[nodiscard]] Vector2 MeasureEx() const {
         return ::MeasureTextEx(font, text.c_str(), fontSize, spacing);
     }
 

@@ -1,14 +1,15 @@
 #ifndef RAYLIB_CPP_INCLUDE_TEXTUREUNMANAGED_HPP_
 #define RAYLIB_CPP_INCLUDE_TEXTUREUNMANAGED_HPP_
 
+#include <bit>
 #include <string>
 
 #include "./raylib.hpp"
-#include "./raylib-cpp-utils.hpp"
-#include "./Vector2.hpp"
+#include "./Image.hpp"
 #include "./Material.hpp"
 #include "./RaylibException.hpp"
-#include "./Image.hpp"
+#include "./Vector2.hpp"
+#include "./raylib-cpp-utils.hpp"
 
 namespace raylib {
 /**
@@ -294,7 +295,7 @@ class TextureUnmanaged : public ::Texture {
     }
 
     TextureUnmanaged& SetMaterial(const ::Material& material, int mapType = MATERIAL_MAP_NORMAL) {
-        ::SetMaterialTexture((::Material*)(&material), mapType, *this);
+        ::SetMaterialTexture(std::bit_cast<::Material*>(&material), mapType, *this);
         return *this;
     }
 

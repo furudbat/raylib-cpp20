@@ -11,22 +11,20 @@ namespace raylib {
  */
 class AutomationEventList : public ::AutomationEventList {
  public:
-    AutomationEventList(const ::AutomationEventList& automationEventList) {
-        set(automationEventList);
-    }
-
-    AutomationEventList(unsigned int capacity = 16384,
-            unsigned int count = 0,
-            AutomationEvent *events = nullptr) : ::AutomationEventList{capacity, count, events} {
+    explicit AutomationEventList(unsigned int pCapacity = 16384,
+            unsigned int pCount = 0,
+            AutomationEvent *pEvents = nullptr) : ::AutomationEventList{pCapacity, pCount, pEvents} {
         // Nothing.
     }
 
-    AutomationEventList(const char* fileName) {
+    explicit AutomationEventList(const char* fileName) {
         Load(fileName);
     }
 
+    AutomationEventList(const ::AutomationEventList& automationEventList) {
+        set(automationEventList);
+    }
     AutomationEventList(const AutomationEventList&) = delete;
-
     AutomationEventList(AutomationEventList&& other) {
         set(other);
 
@@ -34,7 +32,6 @@ class AutomationEventList : public ::AutomationEventList {
         other.count = 0;
         other.events = nullptr;
     }
-
     ~AutomationEventList() {
         Unload();
     }

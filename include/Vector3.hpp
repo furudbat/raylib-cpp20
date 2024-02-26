@@ -19,14 +19,14 @@ class Vector3 : public ::Vector3 {
  public:
     Vector3(const ::Vector3& vec) : ::Vector3{vec.x, vec.y, vec.z} {}
 
-    Vector3(float x, float y, float z) : ::Vector3{x, y, z} {}
-    Vector3(float x, float y) : ::Vector3{x, y, 0} {}
-    Vector3(float x) : ::Vector3{x, 0, 0} {}
-    Vector3() {}
-
     Vector3(::Color color) {
         set(ColorToHSV(color));
     }
+
+    Vector3(float px, float py, float pz) : ::Vector3{px, py, pz} {}
+    Vector3(float px, float py) : ::Vector3{px, py, 0} {}
+    /*explicit*/ Vector3(float px) : ::Vector3{px, 0, 0} {}
+    Vector3() = default;
 
     GETTERSETTER(float, X, x)
     GETTERSETTER(float, Y, y)
@@ -47,11 +47,11 @@ class Vector3 : public ::Vector3 {
         return !(*this == other);
     }
 
-    std::string ToString() const {
+    [[nodiscard]] std::string ToString() const {
         return TextFormat("Vector3(%f, %f, %f)", x, y, z);
     }
 
-    operator std::string() const {
+    explicit operator std::string() const {
         return ToString();
     }
 
@@ -59,7 +59,7 @@ class Vector3 : public ::Vector3 {
     /**
      * Add two vectors
      */
-    Vector3 Add(const ::Vector3& vector3) const {
+    [[nodiscard]] Vector3 Add(const ::Vector3& vector3) const {
         return Vector3Add(*this, vector3);
     }
 
@@ -79,7 +79,7 @@ class Vector3 : public ::Vector3 {
     /**
      * Subtract two vectors.
      */
-    Vector3 Subtract(const ::Vector3& vector3) const {
+    [[nodiscard]] Vector3 Subtract(const ::Vector3& vector3) const {
         return Vector3Subtract(*this, vector3);
     }
 
@@ -99,7 +99,7 @@ class Vector3 : public ::Vector3 {
     /**
      * Negate provided vector (invert direction)
      */
-    Vector3 Negate() const {
+    [[nodiscard]] Vector3 Negate() const {
         return Vector3Negate(*this);
     }
 
@@ -113,7 +113,7 @@ class Vector3 : public ::Vector3 {
     /**
      * Multiply vector by vector
      */
-    Vector3 Multiply(const ::Vector3& vector3) const {
+    [[nodiscard]] Vector3 Multiply(const ::Vector3& vector3) const {
         return Vector3Multiply(*this, vector3);
     }
 

@@ -15,11 +15,11 @@ class AudioStream : public ::AudioStream {
         set(music);
     }
 
-    AudioStream(rAudioBuffer* buffer = nullptr,
-            rAudioProcessor *processor = nullptr,
-            unsigned int sampleRate = 0,
-            unsigned int sampleSize = 0,
-            unsigned int channels = 0) : ::AudioStream{buffer, processor, sampleRate, sampleSize, channels} {
+    explicit AudioStream(rAudioBuffer* pBuffer = nullptr,
+            rAudioProcessor *pProcessor = nullptr,
+            unsigned int pSampleRate = 0,
+            unsigned int pSampleSize = 0,
+            unsigned int pChannels = 0) : ::AudioStream{pBuffer, pProcessor, pSampleRate, pSampleSize, pChannels} {
         // Nothing.
     }
 
@@ -28,8 +28,8 @@ class AudioStream : public ::AudioStream {
      *
      * @throws raylib::RaylibException Throws if the AudioStream failed to load.
      */
-    AudioStream(unsigned int sampleRate, unsigned int sampleSize, unsigned int channels = 2) {
-        Load(sampleRate, sampleSize, channels);
+    AudioStream(unsigned int pSampleRate, unsigned int pSampleSize, unsigned int pChannels = 2) {
+        Load(pSampleRate, pSampleSize, pChannels);
     }
 
     AudioStream(const AudioStream&) = delete;
@@ -180,15 +180,15 @@ class AudioStream : public ::AudioStream {
     /**
      * Attach audio stream processor to stream
      */
-    void AttachProcessor(::AudioCallback processor) {
-        ::AttachAudioStreamProcessor(*this, processor);
+    void AttachProcessor(::AudioCallback pProcessor) {
+        ::AttachAudioStreamProcessor(*this, pProcessor);
     }
 
     /**
      * Detach audio stream processor from stream
      */
-    void DetachProcessor(::AudioCallback processor) {
-        ::DetachAudioStreamProcessor(*this, processor);
+    void DetachProcessor(::AudioCallback pProcessor) {
+        ::DetachAudioStreamProcessor(*this, pProcessor);
     }
 
     /**
