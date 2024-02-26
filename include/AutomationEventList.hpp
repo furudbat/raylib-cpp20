@@ -11,28 +11,20 @@ namespace raylib {
  */
 class AutomationEventList : public ::AutomationEventList {
  public:
-    AutomationEventList(const ::AutomationEventList& automationEventList) {
-        set(automationEventList);
+    explicit AutomationEventList(unsigned int pCapacity = 16384,
+            unsigned int pCount = 0,
+            AutomationEvent *pEvents = nullptr) : ::AutomationEventList{pCapacity, pCount, pEvents} {
+        // Nothing.
     }
 
-    /**
-     * Load an empty automation events list.
-     */
-    AutomationEventList() {
-        set(::LoadAutomationEventList(0));
-    }
-
-    /**
-     * Load automation events list from file.
-     *
-     * @param fileName The file path to load the automation events list from.
-     */
-    AutomationEventList(const char* fileName) {
+    explicit AutomationEventList(const char* fileName) {
         Load(fileName);
     }
 
+    AutomationEventList(const ::AutomationEventList& automationEventList) {
+        set(automationEventList);
+    }
     AutomationEventList(const AutomationEventList&) = delete;
-
     AutomationEventList(AutomationEventList&& other) {
         set(other);
 
@@ -40,14 +32,13 @@ class AutomationEventList : public ::AutomationEventList {
         other.count = 0;
         other.events = nullptr;
     }
-
     ~AutomationEventList() {
         Unload();
     }
 
-    GETTER(unsigned int, Capacity, capacity)
-    GETTER(unsigned int, Count, count)
-    GETTER(AutomationEvent*, Events, events)
+    GETTERSETTER(unsigned int, Capacity, capacity)
+    GETTERSETTER(unsigned int, Count, count)
+    GETTERSETTER(AutomationEvent*, Events, events)
 
     AutomationEventList& operator=(const ::AutomationEventList& other) {
         set(other);

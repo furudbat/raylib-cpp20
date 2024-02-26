@@ -24,7 +24,7 @@ class Camera3D : public ::Camera3D {
      * @param fovy Camera field-of-view apperture in Y (degrees) in perspective, used as near plane width in orthographic
      * @param projection Camera projection: CAMERA_PERSPECTIVE or CAMERA_ORTHOGRAPHIC
      */
-    Camera3D(::Vector3 position,
+    explicit Camera3D(::Vector3 position,
             ::Vector3 target = ::Vector3{0.0f, 0.0f, 0.0f},
             ::Vector3 up = ::Vector3{0.0f, 1.0f, 0.0f},
             float fovy = 0,
@@ -62,7 +62,7 @@ class Camera3D : public ::Camera3D {
     /**
      * Get camera transform matrix (view matrix)
      */
-    Matrix GetMatrix() const {
+    [[nodiscard]] Matrix GetMatrix() const {
         return ::GetCameraMatrix(*this);
     }
 
@@ -85,14 +85,14 @@ class Camera3D : public ::Camera3D {
     /**
      * Returns a ray trace from mouse position
      */
-    Ray GetMouseRay(::Vector2 mousePosition) const {
+    [[nodiscard]] Ray GetMouseRay(::Vector2 mousePosition) const {
         return ::GetMouseRay(mousePosition, *this);
     }
 
     /**
      * Returns the screen space position for a 3d world space position
      */
-    Vector2 GetWorldToScreen(::Vector3 position) const {
+    [[nodiscard]] Vector2 GetWorldToScreen(::Vector3 position) const {
         return ::GetWorldToScreen(position, *this);
     }
 

@@ -19,8 +19,8 @@ class Vector2 : public ::Vector2 {
  public:
     Vector2(const ::Vector2& vec) : ::Vector2{vec.x, vec.y} {}
 
-    Vector2(float x, float y) : ::Vector2{x, y} {}
-    Vector2(float x) : ::Vector2{x, 0} {}
+    Vector2(float px, float py) : ::Vector2{px, py} {}
+    explicit Vector2(float px) : ::Vector2{px, 0} {}
     Vector2() : ::Vector2{0, 0} {}
 
     GETTERSETTER(float, X, x)
@@ -49,11 +49,11 @@ class Vector2 : public ::Vector2 {
         return !(*this == other);
     }
 
-    std::string ToString() const {
+    [[nodiscard]] std::string ToString() const {
         return TextFormat("Vector2(%f, %f)", x, y);
     }
 
-    operator std::string() const {
+    explicit operator std::string() const {
         return ToString();
     }
 
