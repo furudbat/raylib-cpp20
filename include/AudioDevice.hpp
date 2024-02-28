@@ -3,9 +3,17 @@
 
 #include "./raylib.hpp"
 #include "./raylib-cpp-utils.hpp"
+#ifdef __cpp_exceptions
 #include "./RaylibException.hpp"
+#endif
 
 namespace raylib {
+
+enum class AudioDeviceInitOption : bool {
+    LateInit = false,
+    CallInit
+};
+
 /**
  * Audio device management functions.
  */
@@ -18,8 +26,16 @@ class AudioDevice {
      *
      * @throws raylib::RaylibException Throws if the AudioDevice failed to initialize.
      */
-    AudioDevice(bool lateInit = false) {
+     /*
+    [[deprecated("Use AudioDevice(options)")]] AudioDevice(bool lateInit = false) {
         if (!lateInit) {
+            Init();
+        }
+    }
+    */
+
+    explicit AudioDevice(AudioDeviceInitOption options = AudioDeviceInitOption::LateInit) {
+        if (options == AudioDeviceInitOption::CallInit) {
             Init();
         }
     }

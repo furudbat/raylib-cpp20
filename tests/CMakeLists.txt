@@ -18,6 +18,8 @@ endif()
 target_link_libraries(raylib_cpp_test PRIVATE raylib_cpp)
 target_link_system_libraries(raylib_cpp_test PRIVATE raylib)
 target_link_system_libraries(raylib_cpp_test PRIVATE Catch2::Catch2 Catch2::Catch2WithMain)
+target_compile_options(raylib_cpp_test PRIVATE -fexceptions)
+target_compile_options(raylib_cpp_test PRIVATE -Wno-shadow)
 
 # automatically discover tests that are defined in catch based test files you can modify the unittests. Set TEST_PREFIX to whatever you
 # want, or use different for different binaries

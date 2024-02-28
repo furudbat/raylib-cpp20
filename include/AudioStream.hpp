@@ -3,7 +3,9 @@
 
 #include "./raylib.hpp"
 #include "./raylib-cpp-utils.hpp"
+#ifdef __cpp_exceptions
 #include "./RaylibException.hpp"
+#endif
 
 namespace raylib {
 /**
@@ -33,7 +35,6 @@ class AudioStream : public ::AudioStream {
     }
 
     AudioStream(const AudioStream&) = delete;
-
     AudioStream(AudioStream&& other) {
         set(other);
 
@@ -43,7 +44,6 @@ class AudioStream : public ::AudioStream {
         other.sampleSize = 0;
         other.channels = 0;
     }
-
     ~AudioStream() {
         Unload();
     }
@@ -98,7 +98,7 @@ class AudioStream : public ::AudioStream {
     /**
      * Check if any audio stream buffers requires refill
      */
-    bool IsProcessed() const {
+    [[nodiscard]] bool IsProcessed() const {
         return ::IsAudioStreamProcessed(*this);
     }
 
@@ -129,7 +129,7 @@ class AudioStream : public ::AudioStream {
     /**
      * Check if audio stream is playing
      */
-    bool IsPlaying() const {
+    [[nodiscard]] bool IsPlaying() const {
         return ::IsAudioStreamPlaying(*this);
     }
 
@@ -196,7 +196,7 @@ class AudioStream : public ::AudioStream {
     /**
      * Retrieve whether or not the audio stream is ready.
      */
-    bool IsReady() const {
+    [[nodiscard]] bool IsReady() const {
         return ::IsAudioStreamReady(*this);
     }
 

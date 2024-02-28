@@ -4,8 +4,10 @@
 #include <string>
 
 #include "./raylib.hpp"
-#include "./RaylibException.hpp"
 #include "./raylib-cpp-utils.hpp"
+#ifdef __cpp_exceptions
+#include "./RaylibException.hpp"
+#endif
 
 namespace raylib {
 /**
@@ -121,7 +123,7 @@ class Text {
     /**
      * Measure string width for default font
      */
-    int Measure() const {
+    [[nodiscard]] int Measure() const {
         return ::MeasureText(text.c_str(), static_cast<int>(fontSize));
     }
 

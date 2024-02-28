@@ -31,10 +31,10 @@ class Material : public ::Material {
 
         other.maps = nullptr;
         other.shader = {};
-        other.params[0] = 0.0f;
-        other.params[1] = 0.0f;
-        other.params[2] = 0.0f;
-        other.params[3] = 0.0f;
+        other.params[0] = 0.0F;
+        other.params[1] = 0.0F;
+        other.params[2] = 0.0F;
+        other.params[3] = 0.0F;
     }
 
     ~Material() {
@@ -112,7 +112,7 @@ class Material : public ::Material {
     /**
      * Check if material is ready
      */
-    bool IsReady() const {
+    [[nodiscard]] bool IsReady() const {
         return ::IsMaterialReady(*this);
     }
 

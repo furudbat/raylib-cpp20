@@ -3,17 +3,32 @@
 
 #include "./raylib.hpp"
 #include "./raylib-cpp-utils.hpp"
+#ifdef __cpp_exceptions
 #include "./RaylibException.hpp"
+#endif
 
 namespace raylib {
+
+    struct AutomationEventListOptions {
+        inline static constexpr int DefaultCapacity = 16384;
+
+        unsigned int capacity{DefaultCapacity};
+        unsigned int count{0};
+        AutomationEvent *events{nullptr};
+    };
+
 /**
  * AutomationEventList management functions
  */
 class AutomationEventList : public ::AutomationEventList {
  public:
+    [[deprecated("Use AutomationEventList(options)")]]
     explicit AutomationEventList(unsigned int pCapacity = 16384,
             unsigned int pCount = 0,
             AutomationEvent *pEvents = nullptr) : ::AutomationEventList{pCapacity, pCount, pEvents} {
+        // Nothing.
+    }
+    explicit AutomationEventList(AutomationEventListOptions options) : ::AutomationEventList{options.capacity, options.count, options.events} {
         // Nothing.
     }
 

@@ -5,8 +5,10 @@
 
 #include "./raylib.hpp"
 #include "./raylib-cpp-utils.hpp"
-#include "./RaylibException.hpp"
 #include "./TextureUnmanaged.hpp"
+#ifdef __cpp_exceptions
+#include "./RaylibException.hpp"
+#endif
 
 namespace raylib {
 /**
@@ -41,7 +43,7 @@ class Font : public ::Font {
      *
      * @throws raylib::RaylibException Throws if the given font failed to initialize.
      */
-    Font(const std::string& fileName) {
+    explicit Font(const std::string& fileName) {
         Load(fileName);
     }
 
@@ -54,7 +56,7 @@ class Font : public ::Font {
      *
      * @see ::LoadFontEx
      */
-    Font(const std::string& fileName, int fontSize, int* fontChars = 0, int charCount = 0)  {
+    Font(const std::string& fileName, int fontSize, int* fontChars = nullptr, int charCount = 0)  {
         Load(fileName, fontSize, fontChars, charCount);
     }
 
@@ -84,7 +86,6 @@ class Font : public ::Font {
     }
 
     Font(const Font&) = delete;
-
     Font(Font&& other) {
         set(other);
 
@@ -95,7 +96,6 @@ class Font : public ::Font {
         other.recs = nullptr;
         other.glyphs = nullptr;
     }
-
     ~Font() {
         Unload();
     }
@@ -108,11 +108,11 @@ class Font : public ::Font {
         }
     }
 
-    GETTER(int, BaseSize, baseSize)
-    GETTER(int, GlyphCount, glyphCount)
-    GETTER(int, GlyphPadding, glyphPadding)
-    GETTER(::Rectangle*, Recs, recs)
-    GETTER(::GlyphInfo*, Glyphs, glyphs)
+    GETTERSETTER(int, BaseSize, baseSize)
+    GETTERSETTER(int, GlyphCount, glyphCount)
+    GETTERSETTER(int, GlyphPadding, glyphPadding)
+    GETTERSETTER(::Rectangle*, Recs, recs)
+    GETTERSETTER(::GlyphInfo*, Glyphs, glyphs)
 
     /**
      * Get the texture atlas containing the glyphs.
@@ -206,7 +206,7 @@ class Font : public ::Font {
     /**
      * Returns if the font is ready to be used.
      */
-    bool IsReady() const {
+    [[nodiscard]] bool IsReady() const {
         return ::IsFontReady(*this);
     }
 
@@ -307,14 +307,14 @@ class Font : public ::Font {
     /**
      * Measure string size for Font
      */
-    Vector2 MeasureText(const std::string& text, float fontSize, float spacing) const {
+    [[nodiscard]] Vector2 MeasureText(const std::string& text, float fontSize, float spacing) const {
         return ::MeasureTextEx(*this, text.c_str(), fontSize, spacing);
     }
 
     /**
      * Get index position for a unicode character on font
      */
-    int GetGlyphIndex(int character) const {
+    [[nodiscard]] int GetGlyphIndex(int character) const {
         return ::GetGlyphIndex(*this, character);
     }
 
@@ -329,7 +329,7 @@ class Font : public ::Font {
     /**
      * Create an image from text (custom sprite font)
      */
-    ::Image ImageText(const std::string& text, float fontSize,
+    [[nodiscard]] ::Image ImageText(const std::string& text, float fontSize,
             float spacing, ::Color tint) const {
         return ::ImageTextEx(*this, text.c_str(), fontSize, spacing, tint);
     }

@@ -17,7 +17,7 @@ class Shader : public ::Shader {
         set(shader);
     }
 
-    Shader(unsigned int id, int* locs = nullptr) : ::Shader{id, locs} {}
+    explicit Shader(unsigned int id, int* locs = nullptr) : ::Shader{id, locs} {}
 
     Shader(const std::string& vsFileName, const std::string& fsFileName) {
         set(::LoadShader(vsFileName.c_str(), fsFileName.c_str()));
@@ -123,7 +123,7 @@ class Shader : public ::Shader {
      *
      * @see GetShaderLocation()
      */
-    int GetLocation(const std::string& uniformName) const {
+    [[nodiscard]] int GetLocation(const std::string& uniformName) const {
         return ::GetShaderLocation(*this, uniformName.c_str());
     }
 
@@ -132,7 +132,7 @@ class Shader : public ::Shader {
      *
      * @see GetShaderLocationAttrib()
      */
-    int GetLocationAttrib(const std::string& attribName) const {
+    [[nodiscard]] int GetLocationAttrib(const std::string& attribName) const {
         return ::GetShaderLocationAttrib(*this, attribName.c_str());
     }
 
@@ -179,7 +179,7 @@ class Shader : public ::Shader {
     /**
      * Retrieves whether or not the shader is ready.
      */
-    bool IsReady() const {
+    [[nodiscard]] bool IsReady() const {
         return id != 0 && locs != nullptr;
     }
 

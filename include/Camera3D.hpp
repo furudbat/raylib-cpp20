@@ -30,7 +30,7 @@ class Camera3D : public ::Camera3D {
             float fovy = 0,
             int projection = CAMERA_PERSPECTIVE) : ::Camera3D{position, target, up, fovy, projection} {}
 
-    Camera3D() {}
+    Camera3D() = default;
 
     GETTERSETTER(::Vector3, Position, position)
     GETTERSETTER(::Vector3, Target, target)

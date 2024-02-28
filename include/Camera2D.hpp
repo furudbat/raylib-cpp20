@@ -15,7 +15,7 @@ class Camera2D : public ::Camera2D {
         set(camera);
     }
 
-    Camera2D() {}
+    Camera2D() = default;
     Camera2D(::Vector2 pOffset, ::Vector2 pTarget,
             float pRotation = 0.0F, float pZoom = 1.0F) : ::Camera2D{pOffset, pTarget, pRotation, pZoom} {}
 

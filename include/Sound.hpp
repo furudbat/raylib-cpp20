@@ -5,7 +5,9 @@
 
 #include "./raylib.hpp"
 #include "./raylib-cpp-utils.hpp"
+#ifdef __cpp_exceptions
 #include "./RaylibException.hpp"
+#endif
 
 namespace raylib {
 /**
@@ -42,7 +44,7 @@ class Sound : public ::Sound {
      *
      * @throws raylib::RaylibException Throws if the Sound failed to load.
      */
-    Sound(const std::string& fileName) {
+    explicit Sound(const std::string& fileName) {
         Load(fileName);
     }
 
@@ -51,7 +53,7 @@ class Sound : public ::Sound {
      *
      * @throws raylib::RaylibException Throws if the Sound failed to load.
      */
-    Sound(const ::Wave& wave) {
+    explicit Sound(const ::Wave& wave) {
         Load(wave);
     }
 
@@ -137,7 +139,7 @@ class Sound : public ::Sound {
     /**
      * Check if a sound is currently playing
      */
-    bool IsPlaying() const {
+    [[nodiscard]] bool IsPlaying() const {
         return ::IsSoundPlaying(*this);
     }
 
@@ -194,7 +196,7 @@ class Sound : public ::Sound {
      *
      * @return True or false depending on whether the Sound buffer is loaded.
      */
-    bool IsReady() const {
+    [[nodiscard]] bool IsReady() const {
         return ::IsSoundReady(*this);
     }
 

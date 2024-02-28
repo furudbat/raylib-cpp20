@@ -3,8 +3,10 @@
 
 #include "./raylib.hpp"
 #include "./raylib-cpp-utils.hpp"
-#include "./RaylibException.hpp"
 #include "./TextureUnmanaged.hpp"
+#ifdef __cpp_exceptions
+#include "./RaylibException.hpp"
+#endif
 
 namespace raylib {
 /**
@@ -123,7 +125,7 @@ class RenderTexture : public ::RenderTexture {
     /**
      * Retrieves whether or not the render texture is ready.
      */
-    bool IsReady() const {
+    [[nodiscard]] bool IsReady() const {
         return ::IsRenderTextureReady(*this);
     }
 
