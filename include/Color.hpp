@@ -19,17 +19,17 @@ class Color : public ::Color {
             unsigned char red,
             unsigned char green,
             unsigned char blue,
-            unsigned char alpha = 255) : ::Color{red, green, blue, alpha} {};
+            unsigned char alpha = 255) : ::Color{red, green, blue, alpha} {}
 
     /**
      * Black.
      */
-    Color() : ::Color{0, 0, 0, 255} {};
+    Color() : ::Color{0, 0, 0, 255} {}
 
     /**
      * Returns a Color from HSV values
      */
-    Color(::Vector3 hsv) {
+    explicit Color(::Vector3 hsv) {
         set(::ColorFromHSV(hsv.x, hsv.y, hsv.z));
     }
 
@@ -43,7 +43,7 @@ class Color : public ::Color {
     /**
      * Get Color structure from hexadecimal value
      */
-    Color(unsigned int hexValue) {
+    explicit Color(unsigned int hexValue) {
         set(::GetColor(hexValue));
     }
 
@@ -61,43 +61,43 @@ class Color : public ::Color {
     /**
      * Returns hexadecimal value for a Color
      */
-    operator int() const {
+    explicit operator int() const {
         return ::ColorToInt(*this);
     }
 
-    std::string ToString() const {
+    [[nodiscard]] std::string ToString() const {
         return TextFormat("Color(%d, %d, %d, %d)", r, g, b, a);
     }
 
-    operator std::string() const {
+    explicit operator std::string() const {
         return ToString();
     }
 
     /**
      * Returns color with alpha applied, alpha goes from 0.0f to 1.0f
      */
-    Color Fade(float alpha) const {
+    [[nodiscard]] Color Fade(float alpha) const {
         return ::Fade(*this, alpha);
     }
 
     /**
      * Returns Color normalized as float [0..1]
      */
-    Vector4 Normalize() const {
+    [[nodiscard]] Vector4 Normalize() const {
         return ::ColorNormalize(*this);
     }
 
     /**
      * Returns Color from normalized values [0..1]
      */
-    Color(::Vector4 normalized) {
+    explicit Color(::Vector4 normalized) {
         set(::ColorFromNormalized(normalized));
     }
 
     /**
      * Returns HSV values for a Color
      */
-    Vector3 ToHSV() const {
+    [[nodiscard]] Vector3 ToHSV() const {
         return ::ColorToHSV(*this);
     }
 
@@ -206,35 +206,35 @@ class Color : public ::Color {
     /**
      * Get color multiplied with another color
      */
-    Color Tint(::Color tint) {
-        return ::ColorTint(*this, tint);
+    [[nodiscard]] Color Tint(::Color tint) {
+        return Color{::ColorTint(*this, tint)};
     }
 
     /**
      * Get color with brightness correction, brightness factor goes from -1.0f to 1.0f
      */
-    Color Brightness(float factor) {
-        return ::ColorBrightness(*this, factor);
+    [[nodiscard]] Color Brightness(float factor) {
+        return Color{::ColorBrightness(*this, factor)};
     }
 
     /**
      * Get color with contrast correction, contrast values between -1.0f and 1.0f
      */
-    Color Contrast(float contrast) {
-        return ::ColorContrast(*this, contrast);
+    [[nodiscard]] Color Contrast(float contrast) {
+        return Color{::ColorContrast(*this, contrast)};
     }
 
     /**
      * Returns color with alpha applied, alpha goes from 0.0f to 1.0f
      */
-    Color Alpha(float alpha) const {
+    [[nodiscard]] Color Alpha(float alpha) const {
         return ::ColorAlpha(*this, alpha);
     }
 
     /**
      * Returns src alpha-blended into dst color with tint
      */
-    Color AlphaBlend(::Color dst, ::Color tint) const {
+    [[nodiscard]] Color AlphaBlend(::Color dst, ::Color tint) const {
         return ::ColorAlphaBlend(dst, *this, tint);
     }
 

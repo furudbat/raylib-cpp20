@@ -5,7 +5,9 @@
 
 #include "./raylib.hpp"
 #include "./raylib-cpp-utils.hpp"
+#ifdef __cpp_exceptions
 #include "./RaylibException.hpp"
+#endif
 
 namespace raylib {
 /**

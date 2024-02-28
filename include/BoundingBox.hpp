@@ -24,7 +24,7 @@ class BoundingBox : public ::BoundingBox {
         set(::GetMeshBoundingBox(mesh));
     }
 
-    BoundingBox(::Vector3 minMax = ::Vector3{0.0f, 0.0f, 0.0f}) : ::BoundingBox{minMax, minMax} {}
+    explicit BoundingBox(::Vector3 minMax = ::Vector3{0.0f, 0.0f, 0.0f}) : ::BoundingBox{minMax, minMax} {}
     BoundingBox(::Vector3 pMin, ::Vector3 pMax) : ::BoundingBox{pMin, pMax} {}
 
     GETTERSETTER(::Vector3, Min, min)

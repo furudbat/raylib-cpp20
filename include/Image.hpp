@@ -5,8 +5,10 @@
 
 #include "./raylib.hpp"
 #include "./raylib-cpp-utils.hpp"
-#include "./RaylibException.hpp"
 #include "./Color.hpp"
+#ifdef __cpp_exceptions
+#include "./RaylibException.hpp"
+#endif
 
 namespace raylib {
 /**
@@ -16,7 +18,7 @@ namespace raylib {
  */
 class Image : public ::Image {
  public:
-    Image(void* data = nullptr,
+    explicit Image(void* data = nullptr,
             int width = 0,
             int height = 0,
             int mipmaps = 1,
@@ -35,7 +37,7 @@ class Image : public ::Image {
      *
      * @see Load()
      */
-    Image(const std::string& fileName) {
+    explicit Image(const std::string& fileName) {
         Load(fileName);
     }
 
@@ -75,7 +77,7 @@ class Image : public ::Image {
      *
      * @throws raylib::RaylibException Thrown if the image failed to load from the file.
      */
-    Image(const ::Texture2D& texture) {
+    explicit Image(const ::Texture2D& texture) {
         Load(texture);
     }
 
@@ -325,21 +327,21 @@ class Image : public ::Image {
     /**
      * Retrieve the width and height of the image.
      */
-    ::Vector2 GetSize() const {
+    [[nodiscard]] ::Vector2 GetSize() const {
         return {static_cast<float>(width), static_cast<float>(height)};
     }
 
     /**
      * Create an image duplicate (useful for transformations)
      */
-    ::Image Copy() const {
+    [[nodiscard]] ::Image Copy() const {
         return ::ImageCopy(*this);
     }
 
     /**
      * Create an image from another image piece
      */
-    ::Image FromImage(::Rectangle rec) const {
+    [[nodiscard]] ::Image FromImage(::Rectangle rec) const {
         return ::ImageFromImage(*this, rec);
     }
 
@@ -696,7 +698,7 @@ class Image : public ::Image {
     /**
      * Load texture from image data.
      */
-    ::Texture2D LoadTexture() const {
+    [[nodiscard]] ::Texture2D LoadTexture() const {
         return ::LoadTextureFromImage(*this);
     }
 
@@ -705,7 +707,7 @@ class Image : public ::Image {
      *
      * @see LoadTexture()
      */
-    operator ::Texture2D() {
+    explicit operator ::Texture2D() {
         return LoadTexture();
     }
 
@@ -721,7 +723,7 @@ class Image : public ::Image {
      *
      * @return The pixel data size of the image.
      */
-    int GetPixelDataSize() const {
+    [[nodiscard]] int GetPixelDataSize() const {
         return ::GetPixelDataSize(width, height, format);
     }
 
@@ -730,7 +732,7 @@ class Image : public ::Image {
      *
      * @return True or false depending on whether the Image has been loaded.
      */
-    bool IsReady() const {
+    [[nodiscard]] bool IsReady() const {
         return ::IsImageReady(*this);
     }
 

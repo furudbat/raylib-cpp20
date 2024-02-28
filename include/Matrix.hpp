@@ -23,7 +23,7 @@ class Matrix : public ::Matrix {
         // Nothing.
     }
 
-    Matrix(
+    explicit Matrix(
             float m0 = 0, float m4 = 0, float m8 = 0, float m12 = 0,
             float m1 = 0, float m5 = 0, float m9 = 0, float m13 = 0,
             float m2 = 0, float m6 = 0, float m10 = 0, float m14 = 0,
@@ -90,18 +90,18 @@ class Matrix : public ::Matrix {
     /**
      * Returns the trace of the matrix (sum of the values along the diagonal)
      */
-    float Trace() const {
+    [[nodiscard]] float Trace() const {
         return ::MatrixTrace(*this);
     }
 
     /**
      * Transposes provided matrix
      */
-    Matrix Transpose() const {
+    [[nodiscard]] Matrix Transpose() const {
         return ::MatrixTranspose(*this);
     }
 
-    Matrix Invert() const {
+    [[nodiscard]] Matrix Invert() const {
         return ::MatrixInvert(*this);
     }
 
@@ -153,7 +153,7 @@ class Matrix : public ::Matrix {
         return ::MatrixScale(x, y, z);
     }
 
-    Matrix Multiply(const ::Matrix& right) const {
+    [[nodiscard]] Matrix Multiply(const ::Matrix& right) const {
         return ::MatrixMultiply(*this, right);
     }
 
@@ -179,7 +179,7 @@ class Matrix : public ::Matrix {
         return ::MatrixLookAt(eye, target, up);
     }
 
-    float16 ToFloatV() const {
+    [[nodiscard]] float16 ToFloatV() const {
         return ::MatrixToFloatV(*this);
     }
 

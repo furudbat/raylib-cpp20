@@ -26,6 +26,7 @@ foreach(example_source ${example_sources})
     # Link raylib and raylib-cpp
     target_link_libraries(${example_name} PUBLIC raylib_cpp)
     target_link_system_libraries(${example_name} PUBLIC raylib)
+    target_compile_options(${example_name} PRIVATE -Wno-shadow)
 
     string(REGEX MATCH ".*/.*/" resources_dir ${example_source})
     string(APPEND resources_dir "resources")

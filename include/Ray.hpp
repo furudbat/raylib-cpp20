@@ -15,7 +15,7 @@ class Ray : public ::Ray {
         set(ray);
     }
 
-    Ray(::Vector3 position = {0.0f, 0.0f, 0.0f}, ::Vector3 direction = {0.0f, 0.0f, 0.0f}) :
+    explicit Ray(::Vector3 position = {0.0f, 0.0f, 0.0f}, ::Vector3 direction = {0.0f, 0.0f, 0.0f}) :
             ::Ray{position, direction} {
         // Nothing.
     }
@@ -42,35 +42,35 @@ class Ray : public ::Ray {
     /**
      * Get collision information between ray and sphere
      */
-    RayCollision GetCollision(::Vector3 center, float radius) const {
+    [[nodiscard]] RayCollision GetCollision(::Vector3 center, float radius) const {
         return ::GetRayCollisionSphere(*this, center, radius);
     }
 
     /**
      * Detect collision between ray and box
      */
-    RayCollision GetCollision(const ::BoundingBox& box) const {
+    [[nodiscard]] RayCollision GetCollision(const ::BoundingBox& box) const {
         return ::GetRayCollisionBox(*this, box);
     }
 
     /**
      * Get collision information between ray and mesh
      */
-    RayCollision GetCollision(const ::Mesh& mesh, const ::Matrix& transform) const {
+    [[nodiscard]] RayCollision GetCollision(const ::Mesh& mesh, const ::Matrix& transform) const {
         return ::GetRayCollisionMesh(*this, mesh, transform);
     }
 
     /**
      * Get collision info between ray and triangle
      */
-    RayCollision GetCollision(::Vector3 p1, ::Vector3 p2, ::Vector3 p3) const {
+    [[nodiscard]] RayCollision GetCollision(::Vector3 p1, ::Vector3 p2, ::Vector3 p3) const {
         return ::GetRayCollisionTriangle(*this, p1, p2, p3);
     }
 
     /**
      * Get collision info between ray and quad
      */
-    RayCollision GetCollision(::Vector3 p1, ::Vector3 p2, ::Vector3 p3, ::Vector3 p4) const {
+    [[nodiscard]] RayCollision GetCollision(::Vector3 p1, ::Vector3 p2, ::Vector3 p3, ::Vector3 p4) const {
         return ::GetRayCollisionQuad(*this, p1, p2, p3, p4);
     }
 

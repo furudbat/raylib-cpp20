@@ -7,9 +7,11 @@
 #include "./raylib.hpp"
 #include "./Image.hpp"
 #include "./Material.hpp"
-#include "./RaylibException.hpp"
 #include "./Vector2.hpp"
 #include "./raylib-cpp-utils.hpp"
+#ifdef __cpp_exceptions
+#include "./RaylibException.hpp"
+#endif
 
 namespace raylib {
 /**
@@ -72,7 +74,7 @@ class TextureUnmanaged : public ::Texture {
      *
      * @throws raylib::RaylibException Throws if failed to create the texture from the given file.
      */
-    TextureUnmanaged(const std::string& fileName) {
+    explicit TextureUnmanaged(const std::string& fileName) {
         Load(fileName);
     }
 
@@ -95,7 +97,7 @@ class TextureUnmanaged : public ::Texture {
     /**
      * Retrieve the width and height of the texture.
      */
-    ::Vector2 GetSize() const {
+    [[nodiscard]] ::Vector2 GetSize() const {
         return {static_cast<float>(width), static_cast<float>(height)};
     }
 
@@ -159,14 +161,14 @@ class TextureUnmanaged : public ::Texture {
     /**
      * Get pixel data from GPU texture and return an Image
      */
-    ::Image GetData() const {
+    [[nodiscard]] ::Image GetData() const {
         return ::LoadImageFromTexture(*this);
     }
 
     /**
      * Get pixel data from GPU texture and return an Image
      */
-    operator Image() {
+    explicit operator Image() {
         return GetData();
     }
 
@@ -320,7 +322,7 @@ class TextureUnmanaged : public ::Texture {
      *
      * @return True or false depending on whether the Texture has data.
      */
-    bool IsReady() const {
+    [[nodiscard]] bool IsReady() const {
         return id != 0;
     }
 

@@ -48,14 +48,14 @@ class Keyboard {
      * Get key pressed (keycode), call it multiple times for keys queued, returns 0 when the queue is empty
      */
     static bool GetKeyPressed() {
-        return ::GetKeyPressed();
+        return ::GetKeyPressed() != 0;
     }
 
     /**
      * Get char pressed (unicode), call it multiple times for chars queued, returns 0 when the queue is empty
      */
     static bool GetCharPressed() {
-        return ::GetCharPressed();
+        return ::GetCharPressed() != 0;
     }
 };
 } // namespace raylib

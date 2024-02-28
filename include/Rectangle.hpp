@@ -16,13 +16,13 @@ class Rectangle : public ::Rectangle {
     Rectangle(float x, float y, float width, float height) : ::Rectangle{x, y, width, height} {}
     Rectangle(float x, float y, float width) : ::Rectangle{x, y, width, 0} {}
     Rectangle(float x, float y) : ::Rectangle{x, y, 0, 0} {}
-    Rectangle(float x) : ::Rectangle{x, 0, 0, 0} {}
+    explicit Rectangle(float x) : ::Rectangle{x, 0, 0, 0} {}
     Rectangle() : ::Rectangle{0, 0, 0, 0} {}
 
     Rectangle(::Vector2 position, ::Vector2 size)
             : ::Rectangle{position.x, position.y, size.x, size.y} {}
-    Rectangle(::Vector2 size) : ::Rectangle{0, 0, size.x, size.y} {}
-    Rectangle(::Vector4 rect) : ::Rectangle{rect.x, rect.y, rect.z, rect.w} {}
+    explicit Rectangle(::Vector2 size) : ::Rectangle{0, 0, size.x, size.y} {}
+    explicit Rectangle(::Vector4 rect) : ::Rectangle{rect.x, rect.y, rect.z, rect.w} {}
 
     GETTERSETTER(float, X, x)
     GETTERSETTER(float, Y, y)
@@ -38,7 +38,7 @@ class Rectangle : public ::Rectangle {
         return {x, y, width, height};
     }
 
-    operator ::Vector4() const {
+    explicit operator ::Vector4() const {
         return {x, y, width, height};
     }
 
@@ -88,32 +88,32 @@ class Rectangle : public ::Rectangle {
     /**
      * Check collision between two rectangles
      */
-    bool CheckCollision(::Rectangle rec2) const {
+    [[nodiscard]] bool CheckCollision(::Rectangle rec2) const {
         return ::CheckCollisionRecs(*this, rec2);
     }
 
     /**
      * Get collision rectangle for two rectangles collision
      */
-    ::Rectangle GetCollision(::Rectangle rec2) const {
+    [[nodiscard]] ::Rectangle GetCollision(::Rectangle rec2) const {
         return ::GetCollisionRec(*this, rec2);
     }
 
     /**
      * Check if point is inside rectangle
      */
-    bool CheckCollision(::Vector2 point) const {
+    [[nodiscard]] bool CheckCollision(::Vector2 point) const {
         return ::CheckCollisionPointRec(point, *this);
     }
 
     /**
      * Check collision between circle and rectangle
      */
-    bool CheckCollision(::Vector2 center, float radius) const {
+    [[nodiscard]] bool CheckCollision(::Vector2 center, float radius) const {
         return ::CheckCollisionCircleRec(center, radius, *this);
     }
 
-    Vector2 GetSize() const {
+    [[nodiscard]] Vector2 GetSize() const {
         return {width, height};
     }
 
@@ -132,7 +132,7 @@ class Rectangle : public ::Rectangle {
         return *this;
     }
 
-    Vector2 GetPosition() const {
+    [[nodiscard]] Vector2 GetPosition() const {
         return {x, y};
     }
 
