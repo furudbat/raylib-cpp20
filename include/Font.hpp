@@ -58,8 +58,11 @@ class Font : public ::Font {
      *
      * @see ::LoadFontEx
      */
-    Font(const std::filesystem::path& fileName, int fontSize, std::span<int> fontChars = {}) RAYLIB_CPP_THROWS {
-        Load(fileName, fontSize, fontChars);
+    Font(const std::filesystem::path& fileName, int fontSize, std::span<int> codepoints = {}) RAYLIB_CPP_THROWS {
+        Load(fileName, fontSize, codepoints);
+    }
+    Font(const std::filesystem::path& fileName, int fontSize, int* codepoints, int codepointCount) RAYLIB_CPP_THROWS {
+        Load(fileName, fontSize, std::span<int>{codepoints, static_cast<size_t>(codepointCount)});
     }
 
     /**
@@ -83,8 +86,8 @@ class Font : public ::Font {
      * @see ::LoadFontFromMemory()
      */
     Font(const std::string& fileType, std::span<const unsigned char> fileData, int fontSize,
-         std::span<int> fontChars) RAYLIB_CPP_THROWS {
-        Load(fileType, fileData, fontSize, fontChars);
+         std::span<int> codepoints) RAYLIB_CPP_THROWS {
+        Load(fileType, fileData, fontSize, codepoints);
     }
 
     constexpr Font(const Font&) = delete;
@@ -196,9 +199,9 @@ class Font : public ::Font {
     }
 
     RAYLIB_CPP_EXPECTED_RESULT(void) Load(const std::string& fileType, std::span<const unsigned char> fileData, int fontSize,
-              std::span<int> fontChars)  {
-        set(::LoadFontFromMemory(fileType.c_str(), fileData.data(), static_cast<int>(fileData.size()), fontSize, fontChars.data(),
-                                 static_cast<int>(fontChars.size())));
+              std::span<int> codepoints)  {
+        set(::LoadFontFromMemory(fileType.c_str(), fileData.data(), static_cast<int>(fileData.size()), fontSize, codepoints.data(),
+                                 static_cast<int>(codepoints.size())));
         if (!IsReady()) {
             RAYLIB_CPP_RETURN_EXPECTED_OR_THROW(RaylibError("Failed to load Font " + fileType + " with from file data"));
         }

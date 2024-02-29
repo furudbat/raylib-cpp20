@@ -40,7 +40,7 @@ int main() {
 
     // TTF font : Font data and atlas are generated directly from TTF
     // NOTE: We define a font base size of 32 pixels tall and up-to 250 characters
-    raylib::Font fontTtf("resources/pixantiqua.ttf", 32, 0, 250);
+    raylib::Font fontTtf("resources/pixantiqua.ttf", 32, nullptr, 250);
 
     bool useTtf = false;
 

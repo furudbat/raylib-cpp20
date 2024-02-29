@@ -281,32 +281,32 @@ class Color : public ::Color {
         return Color{::ColorAlphaBlend(dst, *this, tint)};
     }
 
-    inline static constexpr Color LightGray() { return LIGHTGRAY; }
-    inline static constexpr Color Gray() { return GRAY; }
-    inline static constexpr Color DarkGray() { return DARKGRAY; }
-    inline static constexpr Color Yellow() { return YELLOW; }
-    inline static constexpr Color Gold() { return GOLD; }
-    inline static constexpr Color Orange() { return ORANGE; }
-    inline static constexpr Color Pink() { return PINK; }
-    inline static constexpr Color Red() { return RED; }
-    inline static constexpr Color Maroon() { return MAROON; }
-    inline static constexpr Color Green() { return GREEN; }
-    inline static constexpr Color Lime() { return LIME; }
-    inline static constexpr Color DarkGreen() { return DARKGREEN; }
-    inline static constexpr Color SkyBlue() { return SKYBLUE; }
-    inline static constexpr Color Blue() { return BLUE; }
-    inline static constexpr Color DarkBlue() { return DARKBLUE; }
-    inline static constexpr Color Purple() { return PURPLE; }
-    inline static constexpr Color Violet() { return VIOLET; }
-    inline static constexpr Color DarkPurple() { return DARKPURPLE; }
-    inline static constexpr Color Beige() { return BEIGE; }
-    inline static constexpr Color Brown() { return BROWN; }
-    inline static constexpr Color DarkBrown() { return DARKBROWN; }
-    inline static constexpr Color White() { return WHITE; }
-    inline static constexpr Color Black() { return BLACK; }
-    inline static constexpr Color Blank() { return BLANK; }
-    inline static constexpr Color Magenta() { return MAGENTA; }
-    inline static constexpr Color RayWhite() { return RAYWHITE; }
+    inline static constexpr Color LightGray() { return Color{LIGHTGRAY}; }
+    inline static constexpr Color Gray() { return Color{GRAY}; }
+    inline static constexpr Color DarkGray() { return Color{DARKGRAY}; }
+    inline static constexpr Color Yellow() { return Color{YELLOW}; }
+    inline static constexpr Color Gold() { return Color{GOLD}; }
+    inline static constexpr Color Orange() { return Color{ORANGE}; }
+    inline static constexpr Color Pink() { return Color{PINK}; }
+    inline static constexpr Color Red() { return Color{RED}; }
+    inline static constexpr Color Maroon() { return Color{MAROON}; }
+    inline static constexpr Color Green() { return Color{GREEN}; }
+    inline static constexpr Color Lime() { return Color{LIME}; }
+    inline static constexpr Color DarkGreen() { return Color{DARKGREEN}; }
+    inline static constexpr Color SkyBlue() { return Color{SKYBLUE}; }
+    inline static constexpr Color Blue() { return Color{BLUE}; }
+    inline static constexpr Color DarkBlue() { return Color{DARKBLUE}; }
+    inline static constexpr Color Purple() { return Color{PURPLE}; }
+    inline static constexpr Color Violet() { return Color{VIOLET}; }
+    inline static constexpr Color DarkPurple() { return Color{DARKPURPLE}; }
+    inline static constexpr Color Beige() { return Color{BEIGE}; }
+    inline static constexpr Color Brown() { return Color{BROWN}; }
+    inline static constexpr Color DarkBrown() { return Color{DARKBROWN}; }
+    inline static constexpr Color White() { return Color{WHITE}; }
+    inline static constexpr Color Black() { return Color{BLACK}; }
+    inline static constexpr Color Blank() { return Color{BLANK}; }
+    inline static constexpr Color Magenta() { return Color{MAGENTA}; }
+    inline static constexpr Color RayWhite() { return Color{RAYWHITE}; }
 
  protected:
     constexpr void set(const ::Color& color) {
