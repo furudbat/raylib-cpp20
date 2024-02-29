@@ -4,6 +4,7 @@
 #ifndef RAYLIB_CPP_INCLUDE_FUNCTIONS_HPP_
 #define RAYLIB_CPP_INCLUDE_FUNCTIONS_HPP_
 
+#include <filesystem>
 #include <string>
 #include <vector>
 
@@ -80,79 +81,79 @@ namespace raylib {
 /**
  * Save text data to file (write)
  */
-    [[maybe_unused]] RLCPPAPI inline bool SaveFileText(const std::string& fileName, const std::string& text) {
+    [[maybe_unused]] RLCPPAPI inline bool SaveFileText(const std::filesystem::path& fileName, const std::string& text) {
     return ::SaveFileText(fileName.c_str(), const_cast<char*>(text.c_str()));
 }
 
 /**
  * Check if file exists
  */
-    [[maybe_unused]] RLCPPAPI inline bool FileExists(const std::string& fileName) {
+    [[maybe_unused]] RLCPPAPI inline bool FileExists(const std::filesystem::path& fileName) {
     return ::FileExists(fileName.c_str());
 }
 
 /**
  * Check if directory path exists
  */
-    [[maybe_unused]] RLCPPAPI inline bool DirectoryExists(const std::string& dirPath) {
+    [[maybe_unused]] RLCPPAPI inline bool DirectoryExists(const std::filesystem::path& dirPath) {
     return ::DirectoryExists(dirPath.c_str());
 }
 
 /**
  * Check file extension (including point: .png, .wav)
  */
-    [[maybe_unused]] RLCPPAPI inline bool IsFileExtension(const std::string& fileName, const std::string& ext) {
+    [[maybe_unused]] RLCPPAPI inline bool IsFileExtension(const std::filesystem::path& fileName, const std::string& ext) {
     return ::IsFileExtension(fileName.c_str(), ext.c_str());
 }
 
 /**
  * Get pointer to extension for a filename string (including point: ".png")
  */
-    [[maybe_unused]] RLCPPAPI inline std::string GetFileExtension(const std::string& fileName) {
+    [[maybe_unused]] RLCPPAPI inline std::string GetFileExtension(const std::filesystem::path& fileName) {
     return ::GetFileExtension(fileName.c_str());
 }
 
 /**
  * Get pointer to filename for a path string
  */
-    [[maybe_unused]] RLCPPAPI inline std::string GetFileName(const std::string& filePath) {
+    [[maybe_unused]] RLCPPAPI inline std::string GetFileName(const std::filesystem::path& filePath) {
     return ::GetFileName(filePath.c_str());
 }
 
 /**
  * Get filename string without extension
  */
-    [[maybe_unused]] RLCPPAPI inline std::string GetFileNameWithoutExt(const std::string& filePath) {
+    [[maybe_unused]] RLCPPAPI inline std::string GetFileNameWithoutExt(const std::filesystem::path& filePath) {
     return ::GetFileNameWithoutExt(filePath.c_str());
 }
 
 /**
  * Get full path for a given fileName with path
  */
-    [[maybe_unused]] RLCPPAPI inline std::string GetDirectoryPath(const std::string& filePath) {
+    [[maybe_unused]] RLCPPAPI inline std::string GetDirectoryPath(const std::filesystem::path& filePath) {
     return ::GetDirectoryPath(filePath.c_str());
 }
 
 /**
  * Get previous directory path for a given path
  */
-    [[maybe_unused]] RLCPPAPI inline std::string GetPrevDirectoryPath(const std::string& dirPath) {
+    [[maybe_unused]] RLCPPAPI inline std::string GetPrevDirectoryPath(const std::filesystem::path& dirPath) {
     return ::GetPrevDirectoryPath(dirPath.c_str());
 }
 
 /**
  * Get current working directory
  */
-    [[maybe_unused]] RLCPPAPI inline std::string GetWorkingDirectory() {
+    [[maybe_unused]] RLCPPAPI inline std::filesystem::path GetWorkingDirectory() {
     return ::GetWorkingDirectory();
 }
 
 /**
  * Get filenames in a directory path
  */
-    [[maybe_unused]] RLCPPAPI std::vector<std::string> LoadDirectoryFiles(const std::string& dirPath) {
+    [[maybe_unused]] RLCPPAPI std::vector<std::string> LoadDirectoryFiles(const std::filesystem::path& dirPath) {
     FilePathList files = ::LoadDirectoryFiles(dirPath.c_str());
-    std::vector<std::string> output(files.paths, files.paths + files.count);
+    std::vector<std::string> output(files.paths, std::next(files.paths, files.count));
     ::UnloadDirectoryFiles(files);
     return output;
 }
@@ -160,19 +161,23 @@ namespace raylib {
 /**
  * Change working directory, return true on success
  */
-    [[maybe_unused]] RLCPPAPI inline bool ChangeDirectory(const std::string& dir) {
+    [[maybe_unused]] RLCPPAPI inline bool ChangeDirectory(const std::filesystem::path& dir) {
     return ::ChangeDirectory(dir.c_str());
 }
 
 /**
  * Get dropped files names
  */
-    [[maybe_unused]] RLCPPAPI std::vector<std::string> LoadDroppedFiles() {
+    [[maybe_unused]] RLCPPAPI std::vector<std::filesystem::path> LoadDroppedFiles() {
     if (!::IsFileDropped()) {
-        return std::vector<std::string>();
+        return {};
     }
     FilePathList files = ::LoadDroppedFiles();
-    std::vector<std::string> output(files.paths, files.paths + files.count);
+    std::vector<std::filesystem::path> output;
+    output.reserve(files.count);
+    for (auto* path : std::span<char*>(files.paths, files.count)) {
+        output.emplace_back(path);
+    }
     ::UnloadDroppedFiles(files);
     return output;
 }
@@ -180,7 +185,7 @@ namespace raylib {
 /**
  * Get file modification time (last write time)
  */
-    [[maybe_unused]] RLCPPAPI inline long GetFileModTime(const std::string& fileName) { // NOLINT
+    [[maybe_unused]] RLCPPAPI inline long GetFileModTime(const std::filesystem::path& fileName) { // NOLINT
     return ::GetFileModTime(fileName.c_str());
 }
 
@@ -194,14 +199,14 @@ namespace raylib {
 /**
  * Load an image.
  */
-    [[maybe_unused]] RLCPPAPI inline ::Image LoadImage(const std::string& fileName) {
+    [[maybe_unused]] RLCPPAPI inline ::Image LoadImage(const std::filesystem::path& fileName) {
     return ::LoadImage(fileName.c_str());
 }
 
 /**
  * Load an image from RAW file data
  */
-    [[maybe_unused]] RLCPPAPI inline ::Image LoadImageRaw(const std::string& fileName,
+    [[maybe_unused]] RLCPPAPI inline ::Image LoadImageRaw(const std::filesystem::path& fileName,
         int width, int height,
         int format, int headerSize) {
     return ::LoadImageRaw(fileName.c_str(), width, height, format, headerSize);
@@ -210,30 +215,29 @@ namespace raylib {
 /**
  * Load animated image data
  */
-    [[maybe_unused]] RLCPPAPI inline ::Image LoadImageAnim(const std::string& fileName, int *frames) {
-    return ::LoadImageAnim(fileName.c_str(), frames);
+    [[maybe_unused]] RLCPPAPI inline ::Image LoadImageAnim(const std::filesystem::path& fileName, int &frames) {
+    return ::LoadImageAnim(fileName.c_str(), &frames);
 }
 
 /**
  * Load image from memory buffer, fileType refers to extension like "png"
  */
     [[maybe_unused]] RLCPPAPI inline ::Image LoadImageFromMemory(const std::string& fileType,
-        const unsigned char *fileData,
-        int dataSize) {
-    return ::LoadImageFromMemory(fileType.c_str(), fileData, dataSize);
+        std::span<const unsigned char> fileData) {
+    return ::LoadImageFromMemory(fileType.c_str(), fileData.data(), static_cast<int>(fileData.size()));
 }
 
 /**
  * Export image data to file
  */
-    [[maybe_unused]] RLCPPAPI inline bool ExportImage(const Image& image, const std::string& fileName) {
+    [[maybe_unused]] RLCPPAPI inline bool ExportImage(const Image& image, const std::filesystem::path& fileName) {
     return ::ExportImage(image, fileName.c_str());
 }
 
 /**
  * Export image as code file (.h) defining an array of bytes
  */
-    [[maybe_unused]] RLCPPAPI inline bool ExportImageAsCode(const Image& image, const std::string& fileName) {
+    [[maybe_unused]] RLCPPAPI inline bool ExportImageAsCode(const Image& image, const std::filesystem::path& fileName) {
     return ::ExportImageAsCode(image, fileName.c_str());
 }
 
@@ -286,15 +290,15 @@ namespace raylib {
 /**
  * Load font from file (filename must include file extension)
  */
-    [[maybe_unused]] RLCPPAPI inline ::Font LoadFont(const std::string& fileName) {
+    [[maybe_unused]] RLCPPAPI inline ::Font LoadFont(const std::filesystem::path& fileName) {
     return ::LoadFont(fileName.c_str());
 }
 
 /**
  * Load font from file (filename must include file extension)
  */
-    [[maybe_unused]] RLCPPAPI inline ::Font LoadFontEx(const std::string& fileName, int fontSize, int *fontChars, int charsCount) {
-    return ::LoadFontEx(fileName.c_str(), fontSize, fontChars, charsCount);
+    [[maybe_unused]] RLCPPAPI inline ::Font LoadFontEx(const std::filesystem::path& fileName, int fontSize, std::span<int> fontChars) {
+    return ::LoadFontEx(fileName.c_str(), fontSize, fontChars.data(), static_cast<int>(fontChars.size()));
 }
 
 /**
@@ -351,11 +355,9 @@ namespace raylib {
  */
     [[maybe_unused]] RLCPPAPI std::string TextReplace(const std::string& text, const std::string& replace, const std::string& by) {
     const char* input = text.c_str();
-    char* output = ::TextReplace(const_cast<char*>(input), replace.c_str(), by.c_str());
-    if (output != NULL) {
-        std::string stringOutput(output);
-        free(output);
-        return stringOutput;
+    auto output = RayUniquePtr<char>(::TextReplace(const_cast<char*>(input), replace.c_str(), by.c_str()));
+    if (output != nullptr) {
+        return output.get();
     }
     return "";
 }
@@ -364,11 +366,9 @@ namespace raylib {
  * Insert text in a position
  */
     [[maybe_unused]] RLCPPAPI std::string TextInsert(const std::string& text, const std::string& insert, int position) {
-    char* output = ::TextInsert(text.c_str(), insert.c_str(), position);
-    if (output != NULL) {
-        std::string stringOutput(output);
-        free(output);
-        return stringOutput;
+    auto output = RayUniquePtr<char>(::TextInsert(text.c_str(), insert.c_str(), position));
+    if (output != nullptr) {
+        return output.get();
     }
     return "";
 }
@@ -379,7 +379,7 @@ namespace raylib {
     [[maybe_unused]] RLCPPAPI std::vector<std::string> TextSplit(const std::string& text, char delimiter) {
     int count;
     const char** split = ::TextSplit(text.c_str(), delimiter, &count);
-    return std::vector<std::string>(split, split + count);
+    return std::vector<std::string>(split, std::next(split, count));
 }
 
 /**

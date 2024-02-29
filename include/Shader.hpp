@@ -2,6 +2,7 @@
 #define RAYLIB_CPP_INCLUDE_SHADER_HPP_
 
 #include <string>
+#include <filesystem>
 
 #include "./raylib.hpp"
 #include "./raylib-cpp-utils.hpp"
@@ -13,23 +14,35 @@ namespace raylib {
  */
 class Shader : public ::Shader {
  public:
-    Shader(const ::Shader& shader) {
+    constexpr Shader() : ::Shader{0, nullptr} {}
+
+    /// @TODO: moving ownership ???
+    constexpr explicit Shader(const ::Shader& shader) {
         set(shader);
     }
 
-    explicit Shader(unsigned int id, int* locs = nullptr) : ::Shader{id, locs} {}
+    /// @TODO: moving ownership ??? locs != nullptr
+    constexpr explicit Shader(unsigned int _id, int* _locs = nullptr) : ::Shader{_id, _locs} {}
 
-    Shader(const std::string& vsFileName, const std::string& fsFileName) {
-        set(::LoadShader(vsFileName.c_str(), fsFileName.c_str()));
+
+    struct LoadShaderOptions {
+        const std::filesystem::path& vsFileName;
+        const std::filesystem::path& fsFileName;
+    };
+    Shader(LoadShaderOptions options) {
+        set(::LoadShader(options.vsFileName.c_str(), options.fsFileName.c_str()));
     }
 
-    Shader(const char* vsFileName, const char* fsFileName) {
-        set(::LoadShader(vsFileName, fsFileName));
+    struct LoadShaderOptionsC {
+        const char* vsFileName;
+        const char* fsFileName;
+    };
+    Shader(LoadShaderOptionsC options) {
+        set(::LoadShader(options.vsFileName, options.fsFileName));
     }
 
-    Shader(const Shader&) = delete;
-
-    Shader(Shader&& other) {
+    constexpr Shader(const Shader&) = delete;
+    constexpr Shader(Shader&& other) {
         set(other);
 
         other.id = 0;
@@ -41,12 +54,12 @@ class Shader : public ::Shader {
      *
      * @see ::LoadShader
      */
-    static ::Shader Load(const std::string& vsFileName, const std::string& fsFileName) {
-        return ::LoadShader(vsFileName.c_str(), fsFileName.c_str());
+    static ::Shader Load(LoadShaderOptions options) {
+        return ::LoadShader(options.vsFileName.c_str(), options.fsFileName.c_str());
     }
 
-    static ::Shader Load(const char* vsFileName, const char* fsFileName) {
-        return ::LoadShader(vsFileName, fsFileName);
+    static ::Shader Load(LoadShaderOptionsC options) {
+        return ::LoadShader(options.vsFileName, options.fsFileName);
     }
 
     /**
@@ -54,24 +67,31 @@ class Shader : public ::Shader {
      *
      * @see ::LoadShaderFromMemory
      */
-    static ::Shader LoadFromMemory(const std::string& vsCode, const std::string& fsCode) {
-        return ::LoadShaderFromMemory(vsCode.c_str(), fsCode.c_str());
+    struct LoadFromMemoryOptions {
+        const std::string& vsCode;
+        const std::string& fsCode;
+    };
+    static Shader LoadFromMemory(LoadFromMemoryOptions options) {
+        return Shader{::LoadShaderFromMemory(options.vsCode.c_str(), options.fsCode.c_str())};
     }
 
-    static ::Shader LoadFromMemory(const char* vsCode, const char* fsCode) {
-        return ::LoadShaderFromMemory(vsCode, fsCode);
+    struct LoadFromMemoryOptionsC {
+        const char* vsCode;
+        const char* fsCode;
+    };
+    static ::Shader LoadFromMemory(LoadFromMemoryOptionsC options) {
+        return ::LoadShaderFromMemory(options.vsCode, options.fsCode);
     }
 
     GETTERSETTER(unsigned int, Id, id)
     GETTERSETTER(int*, Locs, locs)
 
-    Shader& operator=(const ::Shader& shader) {
+    constexpr Shader& operator=(const ::Shader& shader) {
         set(shader);
         return *this;
     }
 
-    Shader& operator=(const Shader&) = delete;
-
+    constexpr Shader& operator=(const Shader&) = delete;
     Shader& operator=(Shader&& other) noexcept {
         if (this == &other) {
             return *this;
@@ -179,12 +199,12 @@ class Shader : public ::Shader {
     /**
      * Retrieves whether or not the shader is ready.
      */
-    [[nodiscard]] bool IsReady() const {
+    [[nodiscard]] constexpr bool IsReady() const {
         return id != 0 && locs != nullptr;
     }
 
  protected:
-    void set(const ::Shader& shader) {
+    constexpr void set(const ::Shader& shader) {
         id = shader.id;
         locs = shader.locs;
     }

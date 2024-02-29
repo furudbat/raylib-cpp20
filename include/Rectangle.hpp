@@ -11,34 +11,43 @@ namespace raylib {
  */
 class Rectangle : public ::Rectangle {
  public:
-    Rectangle(const ::Rectangle& rect) : ::Rectangle{rect.x, rect.y, rect.width, rect.height} {}
+    explicit constexpr Rectangle(const ::Rectangle& rect = {
+            .x = 0, .y = 0, .width = 0, .height = 0
+    }) : ::Rectangle{rect.x, rect.y, rect.width, rect.height} {}
 
-    Rectangle(float x, float y, float width, float height) : ::Rectangle{x, y, width, height} {}
-    Rectangle(float x, float y, float width) : ::Rectangle{x, y, width, 0} {}
-    Rectangle(float x, float y) : ::Rectangle{x, y, 0, 0} {}
-    explicit Rectangle(float x) : ::Rectangle{x, 0, 0, 0} {}
-    Rectangle() : ::Rectangle{0, 0, 0, 0} {}
+    [[deprecated("Use Rectangle(rect), use named-parameter struct")]]
+    constexpr Rectangle(float _x, float _y, float _width, float _height) : ::Rectangle{_x, _y, _width, _height} {}
+    [[deprecated("Use Rectangle(rect), use named-parameter struct")]]
+    constexpr Rectangle(float _x, float _y, float _width) : ::Rectangle{_x, _y, _width, 0} {}
+    [[deprecated("Use Rectangle(rect), use named-parameter struct")]]
+    constexpr Rectangle(float _x, float _y) : ::Rectangle{_x, _y, 0, 0} {}
+    [[deprecated("Use Rectangle(rect), use named-parameter struct")]]
+    explicit constexpr Rectangle(float _x) : ::Rectangle{_x, 0, 0, 0} {}
 
-    Rectangle(::Vector2 position, ::Vector2 size)
-            : ::Rectangle{position.x, position.y, size.x, size.y} {}
-    explicit Rectangle(::Vector2 size) : ::Rectangle{0, 0, size.x, size.y} {}
-    explicit Rectangle(::Vector4 rect) : ::Rectangle{rect.x, rect.y, rect.z, rect.w} {}
+    struct RectangleVector2 {
+        ::Vector2 position;
+        ::Vector2 size;
+    };
+    explicit constexpr Rectangle(RectangleVector2 position_size)
+            : ::Rectangle{position_size.position.x, position_size.position.y, position_size.size.x, position_size.size.y} {}
+    explicit constexpr Rectangle(::Vector2 size) : ::Rectangle{0, 0, size.x, size.y} {}
+    explicit constexpr Rectangle(::Vector4 rect) : ::Rectangle{rect.x, rect.y, rect.z, rect.w} {}
 
     GETTERSETTER(float, X, x)
     GETTERSETTER(float, Y, y)
     GETTERSETTER(float, Width, width)
     GETTERSETTER(float, Height, height)
 
-    Rectangle& operator=(const ::Rectangle& rect) {
+    constexpr Rectangle& operator=(const ::Rectangle& rect) {
         set(rect);
         return *this;
     }
 
-    ::Vector4 ToVector4() {
+    [[nodiscard]] constexpr ::Vector4 ToVector4() {
         return {x, y, width, height};
     }
 
-    explicit operator ::Vector4() const {
+    explicit constexpr operator ::Vector4() const {
         return {x, y, width, height};
     }
 
@@ -113,17 +122,17 @@ class Rectangle : public ::Rectangle {
         return ::CheckCollisionCircleRec(center, radius, *this);
     }
 
-    [[nodiscard]] Vector2 GetSize() const {
-        return {width, height};
+    [[nodiscard]] constexpr raylib::Vector2 GetSize() const {
+        return raylib::Vector2{{.x = width, .y = height}};
     }
 
-    Rectangle& SetSize(float newWidth, float newHeight) {
+    constexpr Rectangle& SetSize(float newWidth, float newHeight) {
         width = newWidth;
         height = newHeight;
         return *this;
     }
 
-    Rectangle& SetSize(const ::Vector2& size) {
+    constexpr Rectangle& SetSize(const ::Vector2& size) {
         return SetSize(size.x, size.y);
     }
 
@@ -132,22 +141,22 @@ class Rectangle : public ::Rectangle {
         return *this;
     }
 
-    [[nodiscard]] Vector2 GetPosition() const {
-        return {x, y};
+    [[nodiscard]] constexpr raylib::Vector2 GetPosition() const {
+        return raylib::Vector2{{.x = x, .y = y}};
     }
 
-    Rectangle& SetPosition(float newX, float newY) {
+    constexpr Rectangle& SetPosition(float newX, float newY) {
         x = newX;
         y = newY;
         return *this;
     }
 
-    Rectangle& SetPosition(const ::Vector2& position) {
+    constexpr Rectangle& SetPosition(const ::Vector2& position) {
         return SetPosition(position.x, position.y);
     }
 
  protected:
-    void set(const ::Rectangle& rect) {
+    constexpr void set(const ::Rectangle& rect) {
         x = rect.x;
         y = rect.y;
         width = rect.width;

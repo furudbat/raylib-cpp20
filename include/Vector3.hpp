@@ -17,33 +17,37 @@ namespace raylib {
  */
 class Vector3 : public ::Vector3 {
  public:
-    Vector3(const ::Vector3& vec) : ::Vector3{vec.x, vec.y, vec.z} {}
+    constexpr explicit Vector3(const ::Vector3& vec = {
+            .x = 0, .y = 0, .z = 0
+    }) : ::Vector3{vec.x, vec.y, vec.z} {}
 
-    Vector3(::Color color) {
+    explicit Vector3(::Color color) {
         set(ColorToHSV(color));
     }
 
-    Vector3(float px, float py, float pz) : ::Vector3{px, py, pz} {}
-    Vector3(float px, float py) : ::Vector3{px, py, 0} {}
-    /*explicit*/ Vector3(float px) : ::Vector3{px, 0, 0} {}
-    Vector3() = default;
+    [[deprecated("Use Vector3(vec)")]]
+    constexpr Vector3(float px, float py, float pz) : ::Vector3{px, py, pz} {}
+    [[deprecated("Use Vector3(vec)")]]
+    constexpr Vector3(float px, float py) : ::Vector3{px, py, 0} {}
+    [[deprecated("Use Vector3(vec)")]]
+    /*explicit*/ constexpr Vector3(float px) : ::Vector3{px, 0, 0} {}
 
     GETTERSETTER(float, X, x)
     GETTERSETTER(float, Y, y)
     GETTERSETTER(float, Z, z)
 
-    Vector3& operator=(const ::Vector3& vector3) {
+    constexpr Vector3& operator=(const ::Vector3& vector3) {
         set(vector3);
         return *this;
     }
 
-    bool operator==(const ::Vector3& other) const {
+    constexpr bool operator==(const ::Vector3& other) const {
         return x == other.x
             && y == other.y
             && z == other.z;
     }
 
-    bool operator!=(const ::Vector3& other) const {
+    constexpr bool operator!=(const ::Vector3& other) const {
         return !(*this == other);
     }
 
@@ -59,19 +63,19 @@ class Vector3 : public ::Vector3 {
     /**
      * Add two vectors
      */
-    [[nodiscard]] Vector3 Add(const ::Vector3& vector3) const {
-        return Vector3Add(*this, vector3);
+    [[nodiscard]] Vector3 Add(::Vector3 vector3) const {
+        return Vector3{::Vector3Add(*this, vector3)};
     }
 
     /**
      * Add two vectors
      */
-    Vector3 operator+(const ::Vector3& vector3) const {
-        return Vector3Add(*this, vector3);
+    Vector3 operator+(::Vector3 vector3) const {
+        return Vector3{::Vector3Add(*this, vector3)};
     }
 
-    Vector3& operator+=(const ::Vector3& vector3) {
-        set(Vector3Add(*this, vector3));
+    Vector3& operator+=(::Vector3 vector3) {
+        set(::Vector3Add(*this, vector3));
 
         return *this;
     }
@@ -79,19 +83,19 @@ class Vector3 : public ::Vector3 {
     /**
      * Subtract two vectors.
      */
-    [[nodiscard]] Vector3 Subtract(const ::Vector3& vector3) const {
-        return Vector3Subtract(*this, vector3);
+    [[nodiscard]] Vector3 Subtract(::Vector3 vector3) const {
+        return Vector3{::Vector3Subtract(*this, vector3)};
     }
 
     /**
      * Subtract two vectors.
      */
-    Vector3 operator-(const ::Vector3& vector3) const {
-        return Vector3Subtract(*this, vector3);
+    Vector3 operator-(::Vector3 vector3) const {
+        return Vector3{::Vector3Subtract(*this, vector3)};
     }
 
-    Vector3& operator-=(const ::Vector3& vector3) {
-        set(Vector3Subtract(*this, vector3));
+    Vector3& operator-=(::Vector3 vector3) {
+        set(::Vector3Subtract(*this, vector3));
 
         return *this;
     }
@@ -100,28 +104,28 @@ class Vector3 : public ::Vector3 {
      * Negate provided vector (invert direction)
      */
     [[nodiscard]] Vector3 Negate() const {
-        return Vector3Negate(*this);
+        return Vector3{::Vector3Negate(*this)};
     }
 
     /**
      * Negate provided vector (invert direction)
      */
     Vector3 operator-() const {
-        return Vector3Negate(*this);
+        return Vector3{::Vector3Negate(*this)};
     }
 
     /**
      * Multiply vector by vector
      */
     [[nodiscard]] Vector3 Multiply(const ::Vector3& vector3) const {
-        return Vector3Multiply(*this, vector3);
+        return Vector3{::Vector3Multiply(*this, vector3)};
     }
 
     /**
      * Multiply vector by vector
      */
     Vector3 operator*(const ::Vector3& vector3) const {
-        return Vector3Multiply(*this, vector3);
+        return Vector3{::Vector3Multiply(*this, vector3)};
     }
 
     /**
@@ -137,21 +141,21 @@ class Vector3 : public ::Vector3 {
      * Multiply vector by scalar
      */
     Vector3 Scale(const float scaler) const {
-        return Vector3Scale(*this, scaler);
+        return Vector3{::Vector3Scale(*this, scaler)};
     }
 
     /**
      * Multiply vector by scalar
      */
     Vector3 operator*(const float scaler) const {
-        return Vector3Scale(*this, scaler);
+        return Vector3{::Vector3Scale(*this, scaler)};
     }
 
     /**
      * Multiply vector by scalar
      */
     Vector3& operator*=(const float scaler) {
-        set(Vector3Scale(*this, scaler));
+        set(::Vector3Scale(*this, scaler));
 
         return *this;
     }
@@ -159,21 +163,21 @@ class Vector3 : public ::Vector3 {
     /**
      * Divide vector by vector
      */
-    Vector3 Divide(const ::Vector3& vector3) const {
-        return Vector3Divide(*this, vector3);
+    Vector3 Divide(::Vector3 vector3) const {
+        return Vector3{::Vector3Divide(*this, vector3)};
     }
 
     /**
      * Divide vector by vector
      */
-    Vector3 operator/(const ::Vector3& vector3) const {
-        return Vector3Divide(*this, vector3);
+    Vector3 operator/(::Vector3 vector3) const {
+        return Vector3{::Vector3Divide(*this, vector3)};
     }
 
     /**
      * Divide vector by vector
      */
-    Vector3& operator/=(const ::Vector3& vector3) {
+    constexpr Vector3& operator/=(::Vector3 vector3) {
         x /= vector3.x;
         y /= vector3.y;
         z /= vector3.z;
@@ -184,21 +188,21 @@ class Vector3 : public ::Vector3 {
     /**
      * Divide a vector by a value.
      */
-    Vector3 Divide(const float div) const {
-        return ::Vector3{x / div, y / div, z / div};
+    constexpr Vector3 Divide(const float div) const {
+        return Vector3{::Vector3{.x = x / div, .y = y / div, .z = z / div}};
     }
 
     /**
      * Divide a vector by a value.
      */
-    Vector3 operator/(const float div) const {
+    constexpr Vector3 operator/(const float div) const {
         return Divide(div);
     }
 
     /**
      * Divide a vector by a value.
      */
-    Vector3& operator/=(const float div) {
+    constexpr Vector3& operator/=(const float div) {
         x /= div;
         y /= div;
         z /= div;
@@ -210,67 +214,67 @@ class Vector3 : public ::Vector3 {
      * Calculate vector length
      */
     float Length() const {
-        return Vector3Length(*this);
+        return ::Vector3Length(*this);
     }
 
     Vector3 Normalize() const {
-        return Vector3Normalize(*this);
+        return Vector3{::Vector3Normalize(*this)};
     }
 
-    float DotProduct(const ::Vector3& vector3) const {
-        return Vector3DotProduct(*this, vector3);
+    float DotProduct(::Vector3 vector3) const {
+        return ::Vector3DotProduct(*this, vector3);
     }
 
-    float Distance(const ::Vector3& vector3) const {
-        return Vector3Distance(*this, vector3);
+    float Distance(::Vector3 vector3) const {
+        return ::Vector3Distance(*this, vector3);
     }
 
-    Vector3 Lerp(const ::Vector3& vector3, const float amount) const {
-        return Vector3Lerp(*this, vector3, amount);
+    Vector3 Lerp(::Vector3 vector3, const float amount) const {
+        return Vector3{::Vector3Lerp(*this, vector3, amount)};
     }
 
-    Vector3 CrossProduct(const ::Vector3& vector3) const {
-        return Vector3CrossProduct(*this, vector3);
+    Vector3 CrossProduct(::Vector3 vector3) const {
+        return Vector3{::Vector3CrossProduct(*this, vector3)};
     }
 
     Vector3 Perpendicular() const {
-        return Vector3Perpendicular(*this);
+        return Vector3{Vector3Perpendicular(*this)};
     }
 
-    void OrthoNormalize(::Vector3* vector3) {
-        Vector3OrthoNormalize(this, vector3);
+    void OrthoNormalize(::Vector3& vector3) {
+        Vector3OrthoNormalize(this, &vector3);
     }
 
-    Vector3 Transform(const ::Matrix& matrix) const {
-        return Vector3Transform(*this, matrix);
+    Vector3 Transform(::Matrix matrix) const {
+        return Vector3{::Vector3Transform(*this, matrix)};
     }
 
-    Vector3 RotateByQuaternion(const ::Quaternion& quaternion) const {
-        return Vector3RotateByQuaternion(*this, quaternion);
+    Vector3 RotateByQuaternion(::Quaternion quaternion) const {
+        return Vector3{Vector3RotateByQuaternion(*this, quaternion)};
     }
 
     Vector3 Reflect(const ::Vector3& normal) const {
-        return Vector3Reflect(*this, normal);
+        return Vector3{Vector3Reflect(*this, normal)};
     }
 
     Vector3 Min(const ::Vector3& vector3) const {
-        return Vector3Min(*this, vector3);
+        return Vector3{::Vector3Min(*this, vector3)};
     }
 
     Vector3 Max(const ::Vector3& vector3) const {
-        return Vector3Max(*this, vector3);
+        return Vector3{::Vector3Max(*this, vector3)};
     }
 
-    Vector3 Barycenter(const ::Vector3& a, const ::Vector3& b, const ::Vector3& c) const {
-        return Vector3Barycenter(*this, a, b, c);
+    Vector3 Barycenter(::Vector3 a, ::Vector3 b, ::Vector3 c) const {
+        return Vector3{::Vector3Barycenter(*this, a, b, c)};
     }
 
     static Vector3 Zero() {
-        return Vector3Zero();
+        return Vector3{::Vector3Zero()};
     }
 
     static Vector3 One() {
-        return Vector3One();
+        return Vector3{::Vector3One()};
     }
 #endif
 
@@ -335,12 +339,12 @@ class Vector3 : public ::Vector3 {
     /**
      * Detect collision between two spheres
      */
-    bool CheckCollision(float radius1, const ::Vector3& center2, float radius2) const {
-        return CheckCollisionSpheres(*this, radius1, center2, radius2);
+    [[nodiscard]] bool CheckCollision(float radius1, const ::Vector3& center2, float radius2) const {
+        return ::CheckCollisionSpheres(*this, radius1, center2, radius2);
     }
 
  protected:
-    void set(const ::Vector3& vec) {
+    constexpr void set(const ::Vector3& vec) {
         x = vec.x;
         y = vec.y;
         z = vec.z;

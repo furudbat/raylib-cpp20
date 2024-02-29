@@ -3,6 +3,7 @@
 
 #include "./raylib.hpp"
 #include "./Vector3.hpp"
+#include "./Ray.hpp"
 #include "./raylib-cpp-utils.hpp"
 
 namespace raylib {
@@ -11,7 +12,7 @@ namespace raylib {
  */
 class Camera3D : public ::Camera3D {
  public:
-    Camera3D(const ::Camera3D& camera) {
+    constexpr Camera3D(const ::Camera3D& camera) {
         set(camera);
     }
 
@@ -24,11 +25,11 @@ class Camera3D : public ::Camera3D {
      * @param fovy Camera field-of-view apperture in Y (degrees) in perspective, used as near plane width in orthographic
      * @param projection Camera projection: CAMERA_PERSPECTIVE or CAMERA_ORTHOGRAPHIC
      */
-    explicit Camera3D(::Vector3 position,
-            ::Vector3 target = ::Vector3{0.0f, 0.0f, 0.0f},
-            ::Vector3 up = ::Vector3{0.0f, 1.0f, 0.0f},
-            float fovy = 0,
-            int projection = CAMERA_PERSPECTIVE) : ::Camera3D{position, target, up, fovy, projection} {}
+    explicit constexpr Camera3D(::Vector3 _position,
+            ::Vector3 _target = ::Vector3{0.0f, 0.0f, 0.0f},
+            ::Vector3 _up = ::Vector3{0.0f, 1.0f, 0.0f},
+            float _fovy = 0.0F,
+            int _projection = CAMERA_PERSPECTIVE) : ::Camera3D{_position, _target, _up, _fovy, _projection} {}
 
     Camera3D() = default;
 
@@ -38,7 +39,7 @@ class Camera3D : public ::Camera3D {
     GETTERSETTER(float, Fovy, fovy)
     GETTERSETTER(int, Projection, projection)
 
-    Camera3D& operator=(const ::Camera3D& camera) {
+    constexpr Camera3D& operator=(const ::Camera3D& camera) {
         set(camera);
         return *this;
     }
@@ -77,7 +78,7 @@ class Camera3D : public ::Camera3D {
     /**
      * Update camera movement/rotation
      */
-    Camera3D& Update(::Vector3 movement, ::Vector3 rotation, float zoom = 1.0f) {
+    Camera3D& Update(::Vector3 movement, ::Vector3 rotation, float zoom = 1.0F) {
         ::UpdateCameraPro(this, movement, rotation, zoom);
         return *this;
     }
@@ -85,15 +86,15 @@ class Camera3D : public ::Camera3D {
     /**
      * Returns a ray trace from mouse position
      */
-    [[nodiscard]] Ray GetMouseRay(::Vector2 mousePosition) const {
-        return ::GetMouseRay(mousePosition, *this);
+    [[nodiscard]] raylib::Ray GetMouseRay(::Vector2 mousePosition) const {
+        return raylib::Ray{::GetMouseRay(mousePosition, *this)};
     }
 
     /**
      * Returns the screen space position for a 3d world space position
      */
-    [[nodiscard]] Vector2 GetWorldToScreen(::Vector3 position) const {
-        return ::GetWorldToScreen(position, *this);
+    [[nodiscard]] raylib::Vector2 GetWorldToScreen(::Vector3 _position) const {
+        return raylib::Vector2{::GetWorldToScreen(_position, *this)};
     }
 
     /**
@@ -120,7 +121,7 @@ class Camera3D : public ::Camera3D {
     }
 
  protected:
-    void set(const ::Camera3D& camera) {
+    constexpr void set(const ::Camera3D& camera) {
         position = camera.position;
         target = camera.target;
         up = camera.up;
@@ -129,7 +130,7 @@ class Camera3D : public ::Camera3D {
     }
 };
 
-typedef Camera3D Camera;
+using Camera = Camera3D;
 
 }  // namespace raylib
 

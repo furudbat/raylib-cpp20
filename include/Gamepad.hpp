@@ -12,24 +12,25 @@ namespace raylib {
  */
 class Gamepad {
  public:
-    explicit Gamepad(int gamepadNumber = 0) {
+    int number;
+
+    explicit constexpr Gamepad(int gamepadNumber = 0) {
         set(gamepadNumber);
     }
-    int number;
 
     GETTERSETTER(int, Number, number)
 
-    Gamepad& operator=(const Gamepad& gamepad) {
+    constexpr Gamepad& operator=(const Gamepad& gamepad) {
         set(gamepad.number);
         return *this;
     }
 
-    Gamepad& operator=(int gamepadNumber) {
+    constexpr Gamepad& operator=(int gamepadNumber) {
         set(gamepadNumber);
         return *this;
     }
 
-    explicit operator int() const { return number; }
+    explicit constexpr operator int() const { return number; }
 
     /**
      * Detect if a gamepad is available
@@ -113,7 +114,7 @@ class Gamepad {
     }
 
  protected:
-    void set(int gamepadNumber) {
+    constexpr void set(int gamepadNumber) {
         number = gamepadNumber;
     }
 };

@@ -15,7 +15,12 @@ namespace raylib {
  */
 class Matrix : public ::Matrix {
  public:
-    Matrix(const ::Matrix& mat) : ::Matrix{
+    constexpr Matrix(const ::Matrix& mat = {
+            .m0 = 0, .m4 = 0, .m8 = 0, .m12 = 0,
+            .m1 = 0, .m5 = 0, .m9 = 0, .m13 = 0,
+            .m2 = 0, .m6 = 0, .m10 = 0, .m14 = 0,
+            .m3 = 0, .m7 = 0, .m11 = 0, .m15 = 0
+    }) : ::Matrix{
             mat.m0, mat.m4, mat.m8, mat.m12,
             mat.m1, mat.m5, mat.m9, mat.m13,
             mat.m2, mat.m6, mat.m10, mat.m14,
@@ -23,16 +28,17 @@ class Matrix : public ::Matrix {
         // Nothing.
     }
 
-    explicit Matrix(
-            float m0 = 0, float m4 = 0, float m8 = 0, float m12 = 0,
-            float m1 = 0, float m5 = 0, float m9 = 0, float m13 = 0,
-            float m2 = 0, float m6 = 0, float m10 = 0, float m14 = 0,
-            float m3 = 0, float m7 = 0, float m11 = 0, float m15 = 0) :
+    [[deprecated("Use Matrix(mat), use named-parameters with struct")]]
+    explicit constexpr Matrix(
+            float _m0 = 0, float _m4 = 0, float _m8 = 0, float _m12 = 0,
+            float _m1 = 0, float _m5 = 0, float _m9 = 0, float _m13 = 0,
+            float _m2 = 0, float _m6 = 0, float _m10 = 0, float _m14 = 0,
+            float _m3 = 0, float _m7 = 0, float _m11 = 0, float _m15 = 0) :
         ::Matrix{
-            m0, m4, m8, m12,
-            m1, m5, m9, m13,
-            m2, m6, m10, m14,
-            m3, m7, m11, m15} {
+            _m0, _m4, _m8, _m12,
+            _m1, _m5, _m9, _m13,
+            _m2, _m6, _m10, _m14,
+            _m3, _m7, _m11, _m15} {
         // Nothing.
     }
 
@@ -53,17 +59,17 @@ class Matrix : public ::Matrix {
     GETTERSETTER(float, M14, m14)
     GETTERSETTER(float, M15, m15)
 
-    Matrix& operator=(const ::Matrix& matrix) {
+    constexpr Matrix& operator=(const ::Matrix& matrix) {
         set(matrix);
         return *this;
     }
 
-    Matrix& operator=(const Matrix& matrix) {
+    constexpr Matrix& operator=(const Matrix& matrix) {
         set(matrix);
         return *this;
     }
 
-    bool operator==(const ::Matrix& other) {
+    constexpr bool operator==(const ::Matrix& other) {
         return m0 == other.m0
             && m1 == other.m1
             && m2 == other.m2
@@ -82,7 +88,7 @@ class Matrix : public ::Matrix {
             && m15 == other.m15;
     }
 
-    bool operator!=(const ::Matrix& other) {
+    constexpr bool operator!=(const ::Matrix& other) {
         return !(*this == other);
     }
 
@@ -183,7 +189,7 @@ class Matrix : public ::Matrix {
         return ::MatrixToFloatV(*this);
     }
 
-    operator float16() {
+    explicit operator float16() const {
         return ToFloatV();
     }
 
@@ -206,7 +212,7 @@ class Matrix : public ::Matrix {
 #endif
 
  protected:
-    void set(const ::Matrix& mat) {
+    constexpr void set(const ::Matrix& mat) {
         m0 = mat.m0;
         m1 = mat.m1;
         m2 = mat.m2;

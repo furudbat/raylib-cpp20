@@ -13,7 +13,7 @@ class BoundingBox : public ::BoundingBox {
     /*
      * Copy a bounding box from another bounding box.
      */
-    BoundingBox(const ::BoundingBox& box) : ::BoundingBox{box.min, box.max} {
+    constexpr BoundingBox(const ::BoundingBox& box) : ::BoundingBox{box.min, box.max} {
         // Nothing.
     }
 
@@ -24,13 +24,13 @@ class BoundingBox : public ::BoundingBox {
         set(::GetMeshBoundingBox(mesh));
     }
 
-    explicit BoundingBox(::Vector3 minMax = ::Vector3{0.0f, 0.0f, 0.0f}) : ::BoundingBox{minMax, minMax} {}
-    BoundingBox(::Vector3 pMin, ::Vector3 pMax) : ::BoundingBox{pMin, pMax} {}
+    explicit constexpr BoundingBox(::Vector3 minMax = ::Vector3{0.0F, 0.0F, 0.0F}) : ::BoundingBox{minMax, minMax} {}
+    constexpr BoundingBox(::Vector3 pMin, ::Vector3 pMax) : ::BoundingBox{pMin, pMax} {}
 
     GETTERSETTER(::Vector3, Min, min)
     GETTERSETTER(::Vector3, Max, max)
 
-    BoundingBox& operator=(const ::BoundingBox& box) {
+    constexpr BoundingBox& operator=(const ::BoundingBox& box) {
         set(box);
         return *this;
     }
@@ -38,7 +38,7 @@ class BoundingBox : public ::BoundingBox {
     /**
      * Draw a bounding box with wires
      */
-    void Draw(::Color color = {255, 255, 255, 255}) const {
+    void Draw(::Color color = WHITE) const {
         ::DrawBoundingBox(*this, color);
     }
 
@@ -46,36 +46,36 @@ class BoundingBox : public ::BoundingBox {
      * Detect collision between two boxes
      */
     [[nodiscard]] bool CheckCollision(const ::BoundingBox& box2) const {
-        return CheckCollisionBoxes(*this, box2);
+        return ::CheckCollisionBoxes(*this, box2);
     }
 
     /**
      * Detect collision between box and sphere
      */
     [[nodiscard]] bool CheckCollision(::Vector3 center, float radius) const {
-        return CheckCollisionBoxSphere(*this, center, radius);
+        return ::CheckCollisionBoxSphere(*this, center, radius);
     }
 
     /**
      * Detect collision between ray and bounding box
      */
     [[nodiscard]] bool CheckCollision(const ::Ray& ray) const {
-        return GetRayCollisionBox(ray, *this).hit;
+        return ::GetRayCollisionBox(ray, *this).hit;
     }
 
     /**
      * Get collision information between ray and bounding box
      */
     [[nodiscard]] RayCollision GetCollision(const ::Ray& ray) const {
-        return GetRayCollisionBox(ray, *this);
+        return ::GetRayCollisionBox(ray, *this);
     }
 
  protected:
-    void set(const ::BoundingBox& box) {
+    constexpr void set(const ::BoundingBox& box) {
         min = box.min;
         max = box.max;
     }
-    void set(const ::Vector3& _min, const ::Vector3& _max) {
+    constexpr void set(const ::Vector3& _min, const ::Vector3& _max) {
         min = _min;
         max = _max;
     }

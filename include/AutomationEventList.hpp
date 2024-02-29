@@ -1,46 +1,56 @@
 #ifndef RAYLIB_CPP_INCLUDE_AUTOMATIONEVENTLIST_HPP_
 #define RAYLIB_CPP_INCLUDE_AUTOMATIONEVENTLIST_HPP_
 
+#include <cstdint>
+#include <filesystem>
+#include <utility>
+
 #include "./raylib.hpp"
 #include "./raylib-cpp-utils.hpp"
 #ifdef __cpp_exceptions
 #include "./RaylibException.hpp"
 #endif
+#include "./RaylibError.hpp"
 
 namespace raylib {
 
-    struct AutomationEventListOptions {
-        inline static constexpr int DefaultCapacity = 16384;
+struct AutomationEventListOptions {
 
-        unsigned int capacity{DefaultCapacity};
-        unsigned int count{0};
-        AutomationEvent *events{nullptr};
-    };
+};
 
 /**
  * AutomationEventList management functions
  */
 class AutomationEventList : public ::AutomationEventList {
  public:
-    [[deprecated("Use AutomationEventList(options)")]]
-    explicit AutomationEventList(unsigned int pCapacity = 16384,
-            unsigned int pCount = 0,
-            AutomationEvent *pEvents = nullptr) : ::AutomationEventList{pCapacity, pCount, pEvents} {
-        // Nothing.
-    }
-    explicit AutomationEventList(AutomationEventListOptions options) : ::AutomationEventList{options.capacity, options.count, options.events} {
+    inline static constexpr int DefaultCapacity = 16384;
+
+    [[deprecated("Use AutomationEventList(automationEventList)")]]
+    explicit constexpr AutomationEventList(uint32_t _capacity,
+                                 uint32_t _count = 0,
+                                 AutomationEvent *_events = nullptr) : ::AutomationEventList{_capacity, _count, _events} {
         // Nothing.
     }
 
-    explicit AutomationEventList(const char* fileName) {
-        Load(fileName);
+    explicit constexpr AutomationEventList(uint32_t _capacity,
+                                           std::span<AutomationEvent> _events) : ::AutomationEventList{_capacity, static_cast<unsigned int>(_events.size()), _events.data()} {
+        // Nothing.
     }
 
-    AutomationEventList(const ::AutomationEventList& automationEventList) {
+    constexpr AutomationEventList(const ::AutomationEventList& automationEventList = {
+            .capacity = DefaultCapacity,
+            .count = 0,
+            .events = nullptr,
+    }) {
         set(automationEventList);
     }
-    AutomationEventList(const AutomationEventList&) = delete;
-    AutomationEventList(AutomationEventList&& other) {
+
+    explicit AutomationEventList(const std::filesystem::path& fileName) RAYLIB_CPP_THROWS {
+        Load(fileName.c_str());
+    }
+
+    constexpr AutomationEventList(const AutomationEventList&) = delete;
+    constexpr AutomationEventList(AutomationEventList&& other) {
         set(other);
 
         other.capacity = 0;
@@ -55,13 +65,12 @@ class AutomationEventList : public ::AutomationEventList {
     GETTERSETTER(unsigned int, Count, count)
     GETTERSETTER(AutomationEvent*, Events, events)
 
-    AutomationEventList& operator=(const ::AutomationEventList& other) {
+    constexpr AutomationEventList& operator=(const ::AutomationEventList& other) {
         set(other);
         return *this;
     }
 
-    AutomationEventList& operator=(const AutomationEventList&) = delete;
-
+    constexpr AutomationEventList& operator=(const AutomationEventList&) = delete;
     AutomationEventList& operator=(AutomationEventList&& other) noexcept {
         if (this == &other) {
             return *this;
@@ -82,11 +91,11 @@ class AutomationEventList : public ::AutomationEventList {
      *
      * @throws raylib::RaylibException Throws if the AutomationEventList failed to load.
      */
-    void Load(const char* fileName) {
+    RAYLIB_CPP_EXPECTED_RESULT(void) Load(const std::filesystem::path& fileName) RAYLIB_CPP_THROWS {
         Unload();
-        set(::LoadAutomationEventList(fileName));
+        set(::LoadAutomationEventList(fileName.c_str()));
         if (!IsReady()) {
-            throw RaylibException("Failed to load automation event list");
+            RAYLIB_CPP_RETURN_EXPECTED_OR_THROW(RaylibError("Failed to load automation event list"));
         }
     }
 
@@ -107,8 +116,8 @@ class AutomationEventList : public ::AutomationEventList {
         return events != nullptr;
     }
 
-    bool Export(const char* fileName) {
-        return ::ExportAutomationEventList(*this, fileName);
+    bool Export(const std::filesystem::path& fileName) {
+        return ::ExportAutomationEventList(*this, fileName.c_str());
     }
 
     void Set() {
@@ -131,16 +140,16 @@ class AutomationEventList : public ::AutomationEventList {
     }
 
     void Play(int index) {
-        if (index < 0 || static_cast<unsigned int>(index) >= this->count) {
+        if (index < 0 || std::cmp_greater_equal(index, count)) {
             return;
         }
 
         Set();
-        ::PlayAutomationEvent(this->events[index]);
+        ::PlayAutomationEvent(events[index]);
     }
 
  protected:
-    void set(const ::AutomationEventList& other) {
+    constexpr void set(const ::AutomationEventList& other) {
         capacity = other.capacity;
         count = other.count;
         events = other.events;

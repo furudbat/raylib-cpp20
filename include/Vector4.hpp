@@ -5,30 +5,40 @@
 #include <cmath>
 #include <utility>
 #endif
-
 #include <string>
 
 #include "./raylib.hpp"
 #include "./raymath.hpp"
+#include "./Rectangle.hpp"
+#include "./Matrix.hpp"
 #include "./raylib-cpp-utils.hpp"
 
 namespace raylib {
+
+class Color;
+
 /**
  * Vector4 type
  */
 class Vector4 : public ::Vector4 {
  public:
-    Vector4(const ::Vector4& vec) : ::Vector4{vec.x, vec.y, vec.z, vec.w} {}
+    explicit constexpr Vector4(const ::Vector4& vec = {
+            .x = 0, .y = 0, .z = 0, .w = 0,
+    }) : ::Vector4{vec.x, vec.y, vec.z, vec.w} {}
 
-    Vector4(float x, float y, float z, float w) : ::Vector4{x, y, z, w} {}
-    Vector4(float x, float y, float z) : ::Vector4{x, y, z, 0} {}
-    Vector4(float x, float y) : ::Vector4{x, y, 0, 0} {}
-    Vector4(float x) : ::Vector4{x, 0, 0, 0} {}
-    Vector4() : ::Vector4{0, 0, 0, 0} {}
-    Vector4(::Rectangle rectangle) : ::Vector4{rectangle.x, rectangle.y, rectangle.width, rectangle.height} {}
+    [[deprecated("Use Vector4(vec)")]]
+    constexpr Vector4(float _x, float _y, float _z, float _w) : ::Vector4{_x, _y, _z, _w} {}
+    [[deprecated("Use Vector4(vec)")]]
+    constexpr Vector4(float _x, float _y, float _z) : ::Vector4{_x, _y, _z, 0} {}
+    [[deprecated("Use Vector4(vec)")]]
+    constexpr Vector4(float _x, float _y) : ::Vector4{_x, _y, 0, 0} {}
+    [[deprecated("Use Vector4(vec)")]]
+    explicit constexpr Vector4(float _x) : ::Vector4{_x, 0, 0, 0} {}
 
-    Vector4(::Color color) {
-        set(ColorNormalize(color));
+    explicit constexpr Vector4(::Rectangle rectangle) : ::Vector4{rectangle.x, rectangle.y, rectangle.width, rectangle.height} {}
+
+    explicit Vector4(::Color color) {
+        set(::ColorNormalize(color));
     }
 
     GETTERSETTER(float, X, x)
@@ -36,28 +46,28 @@ class Vector4 : public ::Vector4 {
     GETTERSETTER(float, Z, z)
     GETTERSETTER(float, W, w)
 
-    Vector4& operator=(const ::Vector4& vector4) {
+    constexpr Vector4& operator=(const ::Vector4& vector4) {
         set(vector4);
         return *this;
     }
 
-    bool operator==(const ::Vector4& other) const {
+    constexpr bool operator==(const ::Vector4& other) const {
         return x == other.x
             && y == other.y
             && z == other.z
             && w == other.w;
     }
 
-    bool operator!=(const ::Vector4& other) const {
+    constexpr bool operator!=(const ::Vector4& other) const {
         return !(*this == other);
     }
 
-    ::Rectangle ToRectangle() const {
-        return {x, y, z, w};
+    [[nodiscard]] raylib::Rectangle ToRectangle() const {
+        return raylib::Rectangle(::Rectangle{.x = x, .y = y, .width = z, .height = w});
     }
 
-    operator ::Rectangle() const {
-        return {x, y, z, w};
+    explicit operator raylib::Rectangle() const {
+        return raylib::Rectangle(::Rectangle{.x = x, .y = y, .width = z, .height = w});
     }
 
     std::string ToString() const {
@@ -69,100 +79,106 @@ class Vector4 : public ::Vector4 {
     }
 
 #ifndef RAYLIB_CPP_NO_MATH
-    Vector4 Multiply(const ::Vector4& vector4) const {
-        return QuaternionMultiply(*this, vector4);
+    Vector4 Multiply(::Vector4 vector4) const {
+        return Vector4{::QuaternionMultiply(*this, vector4)};
     }
 
-    Vector4 operator*(const ::Vector4& vector4) const {
-        return QuaternionMultiply(*this, vector4);
+    Vector4 operator*(::Vector4 vector4) const {
+        return Vector4{::QuaternionMultiply(*this, vector4)};
     }
 
-    Vector4 Lerp(const ::Vector4& vector4, float amount) const {
-        return QuaternionLerp(*this, vector4, amount);
+    Vector4 Lerp(::Vector4 vector4, float amount) const {
+        return Vector4{::QuaternionLerp(*this, vector4, amount)};
     }
 
-    Vector4 Nlerp(const ::Vector4& vector4, float amount) const {
-        return QuaternionNlerp(*this, vector4, amount);
+    Vector4 Nlerp(::Vector4 vector4, float amount) const {
+        return Vector4{::QuaternionNlerp(*this, vector4, amount)};
     }
 
-    Vector4 Slerp(const ::Vector4& vector4, float amount) const {
-        return QuaternionSlerp(*this, vector4, amount);
+    Vector4 Slerp(::Vector4 vector4, float amount) const {
+        return Vector4{::QuaternionSlerp(*this, vector4, amount)};
     }
 
-    Matrix ToMatrix() const {
-        return QuaternionToMatrix(*this);
+    raylib::Matrix ToMatrix() const {
+        return raylib::Matrix{::QuaternionToMatrix(*this)};
     }
 
     float Length() const {
-        return QuaternionLength(*this);
+        return ::QuaternionLength(*this);
     }
 
     Vector4 Normalize() const {
-        return QuaternionNormalize(*this);
+        return Vector4{::QuaternionNormalize(*this)};
     }
 
     Vector4 Invert() const {
-        return QuaternionInvert(*this);
+        return Vector4{::QuaternionInvert(*this)};
     }
 
-    void ToAxisAngle(::Vector3 *outAxis, float *outAngle) const {
-        QuaternionToAxisAngle(*this, outAxis, outAngle);
+    void ToAxisAngle(::Vector3 &outAxis, float &outAngle) const {
+        ::QuaternionToAxisAngle(*this, &outAxis, &outAngle);
     }
 
     /**
      * Get the rotation angle and axis for a given quaternion
      */
-    std::pair<Vector3, float> ToAxisAngle() const {
-        Vector3 outAxis;
-        float outAngle;
-        QuaternionToAxisAngle(*this, &outAxis, &outAngle);
+     struct AxisAngle {
+         Vector3 outAxis;
+         float outAngle;
+     };
+     AxisAngle ToAxisAngle() const {
+        AxisAngle ret;
+        QuaternionToAxisAngle(*this, &ret.outAxis, &ret.outAngle);
 
-        return std::pair<Vector3, float>(outAxis, outAngle);
+        return ret;
     }
 
-    Vector4 Transform(const ::Matrix& matrix) const {
-        return ::QuaternionTransform(*this, matrix);
+    Vector4 Transform(::Matrix matrix) const {
+        return Vector4{::QuaternionTransform(*this, matrix)};
     }
 
     static Vector4 Identity() {
-        return ::QuaternionIdentity();
+        return Vector4{::QuaternionIdentity()};
     }
 
-    static Vector4 FromVector3ToVector3(const ::Vector3& from , const ::Vector3& to) {
-        return ::QuaternionFromVector3ToVector3(from , to);
+    static Vector4 FromVector3ToVector3(::Vector3 from , ::Vector3 to) {
+        return Vector4{::QuaternionFromVector3ToVector3(from , to)};
     }
 
-    static Vector4 FromMatrix(const ::Matrix& matrix) {
-        return ::QuaternionFromMatrix(matrix);
+    static Vector4 FromMatrix(::Matrix matrix) {
+        return Vector4{::QuaternionFromMatrix(matrix)};
     }
 
-    static Vector4 FromAxisAngle(const ::Vector3& axis, const float angle) {
-        return ::QuaternionFromAxisAngle(axis, angle);
+    static Vector4 FromAxisAngle(::Vector3 axis, const float angle) {
+        return Vector4{::QuaternionFromAxisAngle(axis, angle)};
     }
 
     static Vector4 FromEuler(const float pitch, const float yaw, const float roll) {
-        return ::QuaternionFromEuler(pitch, yaw, roll);
+        return Vector4{::QuaternionFromEuler(pitch, yaw, roll)};
     }
 
-    static Vector4 FromEuler(const ::Vector3& vector3) {
-        return ::QuaternionFromEuler(vector3.x, vector3.y, vector3.z);
+    static Vector4 FromEuler(::Vector3 vector3) {
+        return Vector4{::QuaternionFromEuler(vector3.x, vector3.y, vector3.z)};
     }
 
-    Vector3 ToEuler() const {
-        return ::QuaternionToEuler(*this);
+    raylib::Vector3 ToEuler() const {
+        return raylib::Vector3{::QuaternionToEuler(*this)};
     }
 #endif
 
-    Color ColorFromNormalized() const {
-        return ::ColorFromNormalized(*this);
+/// @FIXME: Incomplete result type 'raylib::Color' in function definition
+/*
+    [[nodiscard]] raylib::Color ColorFromNormalized() const {
+        return raylib::Color{::ColorFromNormalized(*this)};
     }
 
-    operator Color() const {
-        return ColorFromNormalized();
+    explicit operator raylib::Color() const {
+        return raylib::Color{::ColorFromNormalized()};
     }
+*/
 
  protected:
-    void set(const ::Vector4& vec4) {
+    constexpr void set(const ::Vector4& vec4) {
         x = vec4.x;
         y = vec4.y;
         z = vec4.z;
@@ -171,7 +187,8 @@ class Vector4 : public ::Vector4 {
 };
 
 // Alias the Vector4 as Quaternion.
-typedef Vector4 Quaternion;
+using Quaternion = Vector4;
+
 }  // namespace raylib
 
 using RVector4 = raylib::Vector4;

@@ -8,6 +8,7 @@
 #ifdef __cpp_exceptions
 #include "./RaylibException.hpp"
 #endif
+#include "./RaylibError.hpp"
 
 namespace raylib {
 /**
@@ -35,7 +36,7 @@ class Window {
      *
      * @throws raylib::RaylibException Thrown if the window failed to initiate.
      */
-    Window(int width, int height, const std::string& title = "raylib", unsigned int flags = 0) {
+    Window(int width, int height, const std::string& title = "raylib", uint32_t flags = 0) {
         Init(width, height, title, flags);
     }
 
@@ -59,7 +60,7 @@ class Window {
      *
      * @throws raylib::RaylibException Thrown if the window failed to initiate.
      */
-    static void Init(int width = 800, int height = 450, const std::string& title = "raylib", unsigned int flags = 0) {
+    static void Init(int width = 800, int height = 450, const std::string& title = "raylib", uint32_t flags = 0) {
         if (flags != 0) {
             ::SetConfigFlags(flags);
         }

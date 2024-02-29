@@ -2,12 +2,14 @@
 #define RAYLIB_CPP_INCLUDE_SOUND_HPP_
 
 #include <string>
+#include <filesystem>
 
 #include "./raylib.hpp"
 #include "./raylib-cpp-utils.hpp"
 #ifdef __cpp_exceptions
 #include "./RaylibException.hpp"
 #endif
+#include "./RaylibError.hpp"
 
 namespace raylib {
 /**
@@ -20,19 +22,19 @@ namespace raylib {
  */
 class Sound : public ::Sound {
  public:
-    Sound(const Sound&) = delete;
-    Sound& operator=(const Sound&) = delete;
+    constexpr Sound(const Sound&) = delete;
+    constexpr Sound& operator=(const Sound&) = delete;
 
-    Sound() {
+    constexpr Sound() {
         stream = { nullptr, nullptr, 0, 0, 0 };
         frameCount = 0;
     }
 
-    Sound(::AudioStream stream, unsigned int frameCount) : ::Sound{stream, frameCount} {
+    constexpr Sound(::AudioStream _stream, unsigned int _frameCount) : ::Sound{_stream, _frameCount} {
         // Nothing.
     }
 
-    Sound(Sound&& other) {
+    constexpr Sound(Sound&& other) {
         set(other);
 
         other.stream = { nullptr, nullptr, 0, 0, 0 };
@@ -44,7 +46,7 @@ class Sound : public ::Sound {
      *
      * @throws raylib::RaylibException Throws if the Sound failed to load.
      */
-    explicit Sound(const std::string& fileName) {
+    explicit Sound(const std::filesystem::path& fileName) {
         Load(fileName);
     }
 
@@ -162,7 +164,7 @@ class Sound : public ::Sound {
     /**
      * Set pan for a sound (0.5 is center)
      */
-    Sound& SetPan(float pan = 0.5f) {
+    Sound& SetPan(float pan = 0.5F) {
         ::SetSoundPan(*this, pan);
         return *this;
     }
@@ -172,10 +174,10 @@ class Sound : public ::Sound {
      *
      * @throws raylib::RaylibException Throws if the Sound failed to load.
      */
-    void Load(const std::string& fileName) {
+    RAYLIB_CPP_EXPECTED_RESULT(void) Load(const std::filesystem::path& fileName) RAYLIB_CPP_THROWS {
         set(::LoadSound(fileName.c_str()));
         if (!IsReady()) {
-            throw new RaylibException("Failed to load Sound from file");
+            RAYLIB_CPP_RETURN_EXPECTED_OR_THROW(RaylibError("Failed to load Sound from file"));
         }
     }
 
@@ -184,10 +186,10 @@ class Sound : public ::Sound {
      *
      * @throws raylib::RaylibException Throws if the Sound failed to load.
      */
-    void Load(const ::Wave& wave) {
+    RAYLIB_CPP_EXPECTED_RESULT(void) Load(const ::Wave& wave) RAYLIB_CPP_THROWS {
         set(::LoadSoundFromWave(wave));
         if (!IsReady()) {
-            throw new RaylibException("Failed to load Wave");
+            RAYLIB_CPP_RETURN_EXPECTED_OR_THROW(RaylibError("Failed to load Wave"));
         }
     }
 
@@ -201,7 +203,7 @@ class Sound : public ::Sound {
     }
 
  protected:
-    void set(const ::Sound& sound) {
+    constexpr void set(const ::Sound& sound) {
         frameCount = sound.frameCount;
         stream = sound.stream;
     }

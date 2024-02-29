@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <filesystem>
 
 #include "./raylib.hpp"
 #include "./raylib-cpp-utils.hpp"
@@ -10,27 +11,18 @@
 #include "./Model.hpp"
 
 namespace raylib {
+
 /**
  * Vertex data definning a mesh
  */
 class Mesh : public ::Mesh {
  public:
-    Mesh(const ::Mesh& mesh) {
+    constexpr explicit Mesh(const ::Mesh& mesh) {
         set(mesh);
     }
 
-    /**
-     * Load meshes from model file
-     */
-    // static std::vector<Mesh> Load(const std::string& fileName) {
-    //    int count = 0;
-    //    ::Mesh* meshes = LoadMeshes(fileName.c_str(), &count);
-    //    return std::vector<Mesh>(meshes, meshes + count);
-    // }
-
-    Mesh(const Mesh&) = delete;
-
-    Mesh(Mesh&& other) {
+    constexpr Mesh(const Mesh&) = delete;
+    constexpr Mesh(Mesh&& other) {
         set(other);
 
         other.vertexCount = 0;
@@ -53,78 +45,78 @@ class Mesh : public ::Mesh {
     /**
      * Generate polygonal mesh
      */
-    static ::Mesh Poly(int sides, float radius) {
-        return ::GenMeshPoly(sides, radius);
+    static raylib::Mesh Poly(int sides, float radius) {
+        return raylib::Mesh{::GenMeshPoly(sides, radius)};
     }
 
     /**
      * Generate plane mesh (with subdivisions)
      */
-    static ::Mesh Plane(float width, float length, int resX, int resZ) {
-        return ::GenMeshPlane(width, length, resX, resZ);
+    static raylib::Mesh Plane(float width, float length, int resX, int resZ) {
+        return raylib::Mesh{::GenMeshPlane(width, length, resX, resZ)};
     }
 
     /**
      * Generate cuboid mesh
      */
-    static ::Mesh Cube(float width, float height, float length) {
-        return ::GenMeshCube(width, height, length);
+    static raylib::Mesh Cube(float width, float height, float length) {
+        return raylib::Mesh{::GenMeshCube(width, height, length)};
     }
 
     /**
      * Generate sphere mesh (standard sphere)
      */
-    static ::Mesh Sphere(float radius, int rings, int slices) {
-        return ::GenMeshSphere(radius, rings, slices);
+    static raylib::Mesh Sphere(float radius, int rings, int slices) {
+        return raylib::Mesh{::GenMeshSphere(radius, rings, slices)};
     }
 
     /**
      * Generate half-sphere mesh (no bottom cap)
      */
-    static ::Mesh HemiSphere(float radius, int rings, int slices) {
-        return ::GenMeshHemiSphere(radius, rings, slices);
+    static raylib::Mesh HemiSphere(float radius, int rings, int slices) {
+        return raylib::Mesh{::GenMeshHemiSphere(radius, rings, slices)};
     }
 
     /**
      * Generate cylinder mesh
      */
-    static ::Mesh Cylinder(float radius, float height, int slices) {
-        return ::GenMeshCylinder(radius, height, slices);
+    static raylib::Mesh Cylinder(float radius, float height, int slices) {
+        return raylib::Mesh{::GenMeshCylinder(radius, height, slices)};
     }
 
     /**
      * Generate cone/pyramid mesh
      */
-    static ::Mesh Cone(float radius, float height, int slices) {
-        return ::GenMeshCone(radius, height, slices);
+    static raylib::Mesh Cone(float radius, float height, int slices) {
+        return raylib::Mesh{::GenMeshCone(radius, height, slices)};
     }
 
     /**
      * Generate torus mesh
      */
-    static ::Mesh Torus(float radius, float size, int radSeg, int sides) {
-        return ::GenMeshTorus(radius, size, radSeg, sides);
+    static raylib::Mesh Torus(float radius, float size, int radSeg, int sides) {
+        return raylib::Mesh{::GenMeshTorus(radius, size, radSeg, sides)};
     }
 
     /**
      * Generate trefoil knot mesh
      */
-    static ::Mesh Knot(float radius, float size, int radSeg, int sides) {
-        return ::GenMeshKnot(radius, size, radSeg, sides);
+    static raylib::Mesh Knot(float radius, float size, int radSeg, int sides) {
+        return raylib::Mesh{::GenMeshKnot(radius, size, radSeg, sides)};
     }
 
     /**
      * Generate heightmap mesh from image data
      */
-    static ::Mesh Heightmap(const ::Image& heightmap, ::Vector3 size) {
-        return ::GenMeshHeightmap(heightmap, size);
+    static raylib::Mesh Heightmap(const ::Image& heightmap, ::Vector3 size) {
+        return raylib::Mesh{::GenMeshHeightmap(heightmap, size)};
     }
 
     /**
      * Generate cubes-based map mesh from image data
      */
-    static ::Mesh Cubicmap(const ::Image& cubicmap, ::Vector3 cubeSize) {
-        return ::GenMeshCubicmap(cubicmap, cubeSize);
+    static raylib::Mesh Cubicmap(const ::Image& cubicmap, ::Vector3 cubeSize) {
+        return raylib::Mesh{::GenMeshCubicmap(cubicmap, cubeSize)};
     }
 
     GETTERSETTER(int, VertexCount, vertexCount)
@@ -143,13 +135,12 @@ class Mesh : public ::Mesh {
     GETTERSETTER(unsigned int, VaoId, vaoId)
     GETTERSETTER(unsigned int *, VboId, vboId)
 
-    Mesh& operator=(const ::Mesh& mesh) {
+    constexpr Mesh& operator=(const ::Mesh& mesh) {
         set(mesh);
         return *this;
     }
 
-    Mesh& operator=(const Mesh&) = delete;
-
+    constexpr Mesh& operator=(const Mesh&) = delete;
     Mesh& operator=(Mesh&& other) noexcept {
         if (this == &other) {
             return *this;
@@ -184,8 +175,14 @@ class Mesh : public ::Mesh {
     /**
      * Upload mesh vertex data to GPU (VRAM)
      */
+    [[deprecated("Use Upload(UploadOption)")]]
     void Upload(bool dynamic = false) {
         ::UploadMesh(this, dynamic);
+    }
+
+    enum class UploadOption : bool { Static = false, Dynamic = true};
+    void Upload(UploadOption dynamic = UploadOption::Static) {
+        ::UploadMesh(this, dynamic == UploadOption::Dynamic);
     }
 
     /**
@@ -194,6 +191,12 @@ class Mesh : public ::Mesh {
     void UpdateBuffer(int index, void *data, int dataSize, int offset = 0) {
         ::UpdateMeshBuffer(*this, index, data, dataSize, offset);
     }
+    /// @FIXME: can't use std::span<void>
+    /*
+    void UpdateBuffer(int index, std::span<void> data, int offset = 0) {
+        ::UpdateMeshBuffer(*this, index, data.data(), data.size(), offset);
+    }
+    */
 
     /**
      * Draw a 3d mesh with material and transform
@@ -214,9 +217,9 @@ class Mesh : public ::Mesh {
      *
      * @throws raylib::RaylibException Throws if failed to export the Mesh.
      */
-    void Export(const std::string& fileName) {
+    RAYLIB_CPP_EXPECTED_RESULT(void) Export(const std::string& fileName) RAYLIB_CPP_THROWS {
         if (!::ExportMesh(*this, fileName.c_str())) {
-            throw new RaylibException("Failed to export the Mesh");
+            RAYLIB_CPP_RETURN_EXPECTED_OR_THROW(RaylibError("Failed to export the Mesh"));
         }
     }
 
@@ -233,14 +236,14 @@ class Mesh : public ::Mesh {
     /**
      * Compute mesh bounding box limits
      */
-    raylib::BoundingBox BoundingBox() const {
-        return ::GetMeshBoundingBox(*this);
+    [[nodiscard]] raylib::BoundingBox BoundingBox() const {
+        return raylib::BoundingBox{::GetMeshBoundingBox(*this)};
     }
 
     /**
      * Compute mesh bounding box limits
      */
-    operator raylib::BoundingBox() {
+    explicit operator raylib::BoundingBox() const {
         return BoundingBox();
     }
 
@@ -255,19 +258,19 @@ class Mesh : public ::Mesh {
     /**
      * Load model from generated mesh
      */
-    raylib::Model LoadModelFrom() const {
-        return ::LoadModelFromMesh(*this);
+    [[nodiscard]] raylib::Model LoadModelFrom() const {
+        return raylib::Model{::LoadModelFromMesh(*this)};
     }
 
     /**
      * Load model from generated mesh
      */
-    operator raylib::Model() {
-        return ::LoadModelFromMesh(*this);
+    explicit operator raylib::Model() const {
+        return raylib::Model{::LoadModelFromMesh(*this)};
     }
 
  protected:
-    void set(const ::Mesh& mesh) {
+    constexpr void set(const ::Mesh& mesh) {
         vertexCount = mesh.vertexCount;
         triangleCount = mesh.triangleCount;
         vertices = mesh.vertices;

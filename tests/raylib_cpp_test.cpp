@@ -8,7 +8,7 @@
 
 /// @TODO: split into more test cases
 TEST_CASE( "Vector", "[core]" ) {
-    raylib::Vector2 position(50, 100);
+    raylib::Vector2 position({.x = 50, .y = 100});
     REQUIRE(position.GetX() == position.x);
     position.x = 150;
     REQUIRE(position.GetX() == 150);
@@ -34,7 +34,7 @@ TEST_CASE( "Vector", "[core]" ) {
 }
 
 TEST_CASE( "Color", "[core]" ) {
-    raylib::Color color = RED;
+    raylib::Color color {RED};
     REQUIRE(color.ToInt() == ::ColorToInt(RED));
 
     color = RAYWHITE;
@@ -43,7 +43,7 @@ TEST_CASE( "Color", "[core]" ) {
 }
 
 TEST_CASE( "Math", "[core]" ) {
-    raylib::Vector2 direction(50, 50);
+    raylib::Vector2 direction({.x = 50, .y = 50});
     raylib::Vector2 newDirection = direction.Rotate(30);
     REQUIRE(static_cast<int>(newDirection.x) == 57);
 }

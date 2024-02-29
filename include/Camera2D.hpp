@@ -11,13 +11,16 @@ namespace raylib {
  */
 class Camera2D : public ::Camera2D {
  public:
-    Camera2D(const ::Camera2D& camera) {
+    inline static constexpr float DefaultRotation = 0.0F;
+    inline static constexpr float DefaultZoom = 1.0F;
+
+    constexpr Camera2D(const ::Camera2D& camera) {
         set(camera);
     }
 
-    Camera2D() = default;
-    Camera2D(::Vector2 pOffset, ::Vector2 pTarget,
-            float pRotation = 0.0F, float pZoom = 1.0F) : ::Camera2D{pOffset, pTarget, pRotation, pZoom} {}
+    constexpr Camera2D() = default;
+    constexpr Camera2D(::Vector2 pOffset, ::Vector2 pTarget,
+            float pRotation = DefaultRotation, float pZoom = DefaultZoom) : ::Camera2D{pOffset, pTarget, pRotation, pZoom} {}
 
     Camera2D& BeginMode() {
         ::BeginMode2D(*this);
@@ -34,7 +37,7 @@ class Camera2D : public ::Camera2D {
     GETTERSETTER(float, Rotation, rotation)
     GETTERSETTER(float, Zoom, zoom)
 
-    Camera2D& operator=(const ::Camera2D& camera) {
+    constexpr Camera2D& operator=(const ::Camera2D& camera) {
         set(camera);
         return *this;
     }
@@ -61,7 +64,7 @@ class Camera2D : public ::Camera2D {
     }
 
  protected:
-    void set(const ::Camera2D& camera) {
+    constexpr void set(const ::Camera2D& camera) {
         offset = camera.offset;
         target = camera.target;
         rotation = camera.rotation;

@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <array>
 
 #include "./raylib.hpp"
 #include "./raylib-cpp-utils.hpp"
@@ -25,7 +26,6 @@ class Material : public ::Material {
     }
 
     Material(const Material&) = delete;
-
     Material(Material&& other) {
         set(other);
 
@@ -48,21 +48,20 @@ class Material : public ::Material {
         int count = 0;
         // TODO(RobLoach): Material::Load() possibly leaks the materials array.
         ::Material* materials = ::LoadMaterials(fileName.c_str(), &count);
-        return std::vector<Material>(materials, materials + count);
+        return std::vector<Material>(materials, std::next(materials, count));
     }
 
     GETTERSETTER(::Shader, Shader, shader)
     GETTERSETTER(::MaterialMap*, Maps, maps)
     // TODO(RobLoach): Resolve the Material params being a float[4].
-    // GETTERSETTER(float[4], Params, params)
+    //GETTERSETTER(std::array<float, 4>, Params, params)
 
-    Material& operator=(const ::Material& material) {
+    constexpr Material& operator=(const ::Material& material) {
         set(material);
         return *this;
     }
 
-    Material& operator=(const Material&) = delete;
-
+    constexpr Material& operator=(const Material&) = delete;
     Material& operator=(Material&& other) noexcept {
         if (this == &other) {
             return *this;
@@ -117,7 +116,7 @@ class Material : public ::Material {
     }
 
  protected:
-    void set(const ::Material& material) {
+    constexpr void set(const ::Material& material) {
         shader = material.shader;
         maps = material.maps;
         params[0] = material.params[0];

@@ -55,8 +55,8 @@ namespace Keyboard {
      */
     [[maybe_unused]] RLCPPAPI inline bool GetCharPressed() {
         return ::GetCharPressed() != 0;
-0    }
-};
+    }
+}
 } // namespace raylib
 
 namespace RKeyboard = raylib::Keyboard;
