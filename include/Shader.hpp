@@ -3,6 +3,7 @@
 
 #include <string>
 #include <filesystem>
+#include <optional>
 
 #include "./raylib.hpp"
 #include "./raylib-cpp-utils.hpp"
@@ -26,18 +27,18 @@ class Shader : public ::Shader {
 
 
     struct LoadShaderOptions {
-        const std::filesystem::path& vsFileName;
-        const std::filesystem::path& fsFileName;
+        std::optional<std::filesystem::path> vsFileName;
+        std::optional<std::filesystem::path> fsFileName;
     };
-    Shader(LoadShaderOptions options) {
-        set(::LoadShader(options.vsFileName.c_str(), options.fsFileName.c_str()));
+    explicit Shader(LoadShaderOptions options) {
+        set(::LoadShader(options.vsFileName ? options.vsFileName.value().c_str() : nullptr, options.fsFileName ? options.fsFileName.value().c_str() : nullptr));
     }
 
     struct LoadShaderOptionsC {
-        const char* vsFileName;
-        const char* fsFileName;
+        const char* vsFileName{nullptr};
+        const char* fsFileName{nullptr};
     };
-    Shader(LoadShaderOptionsC options) {
+    explicit Shader(LoadShaderOptionsC options) {
         set(::LoadShader(options.vsFileName, options.fsFileName));
     }
 
@@ -54,12 +55,12 @@ class Shader : public ::Shader {
      *
      * @see ::LoadShader
      */
-    static ::Shader Load(LoadShaderOptions options) {
-        return ::LoadShader(options.vsFileName.c_str(), options.fsFileName.c_str());
+    static Shader Load(LoadShaderOptions options) {
+        return Shader(options);
     }
 
-    static ::Shader Load(LoadShaderOptionsC options) {
-        return ::LoadShader(options.vsFileName, options.fsFileName);
+    static Shader Load(LoadShaderOptionsC options) {
+        return Shader(options);
     }
 
     /**

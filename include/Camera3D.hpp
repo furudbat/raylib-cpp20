@@ -12,7 +12,7 @@ namespace raylib {
  */
 class Camera3D : public ::Camera3D {
  public:
-    constexpr Camera3D(const ::Camera3D& camera) {
+    constexpr explicit Camera3D(const ::Camera3D& camera) {
         set(camera);
     }
 
@@ -26,8 +26,8 @@ class Camera3D : public ::Camera3D {
      * @param projection Camera projection: CAMERA_PERSPECTIVE or CAMERA_ORTHOGRAPHIC
      */
     explicit constexpr Camera3D(::Vector3 _position,
-            ::Vector3 _target = ::Vector3{0.0f, 0.0f, 0.0f},
-            ::Vector3 _up = ::Vector3{0.0f, 1.0f, 0.0f},
+            ::Vector3 _target = ::Vector3{0.0F, 0.0F, 0.0F},
+            ::Vector3 _up = ::Vector3{0.0F, 1.0F, 0.0F},
             float _fovy = 0.0F,
             int _projection = CAMERA_PERSPECTIVE) : ::Camera3D{_position, _target, _up, _fovy, _projection} {}
 

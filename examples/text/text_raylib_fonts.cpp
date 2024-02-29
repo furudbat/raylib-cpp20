@@ -26,7 +26,7 @@ int main() {
     int screenHeight = 450;
 
     raylib::Window window(screenWidth, screenHeight, "raylib [text] example - raylib fonts");
-    raylib::Color textColor = DARKGRAY;
+    raylib::Color textColor {DARKGRAY};
 
     // NOTE: Textures MUST be loaded after Window initialization (OpenGL context is required)
     std::array<raylib::Font, MAX_FONTS> fonts = {
@@ -67,7 +67,8 @@ int main() {
     positions[4].y += 2;
     positions[7].y -= 8;
 
-    std::array<raylib::Color, MAX_FONTS> colors = { MAROON, ORANGE, DARKGREEN, DARKBLUE, DARKPURPLE, LIME, GOLD, RED };
+    /// @TODO: use raylib::Color Colors
+    constexpr std::array<raylib::Color, MAX_FONTS> colors = { raylib::Color{MAROON}, raylib::Color{ORANGE}, raylib::Color{DARKGREEN}, raylib::Color{DARKBLUE}, raylib::Color{DARKPURPLE}, raylib::Color{LIME}, raylib::Color{GOLD}, raylib::Color{RED} };
     //--------------------------------------------------------------------------------------
 
     // Main game loop

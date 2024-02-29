@@ -39,7 +39,7 @@ int main(void)
     raylib::Texture2D texture("resources/space.png");
 
     // Load shader and setup location points and values
-    raylib::Shader shader(0, TextFormat("resources/shaders/glsl%i/wave.fs", GLSL_VERSION));
+    raylib::Shader shader({ .vsFileName = std::nullopt, .fsFileName = std::filesystem::path{TextFormat("resources/shaders/glsl%i/wave.fs", GLSL_VERSION)}});
 
     int secondsLoc = shader.GetLocation("secondes");
     int freqXLoc = shader.GetLocation("freqX");
@@ -57,7 +57,7 @@ int main(void)
     float speedX = 8.0f;
     float speedY = 8.0f;
 
-    float screenSize[2] = { (float)window.GetWidth(), (float)window.GetHeight() };
+    std::array<float, 2> screenSize = { (float)window.GetWidth(), (float)window.GetHeight() };
     shader.SetValue(shader.GetLocation("size"), &screenSize, SHADER_UNIFORM_VEC2);
     shader.SetValue(freqXLoc, &freqX, SHADER_UNIFORM_FLOAT);
     shader.SetValue(freqYLoc, &freqY, SHADER_UNIFORM_FLOAT);

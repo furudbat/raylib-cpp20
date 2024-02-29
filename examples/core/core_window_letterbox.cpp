@@ -45,7 +45,7 @@ int main(void)
     std::array<raylib::Color, 10> colors;
     //colors.fill(raylib::Color{0});
     for (auto& color : colors) {
-        color = raylib::Color((unsigned char)GetRandomValue(100, 250), (unsigned char)GetRandomValue(50, 150), (unsigned char)GetRandomValue(10, 100), 255);
+        color = raylib::Color({.r = static_cast<unsigned char>(GetRandomValue(100, 250)), .g = static_cast<unsigned char>(GetRandomValue(50, 150)), .b = static_cast<unsigned char>(GetRandomValue(10, 100)), .a = 255});
     }
 
     window.SetTargetFPS(60);                   // Set our game to run at 60 frames-per-second

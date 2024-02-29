@@ -82,6 +82,9 @@ struct RayArrayHolder {
     operator std::span<T>() {
         return {data.get(), size};
     }
+
+    std::span<T> span() { return {data.get(), size}; }
+    std::span<const T> span() const { return {data.get(), size}; }
 };
 
 #endif  // RAYLIB_CPP_INCLUDE_RAYLIB_CPP_UTILS_HPP_

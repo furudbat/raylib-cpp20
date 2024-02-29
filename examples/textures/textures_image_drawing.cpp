@@ -20,11 +20,11 @@ int main(void) {
     const int screenHeight = 450;
 
     raylib::Window window(screenWidth, screenHeight, "raylib [textures] example - image drawing");
-    raylib::Color darkGray = DARKGRAY;
+    raylib::Color darkGray {DARKGRAY};
 
     // NOTE: Textures MUST be loaded after Window initialization (OpenGL context is required)
     raylib::Image cat("resources/cat.png");             // Load image in CPU memory (RAM)
-    cat.Crop(raylib::Rectangle(100, 10, 280, 380))      // Crop an image piece
+    cat.Crop(raylib::Rectangle{{.x = 100, .y = 10, .width = 280, .height = 380}})      // Crop an image piece
         .FlipHorizontal()                              // Flip cropped image horizontally
         .Resize(150, 200);                            // Resize flipped-cropped image
 
@@ -33,15 +33,16 @@ int main(void) {
     // Draw one image over the other with a scaling of 1.5f
     parrots
         .Draw(cat,
-            raylib::Rectangle(0, 0, cat.GetWidth(), cat.GetHeight()),
-            raylib::Rectangle(30, 40, cat.GetWidth() * 1.5f, cat.GetHeight() * 1.5f));
-    parrots.Crop(raylib::Rectangle(0, 50, parrots.GetWidth(), parrots.GetHeight() - 100));  // Crop resulting image
+            raylib::Rectangle({.x = 0, .y = 0, .width = static_cast<float>(cat.GetWidth()), .height = static_cast<float>(cat.GetHeight())}),
+            raylib::Rectangle(30, 40, static_cast<float>(cat.GetWidth()) * 1.5F, static_cast<float>(cat.GetHeight()) * 1.5F));
+    parrots.Crop(raylib::Rectangle(0, 50, static_cast<float>(parrots.GetWidth()),
+                                   static_cast<float>(parrots.GetHeight() - 100)));  // Crop resulting image
 
     // Load custom font for frawing on image
     raylib::Font font("resources/custom_jupiter_crash.png");
 
     // Draw over image using custom font
-    parrots.DrawText(font, "PARROTS & CAT", raylib::Vector2(300, 230), font.baseSize, -2);
+    parrots.DrawText(font, "PARROTS & CAT", raylib::Vector2({.x = 300,.y =  230}), static_cast<float>(font.baseSize), -2);
 
     raylib::Texture2D texture(parrots);      // Image converted to texture, uploaded to GPU memory (VRAM)
 

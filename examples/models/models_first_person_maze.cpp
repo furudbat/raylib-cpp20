@@ -33,11 +33,11 @@ int main(void)
     model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = texture;     // Set map diffuse texture
 
     // Get map image data to be used for collision detection
-    Color *mapPixels = imMap.LoadColors();
+    auto mapPixels = imMap.LoadColors();
 
     imMap.Unload();                   // Unload image from RAM
 
-    raylib::Vector3 mapPosition(-16.0f, 0.0f, -8.0f);   // Set model position
+    raylib::Vector3 mapPosition({.x = -16.0F,.y =  0.0F,.z = -8.0F});   // Set model position
     raylib::Vector3 playerPosition(camera.position);    // Set player position
 
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
@@ -52,11 +52,11 @@ int main(void)
         camera.Update(CAMERA_FIRST_PERSON);        // Update camera
 
         // Check player collision (we simplify to 2D collision detection)
-        raylib::Vector2 playerPos(camera.position.x, camera.position.z);
-        float playerRadius = 0.1f;  // Collision radius (player is modelled as a cilinder for collision)
+        raylib::Vector2 playerPos({.x = camera.position.x,.y = camera.position.z});
+        float playerRadius = 0.1F;  // Collision radius (player is modelled as a cilinder for collision)
 
-        int playerCellX = static_cast<int>(playerPos.x - mapPosition.x + 0.5f);
-        int playerCellY = static_cast<int>(playerPos.y - mapPosition.z + 0.5f);
+        int playerCellX = static_cast<int>(playerPos.x - mapPosition.x + 0.5F);
+        int playerCellY = static_cast<int>(playerPos.y - mapPosition.z + 0.5F);
 
         // Out-of-limits security check
         if (playerCellX < 0) playerCellX = 0;
@@ -71,7 +71,9 @@ int main(void)
         {
             for (int x = 0; x < cubicmap.width; x++)
             {
-                if ((mapPixels[y*cubicmap.width + x].r == 255) &&       // Collision: white pixel, only check R channel
+                std::span data = mapPixels.span();
+                /// @TODO: check data for size
+                if ((data[y*cubicmap.width + x].r == 255) &&       // Collision: white pixel, only check R channel
                     (playerPos.CheckCollisionCircle(playerRadius,
                     Rectangle{ mapPosition.x - 0.5f + x*1.0f, mapPosition.z - 0.5f + y*1.0f, 1.0f, 1.0f })))
                 {
@@ -110,7 +112,7 @@ int main(void)
     // De-Initialization
     //--------------------------------------------------------------------------------------
 
-    UnloadImageColors(mapPixels);          // Unload color array
+    //UnloadImageColors(mapPixels);          // Unload color array
 
     //----------------------------------------------------------------------------------
 

@@ -21,7 +21,7 @@ int main() {
 
     raylib::Window window(screenWidth, screenHeight, "raylib [core] example - drop files");
 
-    std::vector<std::string> droppedFiles;
+    std::vector<std::filesystem::path> droppedFiles;
 
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------

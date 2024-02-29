@@ -327,8 +327,8 @@ class Window {
     /**
      * Get the screen's width and height.
      */
-    [[nodiscard]] Vector2 GetSize() const {
-        return {static_cast<float>(GetWidth()), static_cast<float>(GetHeight())};
+    [[nodiscard]] raylib::Vector2 GetSize() const {
+        return raylib::Vector2{{.x = static_cast<float>(GetWidth()), .y = static_cast<float>(GetHeight())}};
     }
 
     /**
