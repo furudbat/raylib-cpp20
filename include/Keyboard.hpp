@@ -46,7 +46,6 @@ namespace Keyboard {
     /**
      * Get key pressed (keycode), call it multiple times for keys queued, returns 0 when the queue is empty
      */
-
     [[maybe_unused]] RLCPPAPI inline int GetKeyPressed() {
         return ::GetKeyPressed();
     }

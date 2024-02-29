@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <filesystem>
 
 #include "./raylib.hpp"
 #include "./raylib-cpp-utils.hpp"
@@ -14,13 +15,13 @@ namespace raylib {
  */
 class ModelAnimation : public ::ModelAnimation {
  public:
-    ModelAnimation(const ::ModelAnimation& model) {
+    constexpr ModelAnimation(const ::ModelAnimation& model) {
         set(model);
     }
 
-    ModelAnimation(const ModelAnimation&) = delete;
+    constexpr ModelAnimation(const ModelAnimation&) = delete;
 
-    ModelAnimation(ModelAnimation&& other) {
+    constexpr ModelAnimation(ModelAnimation&& other) {
         set(other);
 
         other.boneCount = 0;
@@ -36,14 +37,10 @@ class ModelAnimation : public ::ModelAnimation {
     /**
      * Load model animations from file
      */
-    static std::vector<ModelAnimation> Load(const std::string& fileName) {
+    static std::vector<ModelAnimation> Load(const std::filesystem::path& fileName) {
         int count = 0;
-        ::ModelAnimation* modelAnimations = ::LoadModelAnimations(fileName.c_str(), &count);
-        std::vector<ModelAnimation> mats(modelAnimations, modelAnimations + count);
-
-        RL_FREE(modelAnimations);
-
-        return mats;
+        auto modelAnimations = RayUniquePtr<::ModelAnimation>(::LoadModelAnimations(fileName.c_str(), &count));
+        return std::vector<ModelAnimation>(modelAnimations.get(), std::next(modelAnimations.get(), count));
     }
 
     GETTERSETTER(int, BoneCount, boneCount)
@@ -51,13 +48,12 @@ class ModelAnimation : public ::ModelAnimation {
     GETTERSETTER(int, FrameCount, frameCount)
     GETTERSETTER(::Transform**, FramePoses, framePoses)
 
-    ModelAnimation& operator=(const ::ModelAnimation& model) {
+    constexpr ModelAnimation& operator=(const ::ModelAnimation& model) {
         set(model);
         return *this;
     }
 
-    ModelAnimation& operator=(const ModelAnimation&) = delete;
-
+    constexpr ModelAnimation& operator=(const ModelAnimation&) = delete;
     ModelAnimation& operator=(ModelAnimation&& other) noexcept {
         if (this == &other) {
             return *this;
@@ -92,12 +88,12 @@ class ModelAnimation : public ::ModelAnimation {
     /**
      * Check model animation skeleton match
      */
-    bool IsValid(const ::Model& model) const {
+    [[nodiscard]] bool IsValid(const ::Model& model) const {
         return ::IsModelAnimationValid(model, *this);
     }
 
  protected:
-    void set(const ::ModelAnimation& model) {
+    constexpr void set(const ::ModelAnimation& model) {
         boneCount = model.boneCount;
         frameCount = model.frameCount;
         bones = model.bones;

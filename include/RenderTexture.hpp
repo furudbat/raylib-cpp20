@@ -7,6 +7,7 @@
 #ifdef __cpp_exceptions
 #include "./RaylibException.hpp"
 #endif
+#include "./RaylibError.hpp"
 
 namespace raylib {
 /**
@@ -17,16 +18,16 @@ class RenderTexture : public ::RenderTexture {
     /**
      * Default constructor to build an empty RenderTexture.
      */
-    RenderTexture() {
-        id = 0;
-    }
+    constexpr RenderTexture() : ::RenderTexture({0, {}, {}}) {}
 
-    RenderTexture(const ::RenderTexture& renderTexture) {
+    /// @TODO: make movable ???
+    constexpr explicit RenderTexture(/*Owner<::RenderTexture>*/ const ::RenderTexture& renderTexture) {
         set(renderTexture);
     }
 
-    RenderTexture(unsigned int id, const ::Texture& texture, const ::Texture& depth) :
-        ::RenderTexture{id, texture, depth} {}
+    /// Questionable Ownership, where is id coming from
+    //constexpr RenderTexture(unsigned int id, const ::Texture& texture, const ::Texture& depth) :
+    //    ::RenderTexture{id, texture, depth} {}
 
     /**
      * Load texture for rendering (framebuffer)
@@ -35,9 +36,8 @@ class RenderTexture : public ::RenderTexture {
         set(::LoadRenderTexture(width, height));
     }
 
-    RenderTexture(const RenderTexture&) = delete;
-
-    RenderTexture(RenderTexture&& other) {
+    constexpr RenderTexture(const RenderTexture&) = delete;
+    constexpr RenderTexture(RenderTexture&& other) {
         set(other);
 
         other.id = 0;
@@ -69,8 +69,9 @@ class RenderTexture : public ::RenderTexture {
         depth = newDepth;
     }
 
-    RenderTexture& operator=(const ::RenderTexture& texture) {
-        set(texture);
+    /// @TODO: make movable ??? ... ownership ???
+    RenderTexture& operator=(const ::RenderTexture& _texture) {
+        set(_texture);
         return *this;
     }
 
@@ -119,7 +120,7 @@ class RenderTexture : public ::RenderTexture {
      * Load texture for rendering (framebuffer)
      */
     static RenderTexture Load(int width, int height) {
-        return ::LoadRenderTexture(width, height);
+        return RenderTexture{::LoadRenderTexture(width, height)};
     }
 
     /**
@@ -130,15 +131,13 @@ class RenderTexture : public ::RenderTexture {
     }
 
  protected:
-    void set(const ::RenderTexture& renderTexture) {
+    constexpr void set(const ::RenderTexture& renderTexture) {
         id = renderTexture.id;
         texture = renderTexture.texture;
         depth = renderTexture.depth;
     }
 };
-
 using RenderTexture2D = RenderTexture;
-
 }  // namespace raylib
 
 using RRenderTexture = raylib::RenderTexture;

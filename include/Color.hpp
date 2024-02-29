@@ -2,29 +2,37 @@
 #define RAYLIB_CPP_INCLUDE_COLOR_HPP_
 
 #include <string>
+#include <cstdint>
 
 #include "./raylib.hpp"
 #include "./Vector4.hpp"
 #include "./raylib-cpp-utils.hpp"
 
 namespace raylib {
+
+struct ColorHSV {
+    float hue;
+    float saturation;
+    float value;
+};
+
 /**
  * Color type, RGBA (32bit)
  */
 class Color : public ::Color {
  public:
-    Color(const ::Color& color) : ::Color{color.r, color.g, color.b, color.a} {}
+    explicit constexpr Color(::Color color) : ::Color{color.r, color.g, color.b, color.a} {}
 
-    Color(
-            unsigned char red,
-            unsigned char green,
-            unsigned char blue,
-            unsigned char alpha = 255) : ::Color{red, green, blue, alpha} {}
+    constexpr Color(
+            uint8_t red,
+            uint8_t green,
+            uint8_t blue,
+            uint8_t alpha = 255) : ::Color{red, green, blue, alpha} {}
 
     /**
      * Black.
      */
-    Color() : ::Color{0, 0, 0, 255} {}
+    constexpr Color() : ::Color{0, 0, 0, 255} {}
 
     /**
      * Returns a Color from HSV values
@@ -32,18 +40,28 @@ class Color : public ::Color {
     explicit Color(::Vector3 hsv) {
         set(::ColorFromHSV(hsv.x, hsv.y, hsv.z));
     }
+    explicit Color(ColorHSV hsv) {
+        set(::ColorFromHSV(hsv.hue, hsv.saturation, hsv.value));
+    }
 
     /**
      * Returns a Color from HSV values
      */
+    [[deprecated("Use FromHSV(ColorHSV)")]]
     static ::Color FromHSV(float hue, float saturation, float value) {
         return ::ColorFromHSV(hue, saturation, value);
+    }
+    static ::Color FromHSV(::Vector3 hsv) {
+        return ::ColorFromHSV(hsv.x, hsv.y, hsv.z);
+    }
+    static ::Color FromHSV(ColorHSV hsv) {
+        return ::ColorFromHSV(hsv.hue, hsv.saturation, hsv.value);
     }
 
     /**
      * Get Color structure from hexadecimal value
      */
-    explicit Color(unsigned int hexValue) {
+    explicit Color(uint32_t hexValue) {
         set(::GetColor(hexValue));
     }
 
@@ -54,7 +72,7 @@ class Color : public ::Color {
     /**
      * Returns hexadecimal value for a Color
      */
-    int ToInt() const {
+    [[nodiscard]] int ToInt() const {
         return ::ColorToInt(*this);
     }
 
@@ -77,14 +95,14 @@ class Color : public ::Color {
      * Returns color with alpha applied, alpha goes from 0.0f to 1.0f
      */
     [[nodiscard]] Color Fade(float alpha) const {
-        return ::Fade(*this, alpha);
+        return Color{::Fade(*this, alpha)};
     }
 
     /**
      * Returns Color normalized as float [0..1]
      */
-    [[nodiscard]] Vector4 Normalize() const {
-        return ::ColorNormalize(*this);
+    [[nodiscard]] raylib::Vector4 Normalize() const {
+        return raylib::Vector4{::ColorNormalize(*this)};
     }
 
     /**
@@ -97,14 +115,19 @@ class Color : public ::Color {
     /**
      * Returns HSV values for a Color
      */
-    [[nodiscard]] Vector3 ToHSV() const {
-        return ::ColorToHSV(*this);
+    [[deprecated("Use ToColorHSV() for better named struct")]]
+    [[nodiscard]] raylib::Vector3 ToHSV() const {
+        return raylib::Vector3{::ColorToHSV(*this)};
+    }
+    [[nodiscard]] ColorHSV ToColorHSV() const {
+        auto hsv = ::ColorToHSV(*this);
+        return {.hue = hsv.x, .saturation = hsv.y, .value = hsv.z};
     }
 
-    GETTERSETTER(unsigned char, R, r)
-    GETTERSETTER(unsigned char, G, g)
-    GETTERSETTER(unsigned char, B, b)
-    GETTERSETTER(unsigned char, A, a)
+    GETTERSETTER(uint8_t, R, r)
+    GETTERSETTER(uint8_t, G, g)
+    GETTERSETTER(uint8_t, B, b)
+    GETTERSETTER(uint8_t, A, a)
 
     Color& operator=(const ::Color& color) {
         set(color);
@@ -248,45 +271,45 @@ class Color : public ::Color {
      * Returns color with alpha applied, alpha goes from 0.0f to 1.0f
      */
     [[nodiscard]] Color Alpha(float alpha) const {
-        return ::ColorAlpha(*this, alpha);
+        return Color{::ColorAlpha(*this, alpha)};
     }
 
     /**
      * Returns src alpha-blended into dst color with tint
      */
     [[nodiscard]] Color AlphaBlend(::Color dst, ::Color tint) const {
-        return ::ColorAlphaBlend(dst, *this, tint);
+        return Color{::ColorAlphaBlend(dst, *this, tint)};
     }
 
-    static Color LightGray() { return LIGHTGRAY; }
-    static Color Gray() { return GRAY; }
-    static Color DarkGray() { return DARKGRAY; }
-    static Color Yellow() { return YELLOW; }
-    static Color Gold() { return GOLD; }
-    static Color Orange() { return ORANGE; }
-    static Color Pink() { return PINK; }
-    static Color Red() { return RED; }
-    static Color Maroon() { return MAROON; }
-    static Color Green() { return GREEN; }
-    static Color Lime() { return LIME; }
-    static Color DarkGreen() { return DARKGREEN; }
-    static Color SkyBlue() { return SKYBLUE; }
-    static Color Blue() { return BLUE; }
-    static Color DarkBlue() { return DARKBLUE; }
-    static Color Purple() { return PURPLE; }
-    static Color Violet() { return VIOLET; }
-    static Color DarkPurple() { return DARKPURPLE; }
-    static Color Beige() { return BEIGE; }
-    static Color Brown() { return BROWN; }
-    static Color DarkBrown() { return DARKBROWN; }
-    static Color White() { return WHITE; }
-    static Color Black() { return BLACK; }
-    static Color Blank() { return BLANK; }
-    static Color Magenta() { return MAGENTA; }
-    static Color RayWhite() { return RAYWHITE; }
+    inline static constexpr Color LightGray() { return LIGHTGRAY; }
+    inline static constexpr Color Gray() { return GRAY; }
+    inline static constexpr Color DarkGray() { return DARKGRAY; }
+    inline static constexpr Color Yellow() { return YELLOW; }
+    inline static constexpr Color Gold() { return GOLD; }
+    inline static constexpr Color Orange() { return ORANGE; }
+    inline static constexpr Color Pink() { return PINK; }
+    inline static constexpr Color Red() { return RED; }
+    inline static constexpr Color Maroon() { return MAROON; }
+    inline static constexpr Color Green() { return GREEN; }
+    inline static constexpr Color Lime() { return LIME; }
+    inline static constexpr Color DarkGreen() { return DARKGREEN; }
+    inline static constexpr Color SkyBlue() { return SKYBLUE; }
+    inline static constexpr Color Blue() { return BLUE; }
+    inline static constexpr Color DarkBlue() { return DARKBLUE; }
+    inline static constexpr Color Purple() { return PURPLE; }
+    inline static constexpr Color Violet() { return VIOLET; }
+    inline static constexpr Color DarkPurple() { return DARKPURPLE; }
+    inline static constexpr Color Beige() { return BEIGE; }
+    inline static constexpr Color Brown() { return BROWN; }
+    inline static constexpr Color DarkBrown() { return DARKBROWN; }
+    inline static constexpr Color White() { return WHITE; }
+    inline static constexpr Color Black() { return BLACK; }
+    inline static constexpr Color Blank() { return BLANK; }
+    inline static constexpr Color Magenta() { return MAGENTA; }
+    inline static constexpr Color RayWhite() { return RAYWHITE; }
 
  protected:
-    void set(const ::Color& color) {
+    constexpr void set(const ::Color& color) {
         r = color.r;
         g = color.g;
         b = color.b;

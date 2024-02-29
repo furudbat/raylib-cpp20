@@ -71,6 +71,7 @@
 #ifdef __cpp_exceptions
 #include "./RaylibException.hpp"
 #endif
+#include "./RaylibError.hpp"
 
 /**
  * All raylib-cpp classes and functions appear in the raylib namespace.

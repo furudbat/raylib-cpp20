@@ -10,12 +10,19 @@ namespace raylib {
  */
 class RayCollision : public ::RayCollision {
  public:
-    RayCollision(const ::RayCollision& ray) {
+    explicit constexpr RayCollision(const ::RayCollision& ray) {
         set(ray);
     }
 
-    RayCollision(bool hit, float distance,
-        ::Vector3 point, ::Vector3 normal) : ::RayCollision{hit, distance, point, normal} {
+    [[deprecated("Use RayCollision(RayCollisionHit, ...)")]]
+    constexpr RayCollision(bool _hit, float _distance,
+                 ::Vector3 _point, ::Vector3 _normal) : ::RayCollision{_hit, _distance, _point, _normal} {
+        // Nothing.
+    }
+
+    enum class RayCollisionHit : bool { Miss = false, Hit = true };
+    constexpr RayCollision(RayCollisionHit _hit, float _distance,
+        ::Vector3 _point, ::Vector3 _normal) : ::RayCollision{_hit == RayCollisionHit::Hit, _distance, _point, _normal} {
         // Nothing.
     }
 
@@ -54,18 +61,22 @@ class RayCollision : public ::RayCollision {
         set(::GetRayCollisionTriangle(ray, p1, p2, p3));
     }
 
-    RayCollision& operator=(const ::RayCollision& ray) {
+    constexpr RayCollision& operator=(const ::RayCollision& ray) {
         set(ray);
         return *this;
     }
 
-    GETTERSETTER(bool, Hit, hit)
+    GETTER(bool, IsHit, hit)
+    /** Retrieves the Hit value for the object. @return The Hit value of the object. */
+    constexpr RayCollisionHit GetHit() const & { return hit ? RayCollisionHit::Hit : RayCollisionHit::Miss; }
+    /** Sets the Hit value for the object. @param value The value of which to set Hit to. */
+    constexpr void SetHit(RayCollisionHit value) { hit = value == RayCollisionHit::Hit; }
     GETTERSETTER(float, Distance, distance)
     GETTERSETTER(::Vector3, Position, point)
     GETTERSETTER(::Vector3, Normal, normal)
 
  protected:
-    void set(const ::RayCollision& ray) {
+    constexpr void set(const ::RayCollision& ray) {
         hit = ray.hit;
         distance = ray.distance;
         point = ray.point;

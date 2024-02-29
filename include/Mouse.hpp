@@ -50,8 +50,8 @@ namespace Mouse {
         ::SetMousePosition(GetX(), y);
     }
 
-    [[maybe_unused]] RLCPPAPI inline Vector2 GetPosition() {
-        return ::GetMousePosition();
+    [[maybe_unused]] RLCPPAPI inline raylib::Vector2 GetPosition() {
+        return raylib::Vector2{::GetMousePosition()};
     }
 
     [[maybe_unused]] RLCPPAPI inline void SetPosition(int x, int y) {
@@ -65,8 +65,8 @@ namespace Mouse {
     /**
      * Get mouse delta between frames
      */
-    [[maybe_unused]] RLCPPAPI inline Vector2 GetDelta() {
-        return ::GetMouseDelta();
+    [[maybe_unused]] RLCPPAPI inline raylib::Vector2 GetDelta() {
+        return raylib::Vector2{::GetMouseDelta()};
     }
 
     [[maybe_unused]] RLCPPAPI inline void SetOffset(int offsetX = 0, int offsetY = 0) {
@@ -77,7 +77,7 @@ namespace Mouse {
         ::SetMouseOffset(static_cast<int>(offset.x), static_cast<int>(offset.y));
     }
 
-    [[maybe_unused]] RLCPPAPI inline void SetScale(float scaleX = 1.0f, float scaleY = 1.0f) {
+    [[maybe_unused]] RLCPPAPI inline void SetScale(float scaleX = 1.0F, float scaleY = 1.0F) {
         ::SetMouseScale(scaleX, scaleY);
     }
 
@@ -97,8 +97,8 @@ namespace Mouse {
      *
      * @see ::GetMouseWheelMoveV()
      */
-    [[maybe_unused]] RLCPPAPI inline Vector2 GetWheelMoveV() {
-        return GetMouseWheelMoveV();
+    [[maybe_unused]] RLCPPAPI inline raylib::Vector2 GetWheelMoveV() {
+        return raylib::Vector2{::GetMouseWheelMoveV()};
     }
 
     /**
@@ -127,22 +127,22 @@ namespace Mouse {
     /**
      * Get touch position XY for a touch point index (relative to screen size)
      */
-    [[maybe_unused]] RLCPPAPI inline Vector2 GetTouchPosition(int index) {
-        return ::GetTouchPosition(index);
+    [[maybe_unused]] RLCPPAPI inline raylib::Vector2 GetTouchPosition(int index) {
+        return raylib::Vector2{::GetTouchPosition(index)};
     }
 
     /**
      * Get a ray trace from mouse position
      */
-    [[maybe_unused]] RLCPPAPI inline Ray GetRay(::Vector2 mousePosition, const ::Camera& camera) {
-        return ::GetMouseRay(mousePosition, camera);
+    [[maybe_unused]] RLCPPAPI inline raylib::Ray GetRay(::Vector2 mousePosition, const ::Camera& camera) {
+        return Ray{::GetMouseRay(mousePosition, camera)};
     }
 
     /**
      * Get a ray trace from mouse position
      */
-    [[maybe_unused]] RLCPPAPI inline Ray GetRay(const ::Camera& camera) {
-        return ::GetMouseRay(::GetMousePosition(), camera);
+    [[maybe_unused]] RLCPPAPI inline raylib::Ray GetRay(const ::Camera& camera) {
+        return raylib::Ray{::GetMouseRay(::GetMousePosition(), camera)};
     }
 }  // namespace Mouse
 }  // namespace raylib

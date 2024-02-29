@@ -6,6 +6,7 @@
 #ifdef __cpp_exceptions
 #include "./RaylibException.hpp"
 #endif
+#include "./RaylibError.hpp"
 
 namespace raylib {
 
@@ -26,25 +27,30 @@ class AudioDevice {
      *
      * @throws raylib::RaylibException Throws if the AudioDevice failed to initialize.
      */
-     /*
-    [[deprecated("Use AudioDevice(options)")]] AudioDevice(bool lateInit = false) {
+    [[deprecated("Use AudioDevice(options)")]] explicit AudioDevice(bool lateInit) RAYLIB_CPP_THROWS {
         if (!lateInit) {
             Init();
         }
     }
-    */
 
-    explicit AudioDevice(AudioDeviceInitOption options = AudioDeviceInitOption::LateInit) {
+#ifdef RAYLIB_CPP_EXPECTED
+    [[deprecated("Use AudioDevice() and Init() to handle error")]]
+#endif
+    explicit AudioDevice(AudioDeviceInitOption options) RAYLIB_CPP_THROWS {
         if (options == AudioDeviceInitOption::CallInit) {
             Init();
         }
     }
 
+    constexpr AudioDevice() = default;
+
     /**
      * Close the audio device and context.
      */
     ~AudioDevice() {
-        Close();
+        if (IsReady()) {
+            Close();
+        }
     }
 
     /**
@@ -52,10 +58,10 @@ class AudioDevice {
      *
      * @throws raylib::RaylibException Throws if the AudioDevice failed to initialize.
      */
-    void Init() {
+    RAYLIB_CPP_EXPECTED_RESULT(void) Init() RAYLIB_CPP_THROWS {
         ::InitAudioDevice();
         if (!IsReady()) {
-            throw RaylibException("Failed to initialize AudioDevice");
+            RAYLIB_CPP_RETURN_EXPECTED_OR_THROW(RaylibError("Failed to initialize AudioDevice"));
         }
     }
 
@@ -69,7 +75,7 @@ class AudioDevice {
     /**
      * Check if audio device has been initialized successfully.
      */
-    bool IsReady() const {
+    [[nodiscard]] bool IsReady() const {
         return ::IsAudioDeviceReady();
     }
 

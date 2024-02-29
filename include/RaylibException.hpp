@@ -5,6 +5,7 @@
 #include <string>
 
 #include "./raylib.hpp"
+#include "./RaylibError.hpp"
 
 namespace raylib {
 /**
@@ -17,7 +18,14 @@ class RaylibException : public std::runtime_error {
      *
      * @param message The message to provide for the exception.
      */
-    explicit RaylibException(std::string message) throw() : std::runtime_error(message) {
+    explicit RaylibException(const std::string& message) noexcept : std::runtime_error(message) {
+        // Nothing
+    }
+
+    RaylibException(const RaylibError& err) noexcept : std::runtime_error(err.GetMessage()) {
+        // Nothing
+    }
+    RaylibException(RaylibError&& err) noexcept : std::runtime_error(err.GetMessage()) {
         // Nothing
     }
 

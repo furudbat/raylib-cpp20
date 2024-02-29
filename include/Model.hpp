@@ -2,6 +2,7 @@
 #define RAYLIB_CPP_INCLUDE_MODEL_HPP_
 
 #include <string>
+#include <filesystem>
 
 #include "./raylib.hpp"
 #include "./raylib-cpp-utils.hpp"
@@ -9,6 +10,7 @@
 #ifdef __cpp_exceptions
 #include "./RaylibException.hpp"
 #endif
+#include "./RaylibError.hpp"
 
 namespace raylib {
 class Mesh;
@@ -17,14 +19,14 @@ class Mesh;
  */
 class Model : public ::Model {
  public:
-    Model() {
+    constexpr Model() {
         // Nothing.
     }
 
     /*
      * Copy a model from another model.
      */
-    Model(const ::Model& model) {
+    constexpr Model(const ::Model& model) {
         set(model);
     }
 
@@ -33,7 +35,7 @@ class Model : public ::Model {
      *
      * @throws raylib::RaylibException Throws if failed to load the Modal.
      */
-    Model(const std::string& fileName) {
+    Model(const std::filesystem::path& fileName) RAYLIB_CPP_THROWS {
         Load(fileName);
     }
 
@@ -59,8 +61,7 @@ class Model : public ::Model {
         Unload();
     }
 
-    Model(const Model&) = delete;
-
+    constexpr Model(const Model&) = delete;
     Model(Model&& other) {
         set(other);
 
@@ -84,13 +85,12 @@ class Model : public ::Model {
     GETTERSETTER(::BoneInfo*, Bones, bones)
     GETTERSETTER(::Transform*, BindPose, bindPose)
 
-    Model& operator=(const ::Model& model) {
+    constexpr Model& operator=(const ::Model& model) {
         set(model);
         return *this;
     }
 
-    Model& operator=(const Model&) = delete;
-
+    constexpr Model& operator=(const Model&) = delete;
     Model& operator=(Model&& other) noexcept {
         if (this == &other) {
             return *this;
@@ -141,7 +141,7 @@ class Model : public ::Model {
     /**
      * Check model animation skeleton match
      */
-    bool IsModelAnimationValid(const ::ModelAnimation& anim) const {
+    [[nodiscard]] bool IsModelAnimationValid(const ::ModelAnimation& anim) const {
         return ::IsModelAnimationValid(*this, anim);
     }
 
@@ -149,8 +149,8 @@ class Model : public ::Model {
      * Draw a model (with texture if set)
      */
     void Draw(::Vector3 position,
-            float scale = 1.0f,
-            ::Color tint = {255, 255, 255, 255}) const {
+            float scale = 1.0F,
+            ::Color tint = WHITE) const {
         ::DrawModel(*this, position, scale, tint);
     }
 
@@ -160,8 +160,8 @@ class Model : public ::Model {
     void Draw(
             ::Vector3 position,
             ::Vector3 rotationAxis,
-            float rotationAngle = 0.0f,
-            ::Vector3 scale = {1.0f, 1.0f, 1.0f},
+            float rotationAngle = 0.0F,
+            ::Vector3 scale = {1.0F, 1.0F, 1.0F},
             ::Color tint = {255, 255, 255, 255}) const {
         ::DrawModelEx(*this, position, rotationAxis, rotationAngle, scale, tint);
     }
@@ -170,8 +170,8 @@ class Model : public ::Model {
      * Draw a model wires (with texture if set)
      */
     void DrawWires(::Vector3 position,
-            float scale = 1.0f,
-            ::Color tint = {255, 255, 255, 255}) const {
+            float scale = 1.0F,
+            ::Color tint = WHITE) const {
         ::DrawModelWires(*this, position, scale, tint);
     }
 
@@ -181,30 +181,30 @@ class Model : public ::Model {
     void DrawWires(
             ::Vector3 position,
             ::Vector3 rotationAxis,
-            float rotationAngle = 0.0f,
-            ::Vector3 scale = {1.0f, 1.0f, 1.0f},
-            ::Color tint = {255, 255, 255, 255}) const {
+            float rotationAngle = 0.0F,
+            ::Vector3 scale = {1.0F, 1.0F, 1.0F},
+            ::Color tint = WHITE) const {
         ::DrawModelWiresEx(*this, position, rotationAxis, rotationAngle, scale, tint);
     }
 
     /**
      * Compute model bounding box limits (considers all meshes)
      */
-    BoundingBox GetBoundingBox() const {
+    [[nodiscard]] BoundingBox GetBoundingBox() const {
         return ::GetModelBoundingBox(*this);
     }
 
     /**
      * Compute model bounding box limits (considers all meshes)
      */
-    operator BoundingBox() const {
+    explicit operator BoundingBox() const {
         return ::GetModelBoundingBox(*this);
     }
 
     /**
      * Determines whether or not the Model has data in it.
      */
-    bool IsReady() const {
+    [[nodiscard]] bool IsReady() const {
         return ::IsModelReady(*this);
     }
 
@@ -213,10 +213,10 @@ class Model : public ::Model {
      *
      * @throws raylib::RaylibException Throws if failed to load the Modal.
      */
-    void Load(const std::string& fileName) {
+    RAYLIB_CPP_EXPECTED_RESULT(void) Load(const std::filesystem::path& fileName) RAYLIB_CPP_THROWS {
         set(::LoadModel(fileName.c_str()));
         if (!IsReady()) {
-            throw RaylibException("Failed to load Model from " + fileName);
+            RAYLIB_CPP_RETURN_EXPECTED_OR_THROW(RaylibError("Failed to load Model from " + fileName.string()));
         }
     }
 
@@ -225,15 +225,15 @@ class Model : public ::Model {
      *
      * @throws raylib::RaylibException Throws if failed to load the Modal.
      */
-    void Load(const ::Mesh& mesh) {
+    RAYLIB_CPP_EXPECTED_RESULT(void) Load(const ::Mesh& mesh) RAYLIB_CPP_THROWS {
         set(::LoadModelFromMesh(mesh));
         if (!IsReady()) {
-            throw RaylibException("Failed to load Model from Mesh");
+            RAYLIB_CPP_RETURN_EXPECTED_OR_THROW(RaylibError("Failed to load Model from Mesh"));
         }
     }
 
  protected:
-    void set(const ::Model& model) {
+    constexpr void set(const ::Model& model) {
         transform = model.transform;
 
         meshCount = model.meshCount;

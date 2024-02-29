@@ -2,6 +2,7 @@
 #define RAYLIB_CPP_INCLUDE_FONT_HPP_
 
 #include <string>
+#include <span>
 
 #include "./raylib.hpp"
 #include "./raylib-cpp-utils.hpp"
@@ -9,6 +10,7 @@
 #ifdef __cpp_exceptions
 #include "./RaylibException.hpp"
 #endif
+#include "./RaylibError.hpp"
 
 namespace raylib {
 /**
@@ -16,12 +18,12 @@ namespace raylib {
  */
 class Font : public ::Font {
  public:
-    Font(int baseSize,
-            int glyphCount,
-            int glyphPadding,
-            ::Texture2D texture,
-            ::Rectangle *recs = nullptr,
-            ::GlyphInfo *glyphs = nullptr) : ::Font{baseSize, glyphCount, glyphPadding, texture, recs, glyphs} {
+    constexpr Font(int _baseSize,
+            int _glyphCount,
+            int _glyphPadding,
+            ::Texture2D _texture,
+            ::Rectangle *_recs = nullptr,
+            ::GlyphInfo *_glyphs = nullptr) : ::Font{_baseSize, _glyphCount, _glyphPadding, _texture, _recs, _glyphs} {
         // Nothing.
     }
 
@@ -32,7 +34,7 @@ class Font : public ::Font {
         set(::GetFontDefault());
     }
 
-    Font(const ::Font& font) {
+    constexpr Font(const ::Font& font) {
         set(font);
     }
 
@@ -43,7 +45,7 @@ class Font : public ::Font {
      *
      * @throws raylib::RaylibException Throws if the given font failed to initialize.
      */
-    explicit Font(const std::string& fileName) {
+    explicit Font(const std::filesystem::path& fileName) RAYLIB_CPP_THROWS {
         Load(fileName);
     }
 
@@ -56,8 +58,8 @@ class Font : public ::Font {
      *
      * @see ::LoadFontEx
      */
-    Font(const std::string& fileName, int fontSize, int* fontChars = nullptr, int charCount = 0)  {
-        Load(fileName, fontSize, fontChars, charCount);
+    Font(const std::filesystem::path& fileName, int fontSize, std::span<int> fontChars = {}) RAYLIB_CPP_THROWS {
+        Load(fileName, fontSize, fontChars);
     }
 
     /**
@@ -69,7 +71,7 @@ class Font : public ::Font {
      *
      * @see ::LoadFontFromImage()
      */
-    Font(const ::Image& image, ::Color key, int firstChar) {
+    Font(const ::Image& image, ::Color key, int firstChar) RAYLIB_CPP_THROWS {
         Load(image, key, firstChar);
     }
 
@@ -80,13 +82,13 @@ class Font : public ::Font {
      *
      * @see ::LoadFontFromMemory()
      */
-    Font(const std::string& fileType, const unsigned char* fileData, int dataSize, int fontSize,
-            int *fontChars, int charsCount)  {
-        Load(fileType, fileData, dataSize, fontSize, fontChars, charsCount);
+    Font(const std::string& fileType, std::span<const unsigned char> fileData, int fontSize,
+         std::span<int> fontChars) RAYLIB_CPP_THROWS {
+        Load(fileType, fileData, fontSize, fontChars);
     }
 
-    Font(const Font&) = delete;
-    Font(Font&& other) {
+    constexpr Font(const Font&) = delete;
+    constexpr Font(Font&& other) {
         set(other);
 
         other.baseSize = 0;
@@ -118,13 +120,13 @@ class Font : public ::Font {
      * Get the texture atlas containing the glyphs.
      */
     TextureUnmanaged GetTexture() {
-        return texture;
+        return TextureUnmanaged{texture};
     }
 
     /**
      * Set the texture atlas containing the glyphs.
      */
-    void SetTexture(const ::Texture& newTexture) {
+    constexpr void SetTexture(const ::Texture& newTexture) {
         texture = newTexture;
     }
 
@@ -134,8 +136,7 @@ class Font : public ::Font {
         return *this;
     }
 
-    Font& operator=(const Font&) = delete;
-
+    constexpr Font& operator=(const Font&) = delete;
     Font& operator=(Font&& other) noexcept {
         if (this == &other) {
             return *this;
@@ -163,10 +164,10 @@ class Font : public ::Font {
      *
      * @see ::LoadFont()
      */
-    void Load(const std::string& fileName) {
+    RAYLIB_CPP_EXPECTED_RESULT(void) Load(const std::string& fileName) RAYLIB_CPP_THROWS {
         set(::LoadFont(fileName.c_str()));
         if (!IsReady()) {
-            throw RaylibException("Failed to load Font with from file: " + fileName);
+            RAYLIB_CPP_RETURN_EXPECTED_OR_THROW(RaylibError("Failed to load Font with from file: " + fileName));
         }
     }
 
@@ -180,26 +181,26 @@ class Font : public ::Font {
      *
      * @see ::LoadFontEx()
      */
-    void Load(const std::string& fileName, int fontSize, int* fontChars, int charCount)  {
-        set(::LoadFontEx(fileName.c_str(), fontSize, fontChars, charCount));
+    RAYLIB_CPP_EXPECTED_RESULT(void) Load(const std::filesystem::path& fileName, int fontSize, std::span<int> fontChars) RAYLIB_CPP_THROWS {
+        set(::LoadFontEx(fileName.c_str(), fontSize, fontChars.data(), static_cast<int>(fontChars.size())));
         if (!IsReady()) {
-            throw RaylibException("Failed to load Font with from file with font size: " + fileName);
+            RAYLIB_CPP_RETURN_EXPECTED_OR_THROW(RaylibError("Failed to load Font with from file with font size: " + fileName.string()));
         }
     }
 
-    void Load(const ::Image& image, ::Color key, int firstChar) {
+    RAYLIB_CPP_EXPECTED_RESULT(void) Load(const ::Image& image, ::Color key, int firstChar) RAYLIB_CPP_THROWS {
         set(::LoadFontFromImage(image, key, firstChar));
         if (!IsReady()) {
-            throw RaylibException("Failed to load Font with from image");
+            RAYLIB_CPP_RETURN_EXPECTED_OR_THROW(RaylibError("Failed to load Font with from image"));
         }
     }
 
-    void Load(const std::string& fileType, const unsigned char* fileData, int dataSize, int fontSize,
-            int *fontChars, int charsCount)  {
-        set(::LoadFontFromMemory(fileType.c_str(), fileData, dataSize, fontSize, fontChars,
-            charsCount));
+    RAYLIB_CPP_EXPECTED_RESULT(void) Load(const std::string& fileType, std::span<const unsigned char> fileData, int fontSize,
+              std::span<int> fontChars)  {
+        set(::LoadFontFromMemory(fileType.c_str(), fileData.data(), static_cast<int>(fileData.size()), fontSize, fontChars.data(),
+                                 static_cast<int>(fontChars.size())));
         if (!IsReady()) {
-            throw RaylibException("Failed to load Font " + fileType + " with from file data");
+            RAYLIB_CPP_RETURN_EXPECTED_OR_THROW(RaylibError("Failed to load Font " + fileType + " with from file data"));
         }
     }
 
@@ -214,7 +215,7 @@ class Font : public ::Font {
      * Draw text using font and additional parameters.
      */
     void DrawText(const char* text, ::Vector2 position, float fontSize,
-            float spacing, ::Color tint = WHITE) const {
+                  float spacing, ::Color tint = WHITE) const {
         ::DrawTextEx(*this, text, position,  fontSize,  spacing,  tint);
     }
 
@@ -222,7 +223,7 @@ class Font : public ::Font {
      * Draw text using font and additional parameters.
      */
     void DrawText(const std::string& text, ::Vector2 position, float fontSize,
-            float spacing, ::Color tint = WHITE) const {
+                  float spacing, ::Color tint = WHITE) const {
         ::DrawTextEx(*this, text.c_str(), position,  fontSize,  spacing,  tint);
     }
 
@@ -230,9 +231,9 @@ class Font : public ::Font {
      * Draw text using font and additional parameters.
      */
     void DrawText(const char* text, int posX, int posY, float fontSize,
-            float spacing, ::Color tint = WHITE) const {
+                  float spacing, ::Color tint = WHITE) const {
         ::DrawTextEx(*this, text,
-            { static_cast<float>(posX), static_cast<float>(posY) },
+            { .x = static_cast<float>(posX), .y = static_cast<float>(posY) },
             fontSize, spacing, tint);
     }
 
@@ -240,9 +241,9 @@ class Font : public ::Font {
      * Draw text using font and additional parameters.
      */
     void DrawText(const std::string& text, int posX, int posY, float fontSize,
-            float spacing, ::Color tint = WHITE) const {
+                  float spacing, ::Color tint = WHITE) const {
         ::DrawTextEx(*this, text.c_str(),
-            { static_cast<float>(posX), static_cast<float>(posY) },
+            { .x = static_cast<float>(posX), .y = static_cast<float>(posY) },
             fontSize, spacing, tint);
     }
 
@@ -280,19 +281,19 @@ class Font : public ::Font {
     void DrawText(int codepoint,
             ::Vector2 position,
             float fontSize,
-            ::Color tint = { 255, 255, 255, 255 }) const {
+            ::Color tint = WHITE) const {
         ::DrawTextCodepoint(*this, codepoint, position, fontSize, tint);
     }
 
     /**
      * Draw multiple character (codepoint)
      */
-    void DrawText(const int *codepoints,
-            int count, ::Vector2 position,
+    void DrawText(std::span<const int> codepoints,
+            ::Vector2 position,
             float fontSize, float spacing,
-            ::Color tint = { 255, 255, 255, 255 }) const {
+            ::Color tint = WHITE) const {
         ::DrawTextCodepoints(*this,
-            codepoints, count,
+            codepoints.data(), static_cast<int>(codepoints.size()),
             position, fontSize,
             spacing, tint);
     }
@@ -322,7 +323,7 @@ class Font : public ::Font {
      * Create an image from text (custom sprite font)
      */
     ::Image ImageText(const char* text, float fontSize,
-            float spacing, ::Color tint) const {
+                      float spacing, ::Color tint) const {
         return ::ImageTextEx(*this, text, fontSize, spacing, tint);
     }
 
@@ -330,12 +331,12 @@ class Font : public ::Font {
      * Create an image from text (custom sprite font)
      */
     [[nodiscard]] ::Image ImageText(const std::string& text, float fontSize,
-            float spacing, ::Color tint) const {
+                                    float spacing, ::Color tint) const {
         return ::ImageTextEx(*this, text.c_str(), fontSize, spacing, tint);
     }
 
  protected:
-    void set(const ::Font& font) {
+    constexpr void set(const ::Font& font) {
         baseSize = font.baseSize;
         glyphCount = font.glyphCount;
         glyphPadding = font.glyphPadding;

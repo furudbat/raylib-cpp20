@@ -11,12 +11,12 @@ namespace raylib {
  */
 class Ray : public ::Ray {
  public:
-    Ray(const ::Ray& ray) {
+    explicit constexpr Ray(const ::Ray& ray) {
         set(ray);
     }
 
-    explicit Ray(::Vector3 position = {0.0f, 0.0f, 0.0f}, ::Vector3 direction = {0.0f, 0.0f, 0.0f}) :
-            ::Ray{position, direction} {
+    explicit constexpr Ray(::Vector3 _position = {0.0F, 0.0F, 0.0F}, ::Vector3 _direction = {0.0F, 0.0F, 0.0F}) :
+            ::Ray{_position, _direction} {
         // Nothing.
     }
 
@@ -24,7 +24,7 @@ class Ray : public ::Ray {
         set(::GetMouseRay(mousePosition, camera));
     }
 
-    Ray& operator=(const ::Ray& ray) {
+    constexpr Ray& operator=(const ::Ray& ray) {
         set(ray);
         return *this;
     }
@@ -43,53 +43,53 @@ class Ray : public ::Ray {
      * Get collision information between ray and sphere
      */
     [[nodiscard]] RayCollision GetCollision(::Vector3 center, float radius) const {
-        return ::GetRayCollisionSphere(*this, center, radius);
+        return RayCollision{::GetRayCollisionSphere(*this, center, radius)};
     }
 
     /**
      * Detect collision between ray and box
      */
     [[nodiscard]] RayCollision GetCollision(const ::BoundingBox& box) const {
-        return ::GetRayCollisionBox(*this, box);
+        return RayCollision{::GetRayCollisionBox(*this, box)};
     }
 
     /**
      * Get collision information between ray and mesh
      */
     [[nodiscard]] RayCollision GetCollision(const ::Mesh& mesh, const ::Matrix& transform) const {
-        return ::GetRayCollisionMesh(*this, mesh, transform);
+        return RayCollision{::GetRayCollisionMesh(*this, mesh, transform)};
     }
 
     /**
      * Get collision info between ray and triangle
      */
     [[nodiscard]] RayCollision GetCollision(::Vector3 p1, ::Vector3 p2, ::Vector3 p3) const {
-        return ::GetRayCollisionTriangle(*this, p1, p2, p3);
+        return RayCollision{::GetRayCollisionTriangle(*this, p1, p2, p3)};
     }
 
     /**
      * Get collision info between ray and quad
      */
     [[nodiscard]] RayCollision GetCollision(::Vector3 p1, ::Vector3 p2, ::Vector3 p3, ::Vector3 p4) const {
-        return ::GetRayCollisionQuad(*this, p1, p2, p3, p4);
+        return RayCollision{::GetRayCollisionQuad(*this, p1, p2, p3, p4)};
     }
 
     /**
      * Get a ray trace from mouse position
      */
     static Ray GetMouse(::Vector2 mousePosition, const ::Camera& camera) {
-        return ::GetMouseRay(mousePosition, camera);
+        return Ray{::GetMouseRay(mousePosition, camera)};
     }
 
     /**
      * Get a ray trace from mouse position
      */
     static Ray GetMouse(const ::Camera& camera) {
-        return ::GetMouseRay(::GetMousePosition(), camera);
+        return Ray{::GetMouseRay(::GetMousePosition(), camera)};
     }
 
  protected:
-    void set(const ::Ray& ray) {
+    constexpr void set(const ::Ray& ray) {
         position = ray.position;
         direction = ray.direction;
     }

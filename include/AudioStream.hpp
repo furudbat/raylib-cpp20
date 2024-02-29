@@ -1,27 +1,44 @@
 #ifndef RAYLIB_CPP_INCLUDE_AUDIOSTREAM_HPP_
 #define RAYLIB_CPP_INCLUDE_AUDIOSTREAM_HPP_
 
+#include <cstdint>
+
 #include "./raylib.hpp"
 #include "./raylib-cpp-utils.hpp"
 #ifdef __cpp_exceptions
 #include "./RaylibException.hpp"
 #endif
+#include "./RaylibError.hpp"
 
 namespace raylib {
+
+struct AudioStreamOptions {
+};
+
 /**
  * AudioStream management functions
  */
 class AudioStream : public ::AudioStream {
  public:
-    AudioStream(const ::AudioStream& music) {
+    inline static constexpr uint32_t LoadDefaultChannels = 2;
+    inline static constexpr float SetDefaultVolume = 1.0F;
+    inline static constexpr float SetDefaultPan = 0.5F;
+
+    explicit constexpr AudioStream(const ::AudioStream& music = {
+        .buffer = nullptr,
+        .processor = nullptr,
+        .sampleRate = 0,
+        .sampleSize = 0,
+        .channels = 0,
+    }) {
         set(music);
     }
 
-    explicit AudioStream(rAudioBuffer* pBuffer = nullptr,
-            rAudioProcessor *pProcessor = nullptr,
-            unsigned int pSampleRate = 0,
-            unsigned int pSampleSize = 0,
-            unsigned int pChannels = 0) : ::AudioStream{pBuffer, pProcessor, pSampleRate, pSampleSize, pChannels} {
+    [[deprecated("Use AudioStream(music)")]] explicit constexpr AudioStream(rAudioBuffer* _buffer,
+            rAudioProcessor *_processor = nullptr,
+            unsigned int _sampleRate = 0,
+            unsigned int _sampleSize = 0,
+            unsigned int _channels = 0) : ::AudioStream{_buffer, _processor, _sampleRate, _sampleSize, _channels} {
         // Nothing.
     }
 
@@ -30,12 +47,12 @@ class AudioStream : public ::AudioStream {
      *
      * @throws raylib::RaylibException Throws if the AudioStream failed to load.
      */
-    AudioStream(unsigned int pSampleRate, unsigned int pSampleSize, unsigned int pChannels = 2) {
-        Load(pSampleRate, pSampleSize, pChannels);
+    AudioStream(unsigned int _sampleRate, unsigned int _sampleSize, unsigned int _channels = LoadDefaultChannels) RAYLIB_CPP_THROWS {
+        Load(_sampleRate, _sampleSize, _channels);
     }
 
-    AudioStream(const AudioStream&) = delete;
-    AudioStream(AudioStream&& other) {
+    constexpr AudioStream(const AudioStream&) = delete;
+    constexpr AudioStream(AudioStream&& other) {
         set(other);
 
         other.buffer = nullptr;
@@ -54,13 +71,11 @@ class AudioStream : public ::AudioStream {
     GETTER(unsigned int, SampleSize, sampleSize)
     GETTER(unsigned int, Channels, channels)
 
-    AudioStream& operator=(const ::AudioStream& stream) {
+    constexpr AudioStream& operator=(const ::AudioStream& stream) {
         set(stream);
         return *this;
     }
-
-    AudioStream& operator=(const AudioStream&) = delete;
-
+    constexpr AudioStream& operator=(const AudioStream&) = delete;
     AudioStream& operator=(AudioStream&& other) noexcept {
         if (this == &other) {
             return *this;
@@ -144,7 +159,7 @@ class AudioStream : public ::AudioStream {
     /**
      * Set volume for audio stream (1.0 is max level)
      */
-    AudioStream& SetVolume(float volume = 1.0f) {
+    AudioStream& SetVolume(float volume = SetDefaultVolume) {
         ::SetAudioStreamVolume(*this, volume);
         return *this;
     }
@@ -160,7 +175,7 @@ class AudioStream : public ::AudioStream {
     /**
      * Set pan for audio stream (0.5 is centered)
      */
-    AudioStream& SetPan(float pan = 0.5f) {
+    AudioStream& SetPan(float pan = SetDefaultPan) {
         ::SetAudioStreamPan(*this, pan);
         return *this;
     }
@@ -205,16 +220,16 @@ class AudioStream : public ::AudioStream {
      *
      * @throws raylib::RaylibException Throws if the AudioStream failed to load.
      */
-    void Load(unsigned int SampleRate, unsigned int SampleSize, unsigned int Channels = 2) {
+    RAYLIB_CPP_EXPECTED_RESULT(void) Load(unsigned int SampleRate, unsigned int SampleSize, unsigned int Channels = LoadDefaultChannels) {
         Unload();
         set(::LoadAudioStream(SampleRate, SampleSize, Channels));
         if (!IsReady()) {
-            throw RaylibException("Failed to load audio stream");
+            RAYLIB_CPP_RETURN_EXPECTED_OR_THROW(RaylibError("Failed to load audio stream"));
         }
     }
 
  protected:
-    void set(const ::AudioStream& stream) {
+    constexpr void set(const ::AudioStream& stream) {
         buffer = stream.buffer;
         processor = stream.processor;
         sampleRate = stream.sampleRate;
