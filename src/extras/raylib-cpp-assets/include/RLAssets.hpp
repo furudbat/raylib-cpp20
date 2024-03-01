@@ -42,6 +42,14 @@
 #ifndef RLASSETS_H
 #define RLASSETS_H
 
+#if __has_include(<raylib-cpp.hpp>)
+#include <raylib-cpp.hpp>
+#else
+#ifndef RLCPPAPI
+#define RLCPPAPI static
+#endif
+#endif
+
 #include <filesystem>     // for path
 #include <memory>         // for shared_ptr
 #include <cstddef>       // for size_t
@@ -67,7 +75,6 @@ extern "C" {
 #define MINIZ_HEADER_FILE_ONLY
 #endif
 #include "zip_file.hpp" // NOLINT
-
 
 namespace raylib::rlas {
 

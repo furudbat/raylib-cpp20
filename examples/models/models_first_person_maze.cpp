@@ -71,7 +71,7 @@ int main(void)
         {
             for (int x = 0; x < cubicmap.width; x++)
             {
-                std::span data = mapPixels.as_span();
+                std::span data = mapPixels.AsSpan();
                 /// @TODO: check data for size
                 if ((data[y*cubicmap.width + x].r == 255) &&       // Collision: white pixel, only check R channel
                     (playerPos.CheckCollisionCircle(playerRadius,

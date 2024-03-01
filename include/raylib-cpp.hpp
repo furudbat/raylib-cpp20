@@ -66,6 +66,8 @@
 #include "raylib-cpp/VrStereoConfig.hpp"
 #include "raylib-cpp/Wave.hpp"
 #include "raylib-cpp/Window.hpp"
+#include "raylib-cpp/FileData.hpp"
+#include "raylib-cpp/FileText.hpp"
 #ifdef __cpp_exceptions
 #include "raylib-cpp/RaylibException.hpp"
 #endif

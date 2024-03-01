@@ -52,7 +52,7 @@ std::filesystem::path GetApplicationBasePath() {
       for (uint32_t i = len; i >= 0; i--) {
         if (path[i] == '/' && path[i + 1] == '.') {
           path[i + 1] = 0;
-          break
+          break;
         }
       }
       appDir = path;
