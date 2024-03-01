@@ -12,6 +12,13 @@
 #include <gsl/gsl>
 #endif
 
+/**
+ * Allow changing the declare type for all raylib-cpp global functions. Defaults to static.
+ */
+#ifndef RLCPPAPI
+#define RLCPPAPI static
+#endif
+
 #ifndef GETTERSETTER
 /**
  * A utility to build get and set methods on top of a property.
@@ -22,6 +29,7 @@
  */
 #define GETTERSETTER(type, method, name) \
     /** Retrieves the name value for the object. @return The name value of the object. */       \
+    constexpr type Get##method() & { return name; }                                             \
     constexpr type Get##method() const & { return name; }                                       \
     constexpr type Get##method() && { return std::move(name); }                                 \
     /** Sets the name value for the object. @param value The value of which to set name to. */  \
@@ -30,6 +38,7 @@
 #ifndef GETTER
 #define GETTER(type, method, name) \
     /** Retrieves the name value for the object. @return The name value of the object. */       \
+    constexpr type Get##method() & { return name; }                                             \
     constexpr type Get##method() const & { return name; }                                       \
     constexpr type Get##method() && { return std::move(name); }
 #endif
@@ -105,8 +114,8 @@ struct RayArrayHolder {
         return {data.get(), size};
     }
 
-    std::span<T> as_span() { return {data.get(), size}; }
-    std::span<const T> as_span() const { return {data.get(), size}; }
+    std::span<T> AsSpan() { return {data.get(), size}; }
+    std::span<const T> AsSpan() const { return {data.get(), size}; }
 };
 
 

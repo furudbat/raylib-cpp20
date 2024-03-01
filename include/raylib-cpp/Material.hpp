@@ -17,7 +17,7 @@ struct RayMaterials {
     RayMaterials(owner<::Material*> _data, size_t _size) : data(_data), size(_size) {}
     ~RayMaterials() {
         if (data != nullptr) {
-            for (auto &mat: as_span()) {
+            for (auto &mat: AsSpan()) {
                 if (mat.maps != nullptr) {
                     ::UnloadMaterial(mat);
                 }
@@ -32,8 +32,8 @@ struct RayMaterials {
         return {data, size};
     }
 
-    std::span<::Material> as_span() { return {data, size}; }
-    std::span<const ::Material> as_span() const { return {data, size}; }
+    std::span<::Material> AsSpan() { return {data, size}; }
+    std::span<const ::Material> AsSpan() const { return {data, size}; }
 };
 
 /**
@@ -86,7 +86,7 @@ class Material : public ::Material {
 
         std::vector<Material> ret;
         ret.reserve(static_cast<size_t>(count));
-        for (auto& mat : materials.as_span()) {
+        for (auto& mat : materials.AsSpan()) {
             ret.emplace_back(std::move(mat));
             mat.maps = nullptr;
         }

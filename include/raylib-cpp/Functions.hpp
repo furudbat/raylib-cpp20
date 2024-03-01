@@ -9,13 +9,7 @@
 #include <vector>
 
 #include "./raylib.hpp"
-
-/**
- * Allow changing the declare type for all raylib-cpp global functions. Defaults to static.
- */
-#ifndef RLCPPAPI
-#define RLCPPAPI static
-#endif
+#include "./raylib-cpp-utils.hpp"
 
 namespace raylib {
 
