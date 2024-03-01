@@ -110,8 +110,9 @@ class TextureUnmanaged : public ::Texture {
     RAYLIB_CPP_EXPECTED_RESULT(void) Load(const ::Image& image) RAYLIB_CPP_THROWS {
         set(::LoadTextureFromImage(image));
         if (!IsReady()) {
-            RAYLIB_CPP_RETURN_EXPECTED_OR_THROW(RaylibError("Failed to load Texture from Image"));
+            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Texture from Image"));
         }
+        RAYLIB_CPP_RETURN_EXPECTED();
     }
 
     /**
@@ -120,7 +121,7 @@ class TextureUnmanaged : public ::Texture {
     RAYLIB_CPP_EXPECTED_RESULT(void) Load(const ::Image& image, int layoutType) RAYLIB_CPP_THROWS {
         set(::LoadTextureCubemap(image, layoutType));
         if (!IsReady()) {
-            RAYLIB_CPP_RETURN_EXPECTED_OR_THROW(RaylibError("Failed to load Texture from Cubemap"));
+            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Texture from Cubemap"));
         }
     }
 
@@ -130,8 +131,9 @@ class TextureUnmanaged : public ::Texture {
     RAYLIB_CPP_EXPECTED_RESULT(void) Load(const std::filesystem::path& fileName) RAYLIB_CPP_THROWS {
         set(::LoadTexture(fileName.c_str()));
         if (!IsReady()) {
-            RAYLIB_CPP_RETURN_EXPECTED_OR_THROW(RaylibError("Failed to load Texture from file: " + fileName.string()));
+            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Texture from file: " + fileName.string()));
         }
+        RAYLIB_CPP_RETURN_EXPECTED();
     }
 
     /**

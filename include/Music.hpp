@@ -208,8 +208,9 @@ class Music : public ::Music {
     RAYLIB_CPP_EXPECTED_RESULT(void) Load(const std::filesystem::path& fileName) {
         set(::LoadMusicStream(fileName.c_str()));
         if (!IsReady()) {
-            RAYLIB_CPP_RETURN_EXPECTED_OR_THROW(RaylibError("Failed to load Music from file: " + fileName.string()));
+            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Music from file: " + fileName.string()));
         }
+        RAYLIB_CPP_RETURN_EXPECTED();
     }
 
     /**
@@ -220,8 +221,9 @@ class Music : public ::Music {
     RAYLIB_CPP_EXPECTED_RESULT(void) Load(const std::string& fileType, std::span<unsigned char> data) {
         set(::LoadMusicStreamFromMemory(fileType.c_str(), data.data(), static_cast<int>(data.size())));
         if (!IsReady()) {
-            RAYLIB_CPP_RETURN_EXPECTED_OR_THROW(RaylibError(TextFormat("Failed to load Music from %s file dat", fileType.c_str())));
+            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError(TextFormat("Failed to load Music from %s file dat", fileType.c_str())));
         }
+        RAYLIB_CPP_RETURN_EXPECTED();
     }
 
     /**

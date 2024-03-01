@@ -60,14 +60,15 @@ class Window {
      *
      * @throws raylib::RaylibException Thrown if the window failed to initiate.
      */
-    static void Init(int width = 800, int height = 450, const std::string& title = "raylib", uint32_t flags = 0) {
+    static RAYLIB_CPP_EXPECTED_RESULT(void) Init(int width = 800, int height = 450, const std::string& title = "raylib", uint32_t flags = 0) {
         if (flags != 0) {
             ::SetConfigFlags(flags);
         }
         ::InitWindow(width, height, title.c_str());
         if (!::IsWindowReady()) {
-            throw RaylibException("Failed to create Window");
+            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to create Window"));
         }
+        RAYLIB_CPP_RETURN_EXPECTED();
     }
 
     /**

@@ -234,7 +234,7 @@ class Model : public ::Model {
     RAYLIB_CPP_EXPECTED_RESULT(void) Load(const std::filesystem::path& fileName) RAYLIB_CPP_THROWS {
         set(::LoadModel(fileName.c_str()));
         if (!IsReady()) {
-            RAYLIB_CPP_RETURN_EXPECTED_OR_THROW(RaylibError("Failed to load Model from " + fileName.string()));
+            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Model from " + fileName.string()));
         }
         RAYLIB_CPP_RETURN_EXPECTED();
     }
@@ -247,7 +247,7 @@ class Model : public ::Model {
     RAYLIB_CPP_EXPECTED_RESULT(void) Load(const ::Mesh& mesh) RAYLIB_CPP_THROWS {
         set(::LoadModelFromMesh(mesh));
         if (!IsReady()) {
-            RAYLIB_CPP_RETURN_EXPECTED_OR_THROW(RaylibError("Failed to load Model from Mesh"));
+            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Model from Mesh"));
         }
         RAYLIB_CPP_RETURN_EXPECTED();
     }

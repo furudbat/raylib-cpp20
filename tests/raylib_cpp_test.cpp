@@ -15,12 +15,12 @@ TEST_CASE( "Vector", "[core]" ) {
     position.SetX(300);
     REQUIRE(position.GetX() == 300);
 
-    raylib::Vector2 speed(10, 10);
+    raylib::Vector2 speed{{.x = 10, .y = 10}};
     position += speed;
     REQUIRE(position.x == 310);
     REQUIRE(raylib::Window::IsReady() == false);
 
-    raylib::Vector2 size{50, 100};
+    raylib::Vector2 size{{.x = 50, .y = 100}};
     raylib::Vector2 halfsize = size / 2.0F;
 
     REQUIRE(size.x == 50);
@@ -38,7 +38,7 @@ TEST_CASE( "Color", "[core]" ) {
     REQUIRE(color.ToInt() == ::ColorToInt(RED));
 
     color = RAYWHITE;
-    ::Color raylibColor = RAYWHITE;
+    auto raylibColor = RAYWHITE;
     REQUIRE(color.r == raylibColor.r);
 }
 
@@ -52,11 +52,11 @@ TEST_CASE( "Image", "[image]" ) {
     // Get a path to where the executable is so file loading is relative.
     //std::string path = (argc > 0) ? GetDirectoryPath(argv[0]) : 0;
 
-    SECTION("Loading"){
+    SECTION("Loading") {
         raylib::Image image("resources/feynman.png");
         REQUIRE(image.IsReady());
 
-        SECTION("Chaining"){
+        SECTION("Chaining") {
             image.Crop(100, 100)
                 .Resize(50, 50);
             REQUIRE(image.GetWidth() == 50);

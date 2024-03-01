@@ -96,19 +96,14 @@ class Material : public ::Material {
     GETTERSETTER(::MaterialMap*, Maps, maps)
     /** Retrieves the params value for the object. @return The params value of the object. */
     constexpr std::array<float, 4> GetParams() const {
-        return params != nullptr ? std::array<float, 4>{ params[0], params[1], params[2], params[3] } : std::array<float, 4>{ 0.0F, 0.0F, 0.0F, 0.0F };
+        return std::array<float, 4>{ params[0], params[1], params[2], params[3] };
     }
     /** Sets the params value for the object. @param value The value of which to set params to. */
-    constexpr bool SetParams(std::array<float, 4> value) {
-        /// @TODO: better setter for params
-        if (params != nullptr) {
-            params[0] = value[0];
-            params[1] = value[1];
-            params[2] = value[2];
-            params[3] = value[3];
-            return true;
-        }
-        return false;
+    constexpr void SetParams(std::array<float, 4> value) {
+        params[0] = value[0];
+        params[1] = value[1];
+        params[2] = value[2];
+        params[3] = value[3];
     }
 
     constexpr Material& operator=(const ::Material& material) = delete;
