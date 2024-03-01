@@ -86,9 +86,10 @@ cpmaddpackage(
 # Include Directory
 add_subdirectory(include)
 
-if (BUILD_RAYLIB_CPP_EXAMPLES OR BUILD_RAYLIB_CPP_TESTS)
+if (BUILD_RAYLIB_CPP_EXAMPLES OR BUILD_RAYLIB_CPP_TESTS OR BUILD_RAYLIB_CPP_EXTRAS)
     add_subdirectory(libs)
 endif()
+add_subdirectory(src)
 
 # Examples
 if(BUILD_RAYLIB_CPP_EXAMPLES)
