@@ -28,7 +28,7 @@ class TextureUnmanaged : public ::Texture {
     /**
      * Default texture constructor.
      */
-    constexpr TextureUnmanaged() : ::Texture{0, 0, 0, 0, 0} {
+    constexpr TextureUnmanaged() : ::Texture{NullTexture} {
         // Nothing.
     }
 
@@ -46,12 +46,10 @@ class TextureUnmanaged : public ::Texture {
     /**
      * Creates a texture object based on the given Texture struct data.
      */
-     /// TODO: move ownership ???
     constexpr TextureUnmanaged(const ::Texture& texture) :
             ::Texture{texture.id, texture.width, texture.height, texture.mipmaps, texture.format} {
         // Nothing.
     }
-    /// @TODO: exchange values ???
     explicit TextureUnmanaged(::Texture&& other) :
             ::Texture{other.id, other.width, other.height, other.mipmaps, other.format} {
         // Nothing.
@@ -100,8 +98,8 @@ class TextureUnmanaged : public ::Texture {
     /**
      * Retrieve the width and height of the texture.
      */
-    [[nodiscard]] constexpr ::Vector2 GetSize() const {
-        return {.x = static_cast<float>(width), .y = static_cast<float>(height)};
+    [[nodiscard]] constexpr raylib::Vector2 GetSize() const {
+        return raylib::Vector2{{.x = static_cast<float>(width), .y = static_cast<float>(height)}};
     }
 
     /**
@@ -166,14 +164,14 @@ class TextureUnmanaged : public ::Texture {
     /**
      * Get pixel data from GPU texture and return an Image
      */
-    [[nodiscard]] ::Image GetData() const {
-        return ::LoadImageFromTexture(*this);
+    [[nodiscard]] raylib::Image GetData() const {
+        return raylib::Image{::LoadImageFromTexture(*this)};
     }
 
     /**
      * Get pixel data from GPU texture and return an Image
      */
-    explicit operator ::Image() const {
+    explicit operator raylib::Image() const {
         return GetData();
     }
 

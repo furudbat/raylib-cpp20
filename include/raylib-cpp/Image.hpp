@@ -14,16 +14,16 @@
 
 namespace raylib {
 
-struct RayColorPaletteDeleter {
+struct RayImagePlatteDeleter {
     void operator()(::Color* arg) const {
-        UnloadImagePalette(arg);
+        ::UnloadImagePalette(arg);
     }
 };
-using RayImagePlatte = RayArrayHolder<::Color, RayColorPaletteDeleter>;
+using RayImagePlatte = RayArrayHolder<::Color, RayImagePlatteDeleter>;
 
 struct RayImageColorsDeleter {
     void operator()(::Color* arg) const {
-        UnloadImageColors(arg);
+        ::UnloadImageColors(arg);
     }
 };
 using RayImageColors = RayArrayHolder<::Color, RayImageColorsDeleter>;
@@ -776,14 +776,16 @@ class Image : public ::Image {
     /**
      * Unload color data loaded with LoadImageColors()
      */
-    void UnloadColors(::Color* colors) const {
+    [[deprecated("Use LoadColors() for loading Colors and avoid unload Colors by hand")]]
+    static void UnloadColors(::Color* colors) {
         ::UnloadImageColors(colors);
     }
 
     /**
      * Unload colors palette loaded with LoadImagePalette()
      */
-    void UnloadPalette(::Color* colors) const {
+    [[deprecated("Use LoadPalette() for loading Colors and avoid unload Palette by hand")]]
+    static void UnloadPalette(::Color* colors) {
         ::UnloadImagePalette(colors);
     }
 

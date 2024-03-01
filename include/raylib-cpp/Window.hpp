@@ -248,7 +248,7 @@ class Window {
         return *this;
     }
     Window& SetIcons(std::span<Image> images) {
-        ::SetWindowIcons(images.data(), images.size());
+        ::SetWindowIcons(images.data(), static_cast<int>(images.size()));
         return *this;
     }
 

@@ -4,27 +4,30 @@
 #include <string>
 #include <filesystem>
 #include <optional>
+#include <utility>
 
 #include "./raylib.hpp"
 #include "./raylib-cpp-utils.hpp"
 #include "Texture.hpp"
 
 namespace raylib {
+
 /**
  * Shader type (generic)
  */
 class Shader : public ::Shader {
  public:
-    constexpr Shader() : ::Shader{0, nullptr} {}
+    constexpr Shader() : ::Shader{NullShader} {}
 
-    /// @TODO: moving ownership ???
-    constexpr explicit Shader(const ::Shader& shader) {
+    constexpr explicit Shader(const ::Shader& shader) = delete;
+    constexpr explicit Shader(::Shader&& shader) {
         set(shader);
+
+        shader.id = 0;
+        shader.locs = nullptr;
     }
 
-    /// @TODO: moving ownership ??? locs != nullptr
-    constexpr explicit Shader(unsigned int _id, int* _locs = nullptr) : ::Shader{_id, _locs} {}
-
+    constexpr Shader(owner<unsigned int> _id, owner<int*> _locs = nullptr) : ::Shader{_id, _locs} {}
 
     struct LoadShaderOptions {
         std::optional<std::filesystem::path> vsFileName;
@@ -42,8 +45,8 @@ class Shader : public ::Shader {
         set(::LoadShader(options.vsFileName, options.fsFileName));
     }
 
-    constexpr Shader(const Shader&) = delete;
-    constexpr Shader(Shader&& other) {
+    explicit constexpr Shader(const Shader&) = delete;
+    explicit constexpr Shader(Shader&& other) {
         set(other);
 
         other.id = 0;
@@ -56,7 +59,7 @@ class Shader : public ::Shader {
      * @see ::LoadShader
      */
     static Shader Load(LoadShaderOptions options) {
-        return Shader(options);
+        return Shader(std::move(options));
     }
 
     static Shader Load(LoadShaderOptionsC options) {
@@ -80,15 +83,20 @@ class Shader : public ::Shader {
         const char* vsCode;
         const char* fsCode;
     };
-    static ::Shader LoadFromMemory(LoadFromMemoryOptionsC options) {
-        return ::LoadShaderFromMemory(options.vsCode, options.fsCode);
+    static Shader LoadFromMemory(LoadFromMemoryOptionsC options) {
+        return Shader{::LoadShaderFromMemory(options.vsCode, options.fsCode)};
     }
 
     GETTERSETTER(unsigned int, Id, id)
     GETTERSETTER(int*, Locs, locs)
 
-    constexpr Shader& operator=(const ::Shader& shader) {
+    constexpr Shader& operator=(const ::Shader& shader) = delete;
+    constexpr Shader& operator=(::Shader&& shader) {
         set(shader);
+
+        shader.id = 0;
+        shader.locs = nullptr;
+
         return *this;
     }
 
@@ -120,6 +128,8 @@ class Shader : public ::Shader {
     void Unload() {
         if (locs != nullptr) {
             ::UnloadShader(*this);
+            id = 0;
+            locs = nullptr;
         }
     }
 
@@ -210,6 +220,7 @@ class Shader : public ::Shader {
         locs = shader.locs;
     }
 };
+
 }  // namespace raylib
 
 using RShader = raylib::Shader;

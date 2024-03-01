@@ -18,7 +18,9 @@ struct RayMaterials {
     ~RayMaterials() {
         if (data != nullptr) {
             for (auto &mat: as_span()) {
-                ::UnloadMaterial(mat);
+                if (mat.maps != nullptr) {
+                    ::UnloadMaterial(mat);
+                }
             }
         }
     }
@@ -51,7 +53,7 @@ class Material : public ::Material {
         set(material);
 
         material.maps = nullptr;
-        material.shader = { .id = 0, };
+        material.shader = NullShader;
         material.params[0] = 0.0F;
         material.params[1] = 0.0F;
         material.params[2] = 0.0F;
@@ -63,7 +65,7 @@ class Material : public ::Material {
         set(other);
 
         other.maps = nullptr;
-        other.shader = { .id = 0, };
+        other.shader = NullShader;
         other.params[0] = 0.0F;
         other.params[1] = 0.0F;
         other.params[2] = 0.0F;
@@ -86,8 +88,9 @@ class Material : public ::Material {
         ret.reserve(static_cast<size_t>(count));
         for (auto& mat : materials.as_span()) {
             ret.emplace_back(std::move(mat));
+            mat.maps = nullptr;
         }
-        materials.data = nullptr; ////< data has been moved
+        materials.data = nullptr; ///< data has been moved
 
         return ret;
     }
@@ -111,7 +114,7 @@ class Material : public ::Material {
         set(material);
 
         material.maps = nullptr;
-        material.shader = { .id = 0, };
+        material.shader = NullShader;
 
         return *this;
     }
@@ -126,7 +129,7 @@ class Material : public ::Material {
         set(other);
 
         other.maps = nullptr;
-        other.shader = { .id = 0, };
+        other.shader = NullShader;
 
         return *this;
     }
@@ -138,6 +141,7 @@ class Material : public ::Material {
         if (maps != nullptr) {
             ::UnloadMaterial(*this);
             maps = nullptr;
+            shader = NullShader;
         }
     }
 

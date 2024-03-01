@@ -119,6 +119,7 @@ class AudioStream : public ::AudioStream {
     void Unload() {
         if (IsReady()) {
             ::UnloadAudioStream(*this);
+            buffer = nullptr;
         }
     }
 
