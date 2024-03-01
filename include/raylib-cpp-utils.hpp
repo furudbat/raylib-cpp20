@@ -92,7 +92,8 @@ struct RayArrayHolder {
     std::unique_ptr<T, D> data{nullptr};
     size_t size{0};
 
-    RayArrayHolder(/*Owner<T*>*/ T* _data, size_t _size) : data(_data), size(_size) {}
+    RayArrayHolder() = default;
+    RayArrayHolder(owner<T*> _data, size_t _size) : data(_data), size(_size) {}
 
     operator std::span<T>() {
         return {data.get(), size};
