@@ -12,7 +12,7 @@ namespace raylib {
  */
 class Camera3D : public ::Camera3D {
  public:
-    constexpr explicit Camera3D(const ::Camera3D& camera) {
+    explicit constexpr Camera3D(const ::Camera3D& camera) {
         set(camera);
     }
 
@@ -121,7 +121,7 @@ class Camera3D : public ::Camera3D {
     }
 
  protected:
-    constexpr void set(const ::Camera3D& camera) {
+    constexpr void set(const ::Camera3D& camera) noexcept {
         position = camera.position;
         target = camera.target;
         up = camera.up;

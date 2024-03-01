@@ -212,7 +212,7 @@ class Matrix : public ::Matrix {
 #endif
 
  protected:
-    constexpr void set(const ::Matrix& mat) {
+    constexpr void set(const ::Matrix& mat) noexcept {
         m0 = mat.m0;
         m1 = mat.m1;
         m2 = mat.m2;

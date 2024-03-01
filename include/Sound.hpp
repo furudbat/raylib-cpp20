@@ -22,18 +22,24 @@ namespace raylib {
  */
 class Sound : public ::Sound {
  public:
-    constexpr Sound(const Sound&) = delete;
-    constexpr Sound& operator=(const Sound&) = delete;
-
     constexpr Sound() {
         stream = { nullptr, nullptr, 0, 0, 0 };
         frameCount = 0;
     }
 
-    constexpr Sound(::AudioStream _stream, unsigned int _frameCount) : ::Sound{_stream, _frameCount} {
+    constexpr Sound(owner<::AudioStream> _stream, unsigned int _frameCount) : ::Sound{_stream, _frameCount} {
         // Nothing.
     }
 
+    constexpr Sound(const ::Sound&) = delete;
+    constexpr Sound(::Sound&& other) {
+        set(other);
+
+        other.stream = { nullptr, nullptr, 0, 0, 0 };
+        other.frameCount = 0;
+    }
+
+    constexpr Sound(const Sound&) = delete;
     constexpr Sound(Sound&& other) {
         set(other);
 
@@ -66,6 +72,7 @@ class Sound : public ::Sound {
     GETTER(unsigned int, FrameCount, frameCount)
     GETTER(::AudioStream, Stream, stream)
 
+    constexpr Sound& operator=(const Sound&) = delete;
     Sound& operator=(Sound&& other) noexcept {
         if (this == &other) {
             return *this;

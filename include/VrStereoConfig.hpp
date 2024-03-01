@@ -52,7 +52,7 @@ class VrStereoConfig : public ::VrStereoConfig  {
     }
 
  protected:
-    constexpr void set(const ::VrStereoConfig& config) {
+    constexpr void set(const ::VrStereoConfig& config) noexcept {
         projection[0] = config.projection[0];
         projection[1] = config.projection[1];
         viewOffset[0] = config.viewOffset[0];

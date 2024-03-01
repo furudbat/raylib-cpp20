@@ -241,8 +241,13 @@ class Window {
     /**
      * Set icon for window (multiple images, RGBA 32bit, only PLATFORM_DESKTOP)
      */
+    [[deprecated("Use SetIcons(span)")]]
     Window& SetIcons(Image* images, int count) {
         ::SetWindowIcons(images, count);
+        return *this;
+    }
+    Window& SetIcons(std::span<Image> images) {
+        ::SetWindowIcons(images.data(), images.size());
         return *this;
     }
 
@@ -265,7 +270,7 @@ class Window {
     /**
      * Set window position on screen
      */
-    Window& SetPosition(const ::Vector2& position) {
+    Window& SetPosition(::Vector2 position) {
         return SetPosition(static_cast<int>(position.x), static_cast<int>(position.y));
     }
 
@@ -288,7 +293,7 @@ class Window {
     /**
      * Set window minimum dimensions
      */
-    Window& SetMinSize(const ::Vector2& size) {
+    Window& SetMinSize(::Vector2 size) {
         ::SetWindowMinSize(static_cast<int>(size.x), static_cast<int>(size.y));
         return *this;
     }
@@ -320,7 +325,7 @@ class Window {
     /**
      * Set window dimensions
      */
-    Window& SetSize(const ::Vector2& size) {
+    Window& SetSize(::Vector2 size) {
         return SetSize(static_cast<int>(size.x), static_cast<int>(size.y));
     }
 

@@ -43,13 +43,16 @@ class Rectangle : public ::Rectangle {
         return *this;
     }
 
-    [[nodiscard]] constexpr ::Vector4 ToVector4() {
-        return {x, y, width, height};
+    /// @FIXME: Rectangle is already included in Vector4
+    /*
+    [[nodiscard]] constexpr raylib::Vector4 ToVector4() {
+        return raylib::Vector4{{.x = x, .y = y, .width = width, .height = height}};
     }
 
-    explicit constexpr operator ::Vector4() const {
-        return {x, y, width, height};
+    explicit constexpr operator raylib::Vector4() const {
+        return raylib::Vector4{{.x = x, .y = y, .width = width, .height = height}};
     }
+    */
 
     /**
      * Draw a color-filled rectangle
@@ -116,8 +119,8 @@ class Rectangle : public ::Rectangle {
     /**
      * Get collision rectangle for two rectangles collision
      */
-    [[nodiscard]] ::Rectangle GetCollision(::Rectangle rec2) const {
-        return ::GetCollisionRec(*this, rec2);
+    [[nodiscard]] Rectangle GetCollision(::Rectangle rec2) const {
+        return Rectangle{::GetCollisionRec(*this, rec2)};
     }
 
     /**
@@ -143,7 +146,6 @@ class Rectangle : public ::Rectangle {
         height = newHeight;
         return *this;
     }
-
     constexpr Rectangle& SetSize(const ::Vector2& size) {
         return SetSize(size.x, size.y);
     }
@@ -162,13 +164,12 @@ class Rectangle : public ::Rectangle {
         y = newY;
         return *this;
     }
-
     constexpr Rectangle& SetPosition(const ::Vector2& position) {
         return SetPosition(position.x, position.y);
     }
 
  protected:
-    constexpr void set(const ::Rectangle& rect) {
+    constexpr void set(const ::Rectangle& rect) noexcept {
         x = rect.x;
         y = rect.y;
         width = rect.width;

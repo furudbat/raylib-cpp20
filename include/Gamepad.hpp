@@ -114,7 +114,7 @@ class Gamepad {
     }
 
  protected:
-    constexpr void set(int gamepadNumber) {
+    constexpr void set(int gamepadNumber) noexcept {
         number = gamepadNumber;
     }
 };

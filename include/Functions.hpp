@@ -19,6 +19,25 @@
 
 namespace raylib {
 
+class RayDirectoryFilesFilePathList {
+public:
+    FilePathList files;
+
+    explicit RayDirectoryFilesFilePathList(const std::filesystem::path& dirPath) : files(::LoadDirectoryFiles(dirPath.c_str())) {}
+    ~RayDirectoryFilesFilePathList() {
+        ::UnloadDirectoryFiles(files);
+    }
+};
+class RayDroppedFilesFilePathList {
+public:
+    FilePathList files;
+
+    RayDroppedFilesFilePathList() : files(::LoadDroppedFiles()) {}
+    ~RayDroppedFilesFilePathList() {
+        ::UnloadDroppedFiles(files);
+    }
+};
+
 /**
  * Initialize window and OpenGL context
  */
@@ -57,7 +76,7 @@ namespace raylib {
 /**
  * Takes a screenshot of current screen (saved a .png)
  */
-[[maybe_unused]] RLCPPAPI inline void TakeScreenshot(const std::string& fileName) {
+[[maybe_unused]] RLCPPAPI inline void TakeScreenshot(const std::filesystem::path& fileName) {
     ::TakeScreenshot(fileName.c_str());
 }
 
@@ -151,11 +170,9 @@ namespace raylib {
 /**
  * Get filenames in a directory path
  */
-[[maybe_unused]] RLCPPAPI std::vector<std::string> LoadDirectoryFiles(const std::filesystem::path& dirPath) {
-    FilePathList files = ::LoadDirectoryFiles(dirPath.c_str());
-    std::vector<std::string> output(files.paths, std::next(files.paths, files.count));
-    ::UnloadDirectoryFiles(files);
-    return output;
+[[maybe_unused]] RLCPPAPI std::vector<std::filesystem::path> LoadDirectoryFiles(const std::filesystem::path& dirPath) {
+    auto filesList = RayDirectoryFilesFilePathList(dirPath);
+    return std::vector<std::filesystem::path>(filesList.files.paths, std::next(filesList.files.paths, filesList.files.count));
 }
 
 /**
@@ -172,14 +189,8 @@ namespace raylib {
     if (!::IsFileDropped()) {
         return {};
     }
-    FilePathList files = ::LoadDroppedFiles();
-    std::vector<std::filesystem::path> output;
-    output.reserve(files.count);
-    for (auto* path : std::span<char*>(files.paths, files.count)) {
-        output.emplace_back(path);
-    }
-    ::UnloadDroppedFiles(files);
-    return output;
+    auto filesList = RayDroppedFilesFilePathList();
+    return std::vector<std::filesystem::path>(filesList.files.paths, std::next(filesList.files.paths, filesList.files.count));
 }
 
 /**
@@ -199,45 +210,51 @@ namespace raylib {
 /**
  * Load an image.
  */
-[[maybe_unused]] RLCPPAPI inline ::Image LoadImage(const std::filesystem::path& fileName) {
-    return ::LoadImage(fileName.c_str());
+[[maybe_unused]] RLCPPAPI inline raylib::Image LoadImage(const std::filesystem::path& fileName) {
+    return raylib::Image{::LoadImage(fileName.c_str())};
 }
 
 /**
  * Load an image from RAW file data
  */
-[[maybe_unused]] RLCPPAPI inline ::Image LoadImageRaw(const std::filesystem::path& fileName,
+[[maybe_unused]] RLCPPAPI inline raylib::Image LoadImageRaw(const std::filesystem::path& fileName,
         int width, int height,
         int format, int headerSize) {
-    return ::LoadImageRaw(fileName.c_str(), width, height, format, headerSize);
+    return raylib::Image{::LoadImageRaw(fileName.c_str(), width, height, format, headerSize)};
 }
 
 /**
  * Load animated image data
  */
-[[maybe_unused]] RLCPPAPI inline ::Image LoadImageAnim(const std::filesystem::path& fileName, int &frames) {
-    return ::LoadImageAnim(fileName.c_str(), &frames);
+[[maybe_unused]] RLCPPAPI inline raylib::Image LoadImageAnim(const std::filesystem::path& fileName, int &frames) {
+    return raylib::Image{::LoadImageAnim(fileName.c_str(), &frames)};
+}
+struct LoadImageAnimResult { raylib::Image image; int frames; };
+[[maybe_unused]] RLCPPAPI inline LoadImageAnimResult LoadImageAnim(const std::filesystem::path& fileName) {
+    int frames{0};
+    auto image = raylib::Image{::LoadImageAnim(fileName.c_str(), &frames)};
+    return { .image = image, .frames = frames };
 }
 
 /**
  * Load image from memory buffer, fileType refers to extension like "png"
  */
-[[maybe_unused]] RLCPPAPI inline ::Image LoadImageFromMemory(const std::string& fileType,
-        std::span<const unsigned char> fileData) {
-    return ::LoadImageFromMemory(fileType.c_str(), fileData.data(), static_cast<int>(fileData.size()));
+[[maybe_unused]] RLCPPAPI inline raylib::Image LoadImageFromMemory(const std::string& fileType,
+                                                                   std::span<const unsigned char> fileData) {
+    return raylib::Image{::LoadImageFromMemory(fileType.c_str(), fileData.data(), static_cast<int>(fileData.size()))};
 }
 
 /**
  * Export image data to file
  */
-[[maybe_unused]] RLCPPAPI inline bool ExportImage(const Image& image, const std::filesystem::path& fileName) {
+[[maybe_unused]] RLCPPAPI inline bool ExportImage(const raylib::Image& image, const std::filesystem::path& fileName) {
     return ::ExportImage(image, fileName.c_str());
 }
 
 /**
  * Export image as code file (.h) defining an array of bytes
  */
-[[maybe_unused]] RLCPPAPI inline bool ExportImageAsCode(const Image& image, const std::filesystem::path& fileName) {
+[[maybe_unused]] RLCPPAPI inline bool ExportImageAsCode(const raylib::Image& image, const std::filesystem::path& fileName) {
     return ::ExportImageAsCode(image, fileName.c_str());
 }
 
@@ -262,8 +279,8 @@ namespace raylib {
 /**
  * Draw text using font and additional parameters
  */
-[[maybe_unused]] RLCPPAPI inline void DrawTextEx(const Font& font, char* text, Vector2 position,
-        float fontSize, float spacing, ::Color tint) {
+[[maybe_unused]] RLCPPAPI inline void DrawTextEx(const Font& font, const char* text, Vector2 position,
+                                                 float fontSize, float spacing, ::Color tint) {
     ::DrawTextEx(font, text, position, fontSize, spacing, tint);
 }
 
@@ -294,17 +311,14 @@ namespace raylib {
 /**
  * Load font from file (filename must include file extension)
  */
-    [[maybe_unused]] RLCPPAPI inline ::Font LoadFont(const std::filesystem::path& fileName) {
+[[maybe_unused]] RLCPPAPI inline ::Font LoadFont(const std::filesystem::path& fileName) {
     return ::LoadFont(fileName.c_str());
 }
 
 /**
  * Load font from file (filename must include file extension)
  */
-[[maybe_unused]] RLCPPAPI inline ::Font LoadFontEx(
-            const std::filesystem::path& fileName,
-            int fontSize,
-            std::span<int> fontChars) {
+[[maybe_unused]] RLCPPAPI inline ::Font LoadFontEx(const std::filesystem::path& fileName, int fontSize, std::span<int> fontChars) {
     return ::LoadFontEx(fileName.c_str(), fontSize, fontChars.data(), static_cast<int>(fontChars.size()));
 }
 
@@ -360,9 +374,7 @@ namespace raylib {
 /**
  * Replace text string
  */
-[[maybe_unused]] RLCPPAPI std::string TextReplace(
-        const std::string& text, const std::string& replace,
-        const std::string& by) {
+[[maybe_unused]] RLCPPAPI std::string TextReplace(const std::string& text, const std::string& replace, const std::string& by) {
     const char* input = text.c_str();
     auto output = RayUniquePtr<char>(::TextReplace(const_cast<char*>(input), replace.c_str(), by.c_str()));
     if (output != nullptr) {
@@ -386,7 +398,7 @@ namespace raylib {
  * Split text into multiple strings
  */
 [[maybe_unused]] RLCPPAPI std::vector<std::string> TextSplit(const std::string& text, char delimiter) {
-    int count;
+    int count{0};
     const char** split = ::TextSplit(text.c_str(), delimiter, &count);
     return std::vector<std::string>(split, std::next(split, count));
 }

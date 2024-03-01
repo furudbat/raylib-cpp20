@@ -63,6 +63,7 @@ class AudioDevice {
         if (!IsReady()) {
             RAYLIB_CPP_RETURN_EXPECTED_OR_THROW(RaylibError("Failed to initialize AudioDevice"));
         }
+        RAYLIB_CPP_RETURN_EXPECTED();
     }
 
     /**

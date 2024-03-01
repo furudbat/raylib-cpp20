@@ -14,7 +14,6 @@
 
 namespace raylib {
 
-
 struct RayColorPaletteDeleter {
     void operator()(::Color* arg) const {
         UnloadImagePalette(arg);
@@ -39,7 +38,7 @@ class Texurte2D;
  */
 class Image : public ::Image {
  public:
-    explicit constexpr Image(void* _data,
+    explicit constexpr Image(owner<void*> _data,
             int _width = 0,
             int _height = 0,
             int _mipmaps = 1,
@@ -47,13 +46,20 @@ class Image : public ::Image {
         // Nothing.
     }
 
-    constexpr Image(const ::Image& image = {
+    explicit constexpr Image(const ::Image& image) = delete;
+    explicit constexpr Image(::Image&& image = {
             .data = nullptr,
             .width = 0,
             .height = 0,
             .mipmaps = 1,
             .format = PIXELFORMAT_UNCOMPRESSED_R8G8B8A8}) {
         set(image);
+
+        image.data = nullptr;
+        image.width = 0;
+        image.height = 0;
+        image.mipmaps = 0;
+        image.format = 0;
     }
 
     /**
@@ -121,9 +127,15 @@ class Image : public ::Image {
     }
 
     Image(const Image& other) {
-        set(other.Copy());
-    }
+        auto copy = other.Copy();
+        set(copy);
 
+        copy.data = nullptr;
+        copy.width = 0;
+        copy.height = 0;
+        copy.mipmaps = 0;
+        copy.format = 0;
+    }
     Image(Image&& other) {
         set(other);
 
@@ -147,60 +159,68 @@ class Image : public ::Image {
     /**
      * Get pixel data from screen buffer and return an Image (screenshot)
      */
-    static ::Image LoadFromScreen() {
-        return ::LoadImageFromScreen();
+    static Image LoadFromScreen() {
+        return Image{::LoadImageFromScreen()};
     }
 
     /**
      * Generate image: plain color
      */
-    static ::Image Color(int width, int height, ::Color color = {255, 255, 255, 255}) {
-        return ::GenImageColor(width, height, color);
+    static Image Color(int width, int height, ::Color color = {255, 255, 255, 255}) {
+        return Image{::GenImageColor(width, height, color)};
     }
 
     /**
      * Generate image: linear gradient
      */
-    static ::Image GradientLinear(int width, int height, int direction, ::Color start, ::Color end) {
-        return ::GenImageGradientLinear(width, height, direction, start, end);
+    static Image GradientLinear(int width, int height, int direction, ::Color start, ::Color end) {
+        return Image{::GenImageGradientLinear(width, height, direction, start, end)};
     }
 
     /**
      * Generate image: radial gradient
      */
-    static ::Image GradientRadial(int width, int height, float density,
+    static Image GradientRadial(int width, int height, float density,
             ::Color inner, ::Color outer) {
-        return ::GenImageGradientRadial(width, height, density, inner, outer);
+        return Image{::GenImageGradientRadial(width, height, density, inner, outer)};
     }
 
     /**
      * Generate image: checked
      */
-    static ::Image Checked(int width, int height, int checksX, int checksY,
+    static Image Checked(int width, int height, int checksX, int checksY,
             ::Color col1 = {255, 255, 255, 255}, ::Color col2 = {0, 0, 0, 255}) {
-        return ::GenImageChecked(width, height, checksX, checksY, col1, col2);
+        return Image{::GenImageChecked(width, height, checksX, checksY, col1, col2)};
     }
 
     /**
      * Generate image: white noise
      */
-    static ::Image WhiteNoise(int width, int height, float factor) {
-        return ::GenImageWhiteNoise(width, height, factor);
+    static Image WhiteNoise(int width, int height, float factor) {
+        return Image{::GenImageWhiteNoise(width, height, factor)};
     }
 
     /**
      * Generate image: cellular algorithm. Bigger tileSize means bigger cells
      */
-    static ::Image Cellular(int width, int height, int tileSize) {
-        return ::GenImageCellular(width, height, tileSize);
+    static Image Cellular(int width, int height, int tileSize) {
+        return Image{::GenImageCellular(width, height, tileSize)};
     }
 
     ~Image() {
         Unload();
     }
 
-    constexpr Image& operator=(const ::Image& image) {
+    constexpr Image& operator=(const ::Image& image) = delete;
+    constexpr Image& operator=(::Image&& image) {
         set(image);
+
+        image.data = nullptr;
+        image.width = 0;
+        image.height = 0;
+        image.mipmaps = 0;
+        image.format = 0;
+
         return *this;
     }
 
@@ -210,7 +230,14 @@ class Image : public ::Image {
         }
 
         Unload();
-        set(other.Copy());
+        auto copy = other.Copy();
+        set(copy);
+
+        copy.data = nullptr;
+        copy.width = 0;
+        copy.height = 0;
+        copy.mipmaps = 0;
+        copy.format = 0;
 
         return *this;
     }
@@ -244,6 +271,7 @@ class Image : public ::Image {
         if (!IsReady()) {
             RAYLIB_CPP_RETURN_EXPECTED_OR_THROW(RaylibError("Failed to load Image from file: " + fileName.string()));
         }
+        RAYLIB_CPP_RETURN_EXPECTED();
     }
 
     /**
@@ -258,6 +286,7 @@ class Image : public ::Image {
         if (!IsReady()) {
             RAYLIB_CPP_RETURN_EXPECTED_OR_THROW(RaylibError("Failed to load Image from file: " + fileName.string()));
         }
+        RAYLIB_CPP_RETURN_EXPECTED();
     }
 
     /**
@@ -272,6 +301,7 @@ class Image : public ::Image {
         if (!IsReady()) {
             RAYLIB_CPP_RETURN_EXPECTED_OR_THROW(RaylibError("Failed to load Image from file: " + fileName.string()));
         }
+        RAYLIB_CPP_RETURN_EXPECTED();
     }
 
     /**
@@ -288,6 +318,7 @@ class Image : public ::Image {
         if (!IsReady()) {
             RAYLIB_CPP_RETURN_EXPECTED_OR_THROW(RaylibError("Failed to load Image data with file type: " + fileType));
         }
+        RAYLIB_CPP_RETURN_EXPECTED();
     }
 
     /**
@@ -302,6 +333,7 @@ class Image : public ::Image {
         if (!IsReady()) {
             RAYLIB_CPP_RETURN_EXPECTED_OR_THROW(RaylibError("Failed to load Image from texture."));
         }
+        RAYLIB_CPP_RETURN_EXPECTED();
     }
 
     /**
@@ -323,13 +355,20 @@ class Image : public ::Image {
         if (!::ExportImage(*this, fileName.c_str())) {
             RAYLIB_CPP_RETURN_EXPECTED_OR_THROW(RaylibError("Failed to export Image to file: " + fileName.string()));
         }
+        RAYLIB_CPP_RETURN_EXPECTED();
     }
 
     /**
      * Export image to memory buffer
      */
-    unsigned char* ExportToMemory(const char *fileType, int &fileSize) {
-        return ::ExportImageToMemory(*this, fileType, &fileSize);
+    RayArrayHolder<unsigned char> ExportToMemory(const char *fileType, int &fileSize) {
+        auto* idata = ::ExportImageToMemory(*this, fileType, &fileSize);
+        return RayArrayHolder<unsigned char>(idata, static_cast<size_t>(fileSize));
+    }
+    RayArrayHolder<unsigned char> ExportToMemory(const char *fileType) {
+        int fileSize;
+        auto* idata = ::ExportImageToMemory(*this, fileType, &fileSize);
+        return RayArrayHolder<unsigned char>(idata, static_cast<size_t>(fileSize));
     }
 
     /**
@@ -370,8 +409,8 @@ class Image : public ::Image {
     /**
      * Retrieve the width and height of the image.
      */
-    [[nodiscard]] constexpr ::Vector2 GetSize() const {
-        return {static_cast<float>(width), static_cast<float>(height)};
+    [[nodiscard]] constexpr raylib::Vector2 GetSize() const {
+        return raylib::Vector2{{.x = static_cast<float>(width), .y = static_cast<float>(height)}};
     }
 
     /**
@@ -745,6 +784,11 @@ class Image : public ::Image {
         ::Color* colors = ::LoadImagePalette(*this, maxPaletteSize, &colorsCount);
         return {colors, static_cast<size_t>(colorsCount)};
     }
+    [[nodiscard]] RayImagePlatte LoadPalette(int maxPaletteSize) const {
+        int colorsCount{0};
+        ::Color* colors = ::LoadImagePalette(*this, maxPaletteSize, &colorsCount);
+        return {colors, static_cast<size_t>(colorsCount)};
+    }
 
     /**
      * Unload color data loaded with LoadImageColors()
@@ -808,7 +852,7 @@ class Image : public ::Image {
     }
 
  protected:
-    constexpr void set(const ::Image& image) {
+    constexpr void set(const ::Image& image) noexcept {
         data = image.data;
         width = image.width;
         height = image.height;

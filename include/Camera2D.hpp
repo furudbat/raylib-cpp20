@@ -14,13 +14,13 @@ class Camera2D : public ::Camera2D {
     inline static constexpr float DefaultRotation = 0.0F;
     inline static constexpr float DefaultZoom = 1.0F;
 
-    constexpr Camera2D(const ::Camera2D& camera) {
+    explicit constexpr Camera2D(const ::Camera2D& camera) {
         set(camera);
     }
 
     constexpr Camera2D() = default;
     constexpr Camera2D(::Vector2 pOffset, ::Vector2 pTarget,
-            float pRotation = DefaultRotation, float pZoom = DefaultZoom) : ::Camera2D{pOffset, pTarget, pRotation, pZoom} {}
+                       float pRotation = DefaultRotation, float pZoom = DefaultZoom) : ::Camera2D{pOffset, pTarget, pRotation, pZoom} {}
 
     Camera2D& BeginMode() {
         ::BeginMode2D(*this);
@@ -64,7 +64,7 @@ class Camera2D : public ::Camera2D {
     }
 
  protected:
-    constexpr void set(const ::Camera2D& camera) {
+    constexpr void set(const ::Camera2D& camera) noexcept {
         offset = camera.offset;
         target = camera.target;
         rotation = camera.rotation;
