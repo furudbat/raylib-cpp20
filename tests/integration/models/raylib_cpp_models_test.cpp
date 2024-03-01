@@ -5,10 +5,12 @@
 #include <string>
 #include <vector>
 #include <filesystem>
+#include <variant>
+#include <unordered_map>
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
 
-TEST_CASE( "image loading", "[textures]" ) {
+TEST_CASE( "first person maze", "[models]" ) {
     // Initialization
     //--------------------------------------------------------------------------------------
     constexpr int ScreenWidth = 800;
@@ -112,6 +114,78 @@ TEST_CASE( "image loading", "[textures]" ) {
     }
     EndDrawing();
     //----------------------------------------------------------------------------------
+
+    window.Close();
+}
+
+
+TEST_CASE( "model and texture with variant", "[models][textures]" ) {
+    // Initialization
+    //--------------------------------------------------------------------------------------
+    constexpr int ScreenWidth = 800;
+    constexpr int ScreenHeight = 450;
+
+    raylib::Window window;
+    REQUIRE(window.Init(ScreenWidth, ScreenHeight, "raylib [models] example - variant"));
+
+    // Define the camera to look into our 3d world
+    raylib::Camera camera({0.2f, 0.4f, 0.2f}, {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, 45.0f);
+
+    raylib::Texture texture;
+    raylib::Texture cubicmap;
+
+    const auto loadTextureAtlas = [] {
+        raylib::Texture atlas_texture;
+        // NOTE: By default each cube is mapped to one part of texture atlas
+        REQUIRE(atlas_texture.Load("resources/cubicmap_atlas.png"));    // Load map texture
+        return atlas_texture;
+    };
+
+    const auto loadModel = [&] {
+        raylib::Mesh mesh;
+        raylib::Model model;
+        raylib::Image imMap;
+        REQUIRE(imMap.Load("resources/cubicmap.png"));      // Load cubicmap image (RAM)
+        REQUIRE(cubicmap.Load(imMap));                    // Convert image to texture to display (VRAM)
+        mesh = raylib::Mesh::Cubicmap(imMap, Vector3{1.0f, 1.0f, 1.0f});
+        REQUIRE(model.Load(mesh));
+
+        // NOTE: By default each cube is mapped to one part of texture atlas
+        REQUIRE(texture.Load("resources/cubicmap_atlas.png"));    // Load map texture
+        model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = texture;     // Set map diffuse texture
+
+        return model;
+    };
+
+    SECTION("variant with model") {
+        std::variant<raylib::Model, raylib::Texture> variant = loadModel();
+    }
+
+    SECTION("map with model") {
+        std::unordered_map<std::string, std::variant<raylib::Model, raylib::Texture>> map;
+        map["model"] = loadModel();
+        map["texture"] = loadTextureAtlas();
+
+        REQUIRE(map.contains("model"));
+        REQUIRE(map.contains("texture"));
+    }
+
+    SECTION("vector with model") {
+        std::vector<raylib::Model> models;
+        models.emplace_back(std::move(loadModel()));
+        models.emplace_back(std::move(loadModel()));
+        models.emplace_back(std::move(loadModel()));
+    }
+
+    SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
+    //--------------------------------------------------------------------------------------
+
+    // Main game loop
+    REQUIRE_FALSE(window.ShouldClose());
+    // Update
+    //----------------------------------------------------------------------------------
+
+    camera.Update(CAMERA_FIRST_PERSON);        // Update camera
 
     window.Close();
 }

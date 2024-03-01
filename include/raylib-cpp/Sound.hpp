@@ -12,6 +12,7 @@
 #include "./RaylibError.hpp"
 
 namespace raylib {
+
 /**
  * Wave/Sound management functions
  *
@@ -106,10 +107,9 @@ class Sound : public ::Sound {
      * Unload sound
      */
     void Unload() {
-        // Protect against calling UnloadSound() twice.
-        if (frameCount != 0) {
+        if (stream.buffer != nullptr) {
             ::UnloadSound(*this);
-            frameCount = 0;
+            stream.buffer = nullptr;
         }
     }
 

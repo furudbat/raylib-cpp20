@@ -41,8 +41,8 @@ class RenderTexture : public ::RenderTexture {
         set(other);
 
         other.id = 0;
-        other.texture = {};
-        other.depth = {};
+        other.texture = NullTexture;
+        other.depth = NullTexture;
     }
 
     GETTER(unsigned int, Id, id)
@@ -54,8 +54,10 @@ class RenderTexture : public ::RenderTexture {
         return texture;
     }
 
-    void SetTexture(const ::Texture& newTexture) {
+    void SetTexture(const ::Texture& newTexture) = delete;
+    void SetTexture(::Texture&& newTexture) {
         texture = newTexture;
+        newTexture = NullTexture;
     }
 
     /**
@@ -69,14 +71,18 @@ class RenderTexture : public ::RenderTexture {
         depth = newDepth;
     }
 
-    /// @TODO: make movable ??? ... ownership ???
-    RenderTexture& operator=(const ::RenderTexture& _texture) {
+    RenderTexture& operator=(const ::RenderTexture& _texture) = delete;
+    RenderTexture& operator=(::RenderTexture&& _texture) {
         set(_texture);
+
+        _texture.id = 0;
+        _texture.texture = NullTexture;
+        _texture.depth = NullTexture;
+
         return *this;
     }
 
     RenderTexture& operator=(const RenderTexture&) = delete;
-
     RenderTexture& operator=(RenderTexture&& other) noexcept {
         if (this == &other) {
             return *this;
@@ -86,8 +92,8 @@ class RenderTexture : public ::RenderTexture {
         set(other);
 
         other.id = 0;
-        other.texture = {};
-        other.depth = {};
+        other.texture = NullTexture;
+        other.depth = NullTexture;
 
         return *this;
     }

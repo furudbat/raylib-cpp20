@@ -70,20 +70,23 @@ using unexpected = E;
 #endif
 #endif
 
+namespace raylib {
+
 struct RayPointerDeleter {
-    template <typename T>
-    constexpr void operator()(T* arg) const {
+    template<typename T>
+    constexpr void operator()(T *arg) const {
         RL_FREE(arg);
     }
 };
-template <typename T>
+
+template<typename T>
 using RayUniquePtr = std::unique_ptr<T, RayPointerDeleter>;
 
 #if __has_include(<gsl/gsl>)
 template <typename T>
 using owner = gsl::owner<T>;
 #else
-template <typename T>
+template<typename T>
 using owner = T;
 #endif
 
@@ -105,5 +108,29 @@ struct RayArrayHolder {
     std::span<T> as_span() { return {data.get(), size}; }
     std::span<const T> as_span() const { return {data.get(), size}; }
 };
+
+
+inline static constexpr ::Image NullImage {
+        .data = nullptr,
+        .width = 0,
+        .height = 0,
+        .mipmaps = 0,
+        .format = 0,
+};
+
+inline static constexpr ::Texture NullTexture {
+        .id = 0,
+        .width = 0,
+        .height = 0,
+        .mipmaps = 0,
+        .format = 0,
+};
+
+inline static constexpr ::Shader NullShader {
+        .id = 0,
+        .locs = nullptr,
+};
+
+}
 
 #endif  // RAYLIB_CPP_INCLUDE_RAYLIB_CPP_UTILS_HPP_

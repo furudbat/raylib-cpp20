@@ -16,7 +16,9 @@ namespace raylib {
 
 struct RayWaveSamplesDeleter {
     void operator()(float* arg) const {
-        UnloadWaveSamples(arg);
+        if (arg != nullptr) {
+            UnloadWaveSamples(arg);
+        }
     }
 };
 using RayWaveSamples = RayArrayHolder<float, RayWaveSamplesDeleter>;
@@ -220,17 +222,16 @@ class Wave : public ::Wave {
     /**
      * Load sound from wave data
      */
-    raylib::Sound LoadSound() {
+    raylib::Sound LoadSound() const {
         return raylib::Sound{::LoadSoundFromWave(*this)};
     }
 
     /**
      * Load sound from wave data
      */
-     /// move ownership ???
-    //explicit operator ::Sound() {
-    //    return LoadSound();
-    //}
+    explicit operator raylib::Sound() const {
+        return LoadSound();
+    }
 
     /**
      * Load wave data from file.

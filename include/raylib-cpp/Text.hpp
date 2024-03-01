@@ -29,7 +29,7 @@ class Text {
     /**
      * The color of the text.
      */
-    ::Color color;
+    raylib::Color color;
 
     /**
      * The internal raylib font to use for the text.
@@ -53,7 +53,7 @@ class Text {
     explicit Text(
             const std::string& pText = "",
             float pFontSize = 10.0F,
-            const ::Color& pColor = WHITE,
+            ::Color pColor = WHITE,
             const ::Font& pFont = ::GetFontDefault(),
             float pSpacing = 0.0F) :
             text(pText),
@@ -90,13 +90,13 @@ class Text {
     GETTERSETTER(std::string, Text, text)
     GETTERSETTER(float, FontSize, fontSize)
     GETTERSETTER(::Font, Font, font)
-    GETTERSETTER(::Color, Color, color)
+    GETTERSETTER(raylib::Color, Color, color)
     GETTERSETTER(float, Spacing, spacing)
 
     /**
      * Draw text with values in class.
      */
-    void Draw(const ::Vector2& position) const {
+    void Draw(::Vector2 position) const {
         ::DrawTextEx(font, text.c_str(), position, fontSize, spacing, color);
     }
 
@@ -117,7 +117,7 @@ class Text {
      *
      * @see DrawTextPro()
      */
-    void Draw(const ::Vector2& position, float rotation, const ::Vector2& origin = {0, 0}) const {
+    void Draw(::Vector2 position, float rotation, ::Vector2 origin = {.x = 0, .y = 0}) const {
         ::DrawTextPro(font, text.c_str(), position, origin, rotation, fontSize, spacing, color);
     }
 
@@ -159,7 +159,7 @@ class Text {
             const int posX,
             const int posY,
             const int fontSize,
-            const ::Color& color) {
+            ::Color color) {
         ::DrawText(text.c_str(), posX, posY, fontSize, color);
     }
 
@@ -170,9 +170,9 @@ class Text {
      */
     static void Draw(
             const std::string& text,
-            const ::Vector2& pos,
+            ::Vector2 pos,
             const int fontSize,
-            const ::Color& color) {
+            ::Color color) {
         ::DrawText(text.c_str(), static_cast<int>(pos.x), static_cast<int>(pos.y), fontSize, color);
     }
 
