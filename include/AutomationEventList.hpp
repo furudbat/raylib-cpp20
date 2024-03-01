@@ -14,10 +14,6 @@
 
 namespace raylib {
 
-struct AutomationEventListOptions {
-
-};
-
 /**
  * AutomationEventList management functions
  */
@@ -28,25 +24,21 @@ class AutomationEventList : public ::AutomationEventList {
     [[deprecated("Use AutomationEventList(automationEventList)")]]
     explicit constexpr AutomationEventList(uint32_t _capacity,
                                  uint32_t _count = 0,
-                                 AutomationEvent *_events = nullptr) : ::AutomationEventList{_capacity, _count, _events} {
+                                 owner<AutomationEvent*> _events = nullptr) : ::AutomationEventList{_capacity, _count, _events} {
         // Nothing.
     }
 
-    explicit constexpr AutomationEventList(uint32_t _capacity,
-                                           std::span<AutomationEvent> _events) : ::AutomationEventList{_capacity, static_cast<unsigned int>(_events.size()), _events.data()} {
-        // Nothing.
-    }
-
-    constexpr AutomationEventList(const ::AutomationEventList& automationEventList = {
+    constexpr AutomationEventList(const ::AutomationEventList& automationEventList) = delete;
+    constexpr AutomationEventList(::AutomationEventList&& automationEventList = {
             .capacity = DefaultCapacity,
             .count = 0,
             .events = nullptr,
     }) {
         set(automationEventList);
-    }
 
-    explicit AutomationEventList(const std::filesystem::path& fileName) RAYLIB_CPP_THROWS {
-        Load(fileName.c_str());
+        automationEventList.capacity = 0;
+        automationEventList.count = 0;
+        automationEventList.events = nullptr;
     }
 
     constexpr AutomationEventList(const AutomationEventList&) = delete;
@@ -61,12 +53,22 @@ class AutomationEventList : public ::AutomationEventList {
         Unload();
     }
 
+    explicit AutomationEventList(const std::filesystem::path& fileName) RAYLIB_CPP_THROWS {
+        Load(fileName.c_str());
+    }
+
     GETTERSETTER(unsigned int, Capacity, capacity)
     GETTERSETTER(unsigned int, Count, count)
     GETTERSETTER(AutomationEvent*, Events, events)
 
-    constexpr AutomationEventList& operator=(const ::AutomationEventList& other) {
+    constexpr AutomationEventList& operator=(const ::AutomationEventList& other) = delete;
+    constexpr AutomationEventList& operator=(::AutomationEventList&& other) {
         set(other);
+
+        other.capacity = 0;
+        other.count = 0;
+        other.events = nullptr;
+
         return *this;
     }
 
@@ -97,6 +99,7 @@ class AutomationEventList : public ::AutomationEventList {
         if (!IsReady()) {
             RAYLIB_CPP_RETURN_EXPECTED_OR_THROW(RaylibError("Failed to load automation event list"));
         }
+        RAYLIB_CPP_RETURN_EXPECTED();
     }
 
     /**
@@ -149,7 +152,7 @@ class AutomationEventList : public ::AutomationEventList {
     }
 
  protected:
-    constexpr void set(const ::AutomationEventList& other) {
+    constexpr void set(const ::AutomationEventList& other) noexcept {
         capacity = other.capacity;
         count = other.count;
         events = other.events;

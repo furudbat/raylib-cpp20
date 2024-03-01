@@ -71,7 +71,7 @@ TEST_CASE( "Keyboard", "[core]" ) {
 
 
 TEST_CASE( "raylib::LoadDirectoryFiles", "[core][raylib-cpp]" ) {
-    std::vector<std::string> files = raylib::LoadDirectoryFiles(::GetWorkingDirectory());
+    auto files = raylib::LoadDirectoryFiles(::GetWorkingDirectory());
     REQUIRE(files.size() > 3);
 }
 

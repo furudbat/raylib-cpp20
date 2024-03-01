@@ -35,7 +35,7 @@ IncludeIsMainRegex: (Test)?$
 IndentCaseLabels: true
 KeepEmptyLinesAtTheStartOfBlocks: true
 MaxEmptyLinesToKeep: 2
-PointerAlignment: Left
+PointerAlignment: Right
 SortIncludes: CaseSensitive
 SortUsingDeclarations: true
 SpaceBeforeAssignmentOperators: true
@@ -45,5 +45,5 @@ TabWidth: 4
 UseTab: Never
 ---
 Language: JavaScript
-IndentWidth: 4
+IndentWidth: 2
 ColumnLimit: 100

@@ -13,21 +13,28 @@
 #include "./RaylibError.hpp"
 
 namespace raylib {
+
 class Mesh;
+
 /**
  * Model type
  */
 class Model : public ::Model {
  public:
-    constexpr Model() {
-        // Nothing.
-    }
+    constexpr Model() = default;
 
-    /*
-     * Copy a model from another model.
-     */
-    constexpr Model(const ::Model& model) {
+    explicit constexpr Model(const ::Model& model) = delete;
+    explicit constexpr Model(::Model&& model) {
         set(model);
+
+        model.meshCount = 0;
+        model.materialCount = 0;
+        model.meshes = nullptr;
+        model.materials = nullptr;
+        model.meshMaterial = nullptr;
+        model.boneCount = 0;
+        model.bones = nullptr;
+        model.bindPose = nullptr;
     }
 
     /*
@@ -44,7 +51,7 @@ class Model : public ::Model {
      *
      * @throws raylib::RaylibException Throws if failed to load the Modal.
      */
-    Model(const ::Mesh& mesh) {
+    Model(const ::Mesh& mesh) RAYLIB_CPP_THROWS {
         Load(mesh);
     }
 
@@ -76,8 +83,19 @@ class Model : public ::Model {
     GETTERSETTER(::BoneInfo*, Bones, bones)
     GETTERSETTER(::Transform*, BindPose, bindPose)
 
-    constexpr Model& operator=(const ::Model& model) {
+    constexpr Model& operator=(const ::Model& model) = delete;
+    constexpr Model& operator=(::Model&& model) {
         set(model);
+
+        model.meshCount = 0;
+        model.materialCount = 0;
+        model.meshes = nullptr;
+        model.materials = nullptr;
+        model.meshMaterial = nullptr;
+        model.boneCount = 0;
+        model.bones = nullptr;
+        model.bindPose = nullptr;
+
         return *this;
     }
 
@@ -181,15 +199,15 @@ class Model : public ::Model {
     /**
      * Compute model bounding box limits (considers all meshes)
      */
-    [[nodiscard]] BoundingBox GetBoundingBox() const {
-        return ::GetModelBoundingBox(*this);
+    [[nodiscard]] raylib::BoundingBox GetBoundingBox() const {
+        return raylib::BoundingBox{::GetModelBoundingBox(*this)};
     }
 
     /**
      * Compute model bounding box limits (considers all meshes)
      */
-    explicit operator BoundingBox() const {
-        return ::GetModelBoundingBox(*this);
+    explicit operator raylib::BoundingBox() const {
+        return raylib::BoundingBox{::GetModelBoundingBox(*this)};
     }
 
     /**
@@ -209,6 +227,7 @@ class Model : public ::Model {
         if (!IsReady()) {
             RAYLIB_CPP_RETURN_EXPECTED_OR_THROW(RaylibError("Failed to load Model from " + fileName.string()));
         }
+        RAYLIB_CPP_RETURN_EXPECTED();
     }
 
     /**
@@ -221,10 +240,11 @@ class Model : public ::Model {
         if (!IsReady()) {
             RAYLIB_CPP_RETURN_EXPECTED_OR_THROW(RaylibError("Failed to load Model from Mesh"));
         }
+        RAYLIB_CPP_RETURN_EXPECTED();
     }
 
  protected:
-    constexpr void set(const ::Model& model) {
+    constexpr void set(const ::Model& model) noexcept {
         transform = model.transform;
 
         meshCount = model.meshCount;

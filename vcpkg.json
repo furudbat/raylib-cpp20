@@ -3,6 +3,7 @@
   "name": "raylib-cpp",
   "version-string": "5.0.1",
   "dependencies": [
-    "raylib"
+    "raylib",
+    "ms-gsl"
   ]
 }

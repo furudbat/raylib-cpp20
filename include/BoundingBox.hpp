@@ -13,14 +13,14 @@ class BoundingBox : public ::BoundingBox {
     /*
      * Copy a bounding box from another bounding box.
      */
-    constexpr BoundingBox(const ::BoundingBox& box) : ::BoundingBox{box.min, box.max} {
+    explicit constexpr BoundingBox(const ::BoundingBox& box) : ::BoundingBox{box.min, box.max} {
         // Nothing.
     }
 
     /**
      * Compute mesh bounding box limits
      */
-    BoundingBox(const ::Mesh& mesh) : BoundingBox() {
+    explicit BoundingBox(const ::Mesh& mesh) : BoundingBox() {
         set(::GetMeshBoundingBox(mesh));
     }
 

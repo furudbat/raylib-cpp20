@@ -37,6 +37,7 @@ class Color : public ::Color {
     /**
      * Returns a Color from HSV values
      */
+    //[[deprecated("Use Color(ColorHSV) for better structured name")]]
     explicit Color(::Vector3 hsv) {
         set(::ColorFromHSV(hsv.x, hsv.y, hsv.z));
     }
@@ -51,6 +52,7 @@ class Color : public ::Color {
     static ::Color FromHSV(float hue, float saturation, float value) {
         return ::ColorFromHSV(hue, saturation, value);
     }
+    //[[deprecated("Use FromHSV(ColorHSV) for better structured name")]]
     static ::Color FromHSV(::Vector3 hsv) {
         return ::ColorFromHSV(hsv.x, hsv.y, hsv.z);
     }
@@ -309,7 +311,7 @@ class Color : public ::Color {
     inline static constexpr Color RayWhite() { return Color{RAYWHITE}; }
 
  protected:
-    constexpr void set(const ::Color& color) {
+    constexpr void set(const ::Color& color) noexcept {
         r = color.r;
         g = color.g;
         b = color.b;

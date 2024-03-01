@@ -21,9 +21,9 @@ class Font : public ::Font {
     constexpr Font(int _baseSize,
             int _glyphCount,
             int _glyphPadding,
-            ::Texture2D _texture,
-            ::Rectangle *_recs = nullptr,
-            ::GlyphInfo *_glyphs = nullptr) : ::Font{_baseSize, _glyphCount, _glyphPadding, _texture, _recs, _glyphs} {
+            owner<::Texture2D> _texture,
+            owner<::Rectangle*> _recs = nullptr,
+            owner<::GlyphInfo*> _glyphs = nullptr) : ::Font{_baseSize, _glyphCount, _glyphPadding, _texture, _recs, _glyphs} {
         // Nothing.
     }
 
@@ -34,8 +34,16 @@ class Font : public ::Font {
         set(::GetFontDefault());
     }
 
-    constexpr Font(const ::Font& font) {
+    constexpr Font(const ::Font& font) = delete;
+    constexpr Font(::Font&& font) {
         set(font);
+
+        font.baseSize = 0;
+        font.glyphCount = 0;
+        font.glyphPadding = 0;
+        font.texture = { .id = 0 };
+        font.recs = nullptr;
+        font.glyphs = nullptr;
     }
 
     /**
@@ -89,6 +97,10 @@ class Font : public ::Font {
          std::span<int> codepoints) RAYLIB_CPP_THROWS {
         Load(fileType, fileData, fontSize, codepoints);
     }
+    Font(const std::string& fileType, std::span<const unsigned char> fileData, int fontSize,
+         int* codepoints, int codepointCount) RAYLIB_CPP_THROWS {
+        Load(fileType, fileData, fontSize, std::span<int>{codepoints, static_cast<size_t>(codepointCount)});
+    }
 
     constexpr Font(const Font&) = delete;
     constexpr Font(Font&& other) {
@@ -97,7 +109,7 @@ class Font : public ::Font {
         other.baseSize = 0;
         other.glyphCount = 0;
         other.glyphPadding = 0;
-        other.texture = {};
+        other.texture = { .id = 0 };
         other.recs = nullptr;
         other.glyphs = nullptr;
     }
@@ -129,13 +141,29 @@ class Font : public ::Font {
     /**
      * Set the texture atlas containing the glyphs.
      */
-    constexpr void SetTexture(const ::Texture& newTexture) {
+    constexpr void SetTexture(const ::Texture& newTexture) = delete;
+    constexpr void SetTexture(::Texture&& newTexture) {
         texture = newTexture;
+
+        newTexture.id = 0;
+        newTexture.width = 0;
+        newTexture.height = 0;
+        newTexture.mipmaps = 0;
+        newTexture.format = 0;
     }
 
-    Font& operator=(const ::Font& font) {
+    Font& operator=(const ::Font& font) = delete;
+    Font& operator=(::Font&& font) {
         Unload();
         set(font);
+
+        font.baseSize = 0;
+        font.glyphCount = 0;
+        font.glyphPadding = 0;
+        font.texture = { .id = 0 };
+        font.recs = nullptr;
+        font.glyphs = nullptr;
+
         return *this;
     }
 
@@ -151,7 +179,7 @@ class Font : public ::Font {
         other.baseSize = 0;
         other.glyphCount = 0;
         other.glyphPadding = 0;
-        other.texture = {};
+        other.texture = { .id = 0 };
         other.recs = nullptr;
         other.glyphs = nullptr;
 
@@ -189,6 +217,7 @@ class Font : public ::Font {
         if (!IsReady()) {
             RAYLIB_CPP_RETURN_EXPECTED_OR_THROW(RaylibError("Failed to load Font with from file with font size: " + fileName.string()));
         }
+        RAYLIB_CPP_RETURN_EXPECTED();
     }
 
     RAYLIB_CPP_EXPECTED_RESULT(void) Load(const ::Image& image, ::Color key, int firstChar) RAYLIB_CPP_THROWS {
@@ -196,15 +225,17 @@ class Font : public ::Font {
         if (!IsReady()) {
             RAYLIB_CPP_RETURN_EXPECTED_OR_THROW(RaylibError("Failed to load Font with from image"));
         }
+        RAYLIB_CPP_RETURN_EXPECTED();
     }
 
     RAYLIB_CPP_EXPECTED_RESULT(void) Load(const std::string& fileType, std::span<const unsigned char> fileData, int fontSize,
-              std::span<int> codepoints)  {
+                                          std::span<int> codepoints) RAYLIB_CPP_THROWS {
         set(::LoadFontFromMemory(fileType.c_str(), fileData.data(), static_cast<int>(fileData.size()), fontSize, codepoints.data(),
                                  static_cast<int>(codepoints.size())));
         if (!IsReady()) {
             RAYLIB_CPP_RETURN_EXPECTED_OR_THROW(RaylibError("Failed to load Font " + fileType + " with from file data"));
         }
+        RAYLIB_CPP_RETURN_EXPECTED();
     }
 
     /**
@@ -339,7 +370,7 @@ class Font : public ::Font {
     }
 
  protected:
-    constexpr void set(const ::Font& font) {
+    constexpr void set(const ::Font& font) noexcept {
         baseSize = font.baseSize;
         glyphCount = font.glyphCount;
         glyphPadding = font.glyphPadding;

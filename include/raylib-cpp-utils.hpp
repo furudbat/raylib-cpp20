@@ -8,6 +8,9 @@
 #include <cstdlib>
 #include <memory>
 #include <span>
+#if __has_include(<gsl/gsl>)
+#include <gsl/gsl>
+#endif
 
 #ifndef GETTERSETTER
 /**
@@ -42,21 +45,27 @@
 #error "define RAYLIB_CPP_UNEXPECTED, when using RAYLIB_CPP_EXPECTED"
 #endif
 template<class T, class E>
-using expected = RAYLIB_CPP_EXPECTED;
-template<class T, class E>
-using unexpected = RAYLIB_CPP_UNEXPECTED;
-#define RAYLIB_CPP_RETURN_EXPECTED_OR_THROW(Error) return RAYLIB_CPP_UNEXPECTED(Error);
+using expected = RAYLIB_CPP_EXPECTED<T, E>;
+template<class E>
+using unexpected = RAYLIB_CPP_UNEXPECTED<E>;
+#define RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(Error) return RAYLIB_CPP_UNEXPECTED(Error);
+#define RAYLIB_CPP_RETURN_EXPECTED_VALUE(Value) return Value;
+#define RAYLIB_CPP_RETURN_EXPECTED()
 #define RAYLIB_CPP_THROWS
 #else
 template<class T, class E>
 using expected = void;
-template<class T, class E>
+template<class E>
 using unexpected = E;
 #ifdef __cpp_exceptions
 #define RAYLIB_CPP_RETURN_EXPECTED_OR_THROW(Error) throw RaylibException(Error);
+#define RAYLIB_CPP_RETURN_EXPECTED_VALUE(Value) return Value;
+#define RAYLIB_CPP_RETURN_EXPECTED()
 #define RAYLIB_CPP_THROWS noexcept(false)
 #else
-#define RAYLIB_CPP_RETURN_EXPECTED_OR_THROW(Error) std::abort();
+#define RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(Error) std::abort();
+#define RAYLIB_CPP_RETURN_EXPECTED_VALUE(Value) return Value;
+#define RAYLIB_CPP_RETURN_EXPECTED()
 #define RAYLIB_CPP_THROWS
 #endif
 #endif
@@ -70,7 +79,13 @@ struct RayPointerDeleter {
 template <typename T>
 using RayUniquePtr = std::unique_ptr<T, RayPointerDeleter>;
 
-//template <typename T> Owner = T;
+#if __has_include(<gsl/gsl>)
+template <typename T>
+using owner = gsl::owner<T>;
+#else
+template <typename T>
+using owner = T;
+#endif
 
 template<typename T, typename D = RayPointerDeleter>
 struct RayArrayHolder {
@@ -82,9 +97,12 @@ struct RayArrayHolder {
     operator std::span<T>() {
         return {data.get(), size};
     }
+    operator std::span<const T>() const {
+        return {data.get(), size};
+    }
 
-    std::span<T> span() { return {data.get(), size}; }
-    std::span<const T> span() const { return {data.get(), size}; }
+    std::span<T> as_span() { return {data.get(), size}; }
+    std::span<const T> as_span() const { return {data.get(), size}; }
 };
 
 #endif  // RAYLIB_CPP_INCLUDE_RAYLIB_CPP_UTILS_HPP_

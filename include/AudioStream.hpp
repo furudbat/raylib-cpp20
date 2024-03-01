@@ -12,9 +12,6 @@
 
 namespace raylib {
 
-struct AudioStreamOptions {
-};
-
 /**
  * AudioStream management functions
  */
@@ -24,7 +21,8 @@ class AudioStream : public ::AudioStream {
     inline static constexpr float SetDefaultVolume = 1.0F;
     inline static constexpr float SetDefaultPan = 0.5F;
 
-    explicit constexpr AudioStream(const ::AudioStream& music = {
+    explicit constexpr AudioStream(const ::AudioStream& music) = delete;
+    explicit constexpr AudioStream(::AudioStream&& music = {
         .buffer = nullptr,
         .processor = nullptr,
         .sampleRate = 0,
@@ -32,10 +30,16 @@ class AudioStream : public ::AudioStream {
         .channels = 0,
     }) {
         set(music);
+
+        music.buffer = nullptr;
+        music.processor = nullptr;
+        music.sampleRate = 0;
+        music.sampleSize = 0;
+        music.channels = 0;
     }
 
-    [[deprecated("Use AudioStream(music)")]] explicit constexpr AudioStream(rAudioBuffer* _buffer,
-            rAudioProcessor *_processor = nullptr,
+    [[deprecated("Use AudioStream(music)")]] explicit constexpr AudioStream(owner<rAudioBuffer*> _buffer,
+            owner<rAudioProcessor*> _processor = nullptr,
             unsigned int _sampleRate = 0,
             unsigned int _sampleSize = 0,
             unsigned int _channels = 0) : ::AudioStream{_buffer, _processor, _sampleRate, _sampleSize, _channels} {
@@ -71,8 +75,16 @@ class AudioStream : public ::AudioStream {
     GETTERSETTER(unsigned int, SampleSize, sampleSize)
     GETTERSETTER(unsigned int, Channels, channels)
 
-    constexpr AudioStream& operator=(const ::AudioStream& stream) {
+    constexpr AudioStream& operator=(const ::AudioStream& stream) = delete;
+    constexpr AudioStream& operator=(::AudioStream&& stream) {
         set(stream);
+
+        stream.buffer = nullptr;
+        stream.processor = nullptr;
+        stream.sampleRate = 0;
+        stream.sampleSize = 0;
+        stream.channels = 0;
+
         return *this;
     }
     constexpr AudioStream& operator=(const AudioStream&) = delete;
@@ -226,10 +238,11 @@ class AudioStream : public ::AudioStream {
         if (!IsReady()) {
             RAYLIB_CPP_RETURN_EXPECTED_OR_THROW(RaylibError("Failed to load audio stream"));
         }
+        RAYLIB_CPP_RETURN_EXPECTED();
     }
 
  protected:
-    constexpr void set(const ::AudioStream& stream) {
+    constexpr void set(const ::AudioStream& stream) noexcept {
         buffer = stream.buffer;
         processor = stream.processor;
         sampleRate = stream.sampleRate;

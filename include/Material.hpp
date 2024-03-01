@@ -9,15 +9,36 @@
 #include "./raylib-cpp-utils.hpp"
 
 namespace raylib {
+
+struct RayMaterials {
+    ::Material* data{nullptr};
+    size_t size{0};
+
+    RayMaterials(owner<::Material*> _data, size_t _size) : data(_data), size(_size) {}
+    ~RayMaterials() {
+        if (data != nullptr) {
+            for (auto &mat: as_span()) {
+                ::UnloadMaterial(mat);
+            }
+        }
+    }
+
+    operator std::span<::Material>() {
+        return {data, size};
+    }
+    operator std::span<const ::Material>() const {
+        return {data, size};
+    }
+
+    std::span<::Material> as_span() { return {data, size}; }
+    std::span<const ::Material> as_span() const { return {data, size}; }
+};
+
 /**
  * Material type (generic)
  */
 class Material : public ::Material {
  public:
-    Material(const ::Material& material) {
-        set(material);
-    }
-
     /**
      * Load default material (Supports: DIFFUSE, SPECULAR, NORMAL maps)
      */
@@ -25,12 +46,24 @@ class Material : public ::Material {
         set(LoadMaterialDefault());
     }
 
+    explicit constexpr Material(const ::Material& material) = delete;
+    explicit constexpr Material(::Material&& material) {
+        set(material);
+
+        material.maps = nullptr;
+        material.shader = { .id = 0, };
+        material.params[0] = 0.0F;
+        material.params[1] = 0.0F;
+        material.params[2] = 0.0F;
+        material.params[3] = 0.0F;
+    }
+
     Material(const Material&) = delete;
     Material(Material&& other) {
         set(other);
 
         other.maps = nullptr;
-        other.shader = {};
+        other.shader = { .id = 0, };
         other.params[0] = 0.0F;
         other.params[1] = 0.0F;
         other.params[2] = 0.0F;
@@ -46,18 +79,45 @@ class Material : public ::Material {
      */
     static std::vector<Material> Load(const std::string& fileName) {
         int count = 0;
-        // TODO(RobLoach): Material::Load() possibly leaks the materials array.
-        ::Material* materials = ::LoadMaterials(fileName.c_str(), &count);
-        return std::vector<Material>(materials, std::next(materials, count));
+        ::Material* materials_data = ::LoadMaterials(fileName.c_str(), &count);
+        RayMaterials materials (materials_data, static_cast<size_t>(count));
+
+        std::vector<Material> ret;
+        ret.reserve(static_cast<size_t>(count));
+        for (auto& mat : materials.as_span()) {
+            ret.emplace_back(std::move(mat));
+        }
+        materials.data = nullptr; ////< data has been moved
+
+        return ret;
     }
 
     GETTERSETTER(::Shader, Shader, shader)
     GETTERSETTER(::MaterialMap*, Maps, maps)
-    // TODO(RobLoach): Resolve the Material params being a float[4].
-    //GETTERSETTER(std::array<float, 4>, Params, params)
+    /** Retrieves the params value for the object. @return The params value of the object. */
+    constexpr std::array<float, 4> GetParams() const {
+        return params != nullptr ? std::array<float, 4>{ params[0], params[1], params[2], params[3] } : std::array<float, 4>{ 0.0F, 0.0F, 0.0F, 0.0F };
+    }
+    /** Sets the params value for the object. @param value The value of which to set params to. */
+    constexpr bool SetParams(std::array<float, 4> value) {
+        /// @TODO: better setter for params
+        if (params != nullptr) {
+            params[0] = value[0];
+            params[1] = value[1];
+            params[2] = value[2];
+            params[3] = value[3];
+            return true;
+        }
+        return false;
+    }
 
-    constexpr Material& operator=(const ::Material& material) {
+    constexpr Material& operator=(const ::Material& material) = delete;
+    constexpr Material& operator=(::Material&& material) {
         set(material);
+
+        material.maps = nullptr;
+        material.shader = { .id = 0, };
+
         return *this;
     }
 
@@ -71,7 +131,7 @@ class Material : public ::Material {
         set(other);
 
         other.maps = nullptr;
-        other.shader = {};
+        other.shader = { .id = 0, };
 
         return *this;
     }
@@ -116,7 +176,7 @@ class Material : public ::Material {
     }
 
  protected:
-    constexpr void set(const ::Material& material) {
+    constexpr void set(const ::Material& material) noexcept {
         shader = material.shader;
         maps = material.maps;
         params[0] = material.params[0];
