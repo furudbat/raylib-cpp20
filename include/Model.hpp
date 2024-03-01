@@ -23,8 +23,8 @@ class Model : public ::Model {
  public:
     constexpr Model() = default;
 
-    explicit constexpr Model(const ::Model& model) = delete;
-    explicit constexpr Model(::Model&& model) {
+    explicit constexpr Model(owner<const ::Model&> model) = delete;
+    explicit constexpr Model(owner<::Model&&> model) {
         set(model);
 
         model.meshCount = 0;

@@ -22,8 +22,26 @@ namespace raylib {
  */
 class Mesh : public ::Mesh {
  public:
-    constexpr explicit Mesh(const ::Mesh& mesh) = delete;
-    constexpr explicit Mesh(::Mesh&& mesh) {
+    constexpr Mesh() {
+        vertexCount = 0;
+        triangleCount = 0;
+        vertices = nullptr;
+        texcoords = nullptr;
+        texcoords2 = nullptr;
+        normals = nullptr;
+        tangents = nullptr;
+        colors = nullptr;
+        indices = nullptr;
+        animVertices = nullptr;
+        animNormals = nullptr;
+        boneIds = nullptr;
+        boneWeights = nullptr;
+        vaoId = 0;
+        vboId = nullptr;
+    }
+
+    constexpr explicit Mesh(owner<const ::Mesh&> mesh) = delete;
+    constexpr explicit Mesh(owner<::Mesh&&> mesh) {
         set(mesh);
 
         mesh.vertexCount = 0;
