@@ -55,7 +55,7 @@ template<class R>
 using RaylibExpectedError = expected<R, RaylibError>;
 
 #ifdef RAYLIB_CPP_EXPECTED
-#define RAYLIB_CPP_EXPECTED_RESULT(R) [[nodiscard()]] RaylibExpectedError<R>
+#define RAYLIB_CPP_EXPECTED_RESULT(R) RaylibExpectedError<R>
 #else
 #define RAYLIB_CPP_EXPECTED_RESULT(R) R
 #endif

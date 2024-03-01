@@ -50,7 +50,7 @@ template<class E>
 using unexpected = RAYLIB_CPP_UNEXPECTED<E>;
 #define RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(Error) return RAYLIB_CPP_UNEXPECTED(Error);
 #define RAYLIB_CPP_RETURN_EXPECTED_VALUE(Value) return Value;
-#define RAYLIB_CPP_RETURN_EXPECTED()
+#define RAYLIB_CPP_RETURN_EXPECTED() return {};
 #define RAYLIB_CPP_THROWS
 #else
 template<class T, class E>
@@ -58,7 +58,7 @@ using expected = void;
 template<class E>
 using unexpected = E;
 #ifdef __cpp_exceptions
-#define RAYLIB_CPP_RETURN_EXPECTED_OR_THROW(Error) throw RaylibException(Error);
+#define RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(Error) throw RaylibException(Error);
 #define RAYLIB_CPP_RETURN_EXPECTED_VALUE(Value) return Value;
 #define RAYLIB_CPP_RETURN_EXPECTED()
 #define RAYLIB_CPP_THROWS noexcept(false)

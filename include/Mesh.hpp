@@ -236,8 +236,9 @@ class Mesh : public ::Mesh {
      */
     RAYLIB_CPP_EXPECTED_RESULT(void) Export(const std::string& fileName) RAYLIB_CPP_THROWS {
         if (!::ExportMesh(*this, fileName.c_str())) {
-            RAYLIB_CPP_RETURN_EXPECTED_OR_THROW(RaylibError("Failed to export the Mesh"));
+            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to export the Mesh"));
         }
+        RAYLIB_CPP_RETURN_EXPECTED();
     }
 
     /**

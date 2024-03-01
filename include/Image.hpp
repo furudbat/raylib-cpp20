@@ -269,7 +269,7 @@ class Image : public ::Image {
     RAYLIB_CPP_EXPECTED_RESULT(void) Load(const std::filesystem::path& fileName) RAYLIB_CPP_THROWS {
         set(::LoadImage(fileName.c_str()));
         if (!IsReady()) {
-            RAYLIB_CPP_RETURN_EXPECTED_OR_THROW(RaylibError("Failed to load Image from file: " + fileName.string()));
+            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Image from file: " + fileName.string()));
         }
         RAYLIB_CPP_RETURN_EXPECTED();
     }
@@ -284,7 +284,7 @@ class Image : public ::Image {
     RAYLIB_CPP_EXPECTED_RESULT(void) Load(const std::filesystem::path& fileName, int _width, int _height, int _format, int headerSize) RAYLIB_CPP_THROWS {
         set(::LoadImageRaw(fileName.c_str(), _width, _height, _format, headerSize));
         if (!IsReady()) {
-            RAYLIB_CPP_RETURN_EXPECTED_OR_THROW(RaylibError("Failed to load Image from file: " + fileName.string()));
+            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Image from file: " + fileName.string()));
         }
         RAYLIB_CPP_RETURN_EXPECTED();
     }
@@ -299,7 +299,7 @@ class Image : public ::Image {
     RAYLIB_CPP_EXPECTED_RESULT(void) Load(const std::filesystem::path& fileName, int& frames) RAYLIB_CPP_THROWS {
         set(::LoadImageAnim(fileName.c_str(), &frames));
         if (!IsReady()) {
-            RAYLIB_CPP_RETURN_EXPECTED_OR_THROW(RaylibError("Failed to load Image from file: " + fileName.string()));
+            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Image from file: " + fileName.string()));
         }
         RAYLIB_CPP_RETURN_EXPECTED();
     }
@@ -316,7 +316,7 @@ class Image : public ::Image {
             std::span<const unsigned char> fileData) RAYLIB_CPP_THROWS {
         set(::LoadImageFromMemory(fileType.c_str(), fileData.data(), static_cast<int>(fileData.size())));
         if (!IsReady()) {
-            RAYLIB_CPP_RETURN_EXPECTED_OR_THROW(RaylibError("Failed to load Image data with file type: " + fileType));
+            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Image data with file type: " + fileType));
         }
         RAYLIB_CPP_RETURN_EXPECTED();
     }
@@ -331,7 +331,7 @@ class Image : public ::Image {
     RAYLIB_CPP_EXPECTED_RESULT(void) Load(const ::Texture2D& texture) RAYLIB_CPP_THROWS {
         set(::LoadImageFromTexture(texture));
         if (!IsReady()) {
-            RAYLIB_CPP_RETURN_EXPECTED_OR_THROW(RaylibError("Failed to load Image from texture."));
+            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Image from texture."));
         }
         RAYLIB_CPP_RETURN_EXPECTED();
     }
@@ -353,7 +353,7 @@ class Image : public ::Image {
      */
     RAYLIB_CPP_EXPECTED_RESULT(void) Export(const std::filesystem::path& fileName) const RAYLIB_CPP_THROWS {
         if (!::ExportImage(*this, fileName.c_str())) {
-            RAYLIB_CPP_RETURN_EXPECTED_OR_THROW(RaylibError("Failed to export Image to file: " + fileName.string()));
+            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to export Image to file: " + fileName.string()));
         }
         RAYLIB_CPP_RETURN_EXPECTED();
     }
@@ -378,8 +378,9 @@ class Image : public ::Image {
      */
     RAYLIB_CPP_EXPECTED_RESULT(void) ExportAsCode(const std::filesystem::path& fileName) const RAYLIB_CPP_THROWS {
         if (!::ExportImageAsCode(*this, fileName.c_str())) {
-            RAYLIB_CPP_RETURN_EXPECTED_OR_THROW(RaylibError("Failed to export Image code to file: " + fileName.string()));
+            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to export Image code to file: " + fileName.string()));
         }
+        RAYLIB_CPP_RETURN_EXPECTED();
     }
 
     GETTERSETTER(void*, Data, data)

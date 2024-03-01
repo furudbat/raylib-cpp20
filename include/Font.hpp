@@ -198,8 +198,9 @@ class Font : public ::Font {
     RAYLIB_CPP_EXPECTED_RESULT(void) Load(const std::string& fileName) RAYLIB_CPP_THROWS {
         set(::LoadFont(fileName.c_str()));
         if (!IsReady()) {
-            RAYLIB_CPP_RETURN_EXPECTED_OR_THROW(RaylibError("Failed to load Font with from file: " + fileName));
+            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Font with from file: " + fileName));
         }
+        RAYLIB_CPP_RETURN_EXPECTED();
     }
 
     /**
@@ -215,7 +216,7 @@ class Font : public ::Font {
     RAYLIB_CPP_EXPECTED_RESULT(void) Load(const std::filesystem::path& fileName, int fontSize, std::span<int> fontChars) RAYLIB_CPP_THROWS {
         set(::LoadFontEx(fileName.c_str(), fontSize, fontChars.data(), static_cast<int>(fontChars.size())));
         if (!IsReady()) {
-            RAYLIB_CPP_RETURN_EXPECTED_OR_THROW(RaylibError("Failed to load Font with from file with font size: " + fileName.string()));
+            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Font with from file with font size: " + fileName.string()));
         }
         RAYLIB_CPP_RETURN_EXPECTED();
     }
@@ -223,7 +224,7 @@ class Font : public ::Font {
     RAYLIB_CPP_EXPECTED_RESULT(void) Load(const ::Image& image, ::Color key, int firstChar) RAYLIB_CPP_THROWS {
         set(::LoadFontFromImage(image, key, firstChar));
         if (!IsReady()) {
-            RAYLIB_CPP_RETURN_EXPECTED_OR_THROW(RaylibError("Failed to load Font with from image"));
+            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Font with from image"));
         }
         RAYLIB_CPP_RETURN_EXPECTED();
     }
@@ -233,7 +234,7 @@ class Font : public ::Font {
         set(::LoadFontFromMemory(fileType.c_str(), fileData.data(), static_cast<int>(fileData.size()), fontSize, codepoints.data(),
                                  static_cast<int>(codepoints.size())));
         if (!IsReady()) {
-            RAYLIB_CPP_RETURN_EXPECTED_OR_THROW(RaylibError("Failed to load Font " + fileType + " with from file data"));
+            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Font " + fileType + " with from file data"));
         }
         RAYLIB_CPP_RETURN_EXPECTED();
     }
