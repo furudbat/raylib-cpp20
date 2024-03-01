@@ -16,7 +16,7 @@
 #include <array>
 #include "raylib-cpp.hpp"
 
-#include "raymath.hpp"        // Required for: Vector2Clamp()
+#include "raylib-cpp/raymath.hpp"        // Required for: Vector2Clamp()
 
 #define MAX(a, b) ((a)>(b)? (a) : (b))
 #define MIN(a, b) ((a)<(b)? (a) : (b))
