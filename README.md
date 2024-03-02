@@ -2,7 +2,11 @@
 
 # raylib-cpp ![Targeting raylib 5.0](https://img.shields.io/badge/for_raylib-5.0-blue) [![Tests](https://github.com/RobLoach/raylib-cpp/workflows/Tests/badge.svg)](https://github.com/RobLoach/raylib-cpp/actions?query=workflow%3ATests+branch%3Amaster) [![License](https://img.shields.io/badge/license-zlib%2Flibpng-blue.svg)](LICENSE)
 
-[raylib-cpp](https://github.com/robloach/raylib-cpp) is a C++ wrapper library for [raylib](https://www.raylib.com), a simple and easy-to-use library to enjoy videogames programming. This C++ header provides object-oriented wrappers around *raylib*'s struct interfaces. *raylib-cpp* is not required to use *raylib* in C++, but the classes do bring using the raylib API more inline with C++'s language paradigm.
+[raylib-cpp](https://github.com/robloach/raylib-cpp) is a C++ wrapper library for [raylib](https://www.raylib.com), 
+a simple and easy-to-use library to enjoy videogames programming. 
+This C++ header provides object-oriented wrappers around *raylib*'s struct interfaces. 
+*raylib-cpp* is not required to use *raylib* in C++, 
+but bring more modern C++20 language paradigm.
 
 ## Example
 
@@ -238,6 +242,36 @@ catch (raylib::RaylibException& error) {
     TraceLog(LOG_ERROR, "Texture failed to load!");
 }
 ```
+
+#### expected
+
+You can disable exceptions and/or use expected instead.
+
+```
+// raylib
+Texture texture = LoadTexture("FileNotFound.png");
+if (texture.width == 0) {
+    TraceLog(LOG_ERROR, "Texture failed to load!");
+}
+
+// raylib-cpp with expected
+raylib::Texture texture; 
+if (auto result = texture.Load("FileNotFound.png"); result) {
+   // do stuff with texture 
+} else {
+    TraceLog(LOG_ERROR, "Texture failed to load!");
+}
+```
+
+Since `std::expected` is part of C++23, you need to provide your own expected class at minimum with MACROS:
+```cmake
+target_link_libraries(raylib_cpp_expected_test PRIVATE tl::expected)
+target_compile_definitions(raylib_cpp_expected_test PRIVATE RAYLIB_CPP_INCLUDE_EXPECTED=<tl/expected.hpp>)
+target_compile_definitions(raylib_cpp_expected_test PRIVATE RAYLIB_CPP_EXPECTED=tl::expected)
+target_compile_definitions(raylib_cpp_expected_test PRIVATE RAYLIB_CPP_UNEXPECTED=tl::unexpected)
+#target_compile_options(raylib_cpp_expected_test PRIVATE -fno-exceptions) # optional
+```
+Like [tl::expected](https://github.com/TartanLlama/expected) or [expected-lite](https://github.com/martinmoene/expected-lite).
 
 ### RayMath
 

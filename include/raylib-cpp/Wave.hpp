@@ -83,7 +83,6 @@ class Wave : public ::Wave {
         copy.channels = 0;
         copy.data = nullptr;
     }
-
     Wave(Wave&& other) {
         set(other);
 
@@ -105,7 +104,7 @@ class Wave : public ::Wave {
     GETTERSETTER(unsigned int, SampleRate, sampleRate)
     GETTERSETTER(unsigned int, SampleSize, sampleSize)
     GETTERSETTER(unsigned int, Channels, channels)
-    GETTERSETTER(void *, Data, data)
+    CONST_GETTERSETTER(void *, Data, data)
 
     Wave& operator=(const ::Wave& wave) = delete;
     Wave& operator=(::Wave&& wave) {

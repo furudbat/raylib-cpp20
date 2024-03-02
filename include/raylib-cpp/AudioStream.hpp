@@ -38,7 +38,8 @@ class AudioStream : public ::AudioStream {
         music.channels = 0;
     }
 
-    [[deprecated("Use AudioStream(music)")]] explicit constexpr AudioStream(owner<rAudioBuffer*> _buffer,
+    [[deprecated("Use AudioStream(music)")]]
+    explicit constexpr AudioStream(owner<rAudioBuffer*> _buffer,
             owner<rAudioProcessor*> _processor = nullptr,
             unsigned int _sampleRate = 0,
             unsigned int _sampleSize = 0,

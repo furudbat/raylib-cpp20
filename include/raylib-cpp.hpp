@@ -39,7 +39,6 @@
 #include "raylib-cpp/Camera3D.hpp"
 #include "raylib-cpp/Color.hpp"
 #include "raylib-cpp/Font.hpp"
-#include "raylib-cpp/Functions.hpp"
 #include "raylib-cpp/Gamepad.hpp"
 #include "raylib-cpp/Image.hpp"
 #include "raylib-cpp/Keyboard.hpp"
@@ -72,6 +71,7 @@
 #include "raylib-cpp/RaylibException.hpp"
 #endif
 #include "raylib-cpp/RaylibError.hpp"
+#include "raylib-cpp/Functions.hpp"
 
 /**
  * All raylib-cpp classes and functions appear in the raylib namespace.

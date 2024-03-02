@@ -17,7 +17,7 @@
 namespace raylib {
 
 /**
- * A Texture that is not managed by the C++ garbage collector.
+ * A Texture that is not managed by the C++ RAII.
  *
  * Make sure to Unload() this if needed, otherwise use raylib::Texture.
  *
@@ -35,7 +35,7 @@ class TextureUnmanaged : public ::Texture {
     /**
      * Move/Create a texture structure manually.
      */
-    constexpr TextureUnmanaged(unsigned int _id,
+    constexpr TextureUnmanaged(owner<unsigned int> _id,
             int _width, int _height,
             int _mipmaps = 1,
             int _format = PIXELFORMAT_UNCOMPRESSED_R8G8B8A8)

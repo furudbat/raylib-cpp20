@@ -158,6 +158,7 @@ class AutomationEventList : public ::AutomationEventList {
         events = other.events;
     }
 };
+
 }  // namespace raylib
 
 using RAutomationEventList = raylib::AutomationEventList;

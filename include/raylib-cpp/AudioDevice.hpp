@@ -90,6 +90,7 @@ class AudioDevice {
         return *this;
     }
 };
+
 }  // namespace raylib
 
 using RAudioDevice = raylib::AudioDevice;

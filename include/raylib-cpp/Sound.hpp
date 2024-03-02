@@ -63,7 +63,7 @@ class Sound : public ::Sound {
      * @throws raylib::RaylibException Throws if the Sound failed to load.
      */
     explicit Sound(const ::Wave& wave) {
-        Load(wave);
+        LoadFromWave(wave);
     }
 
     ~Sound() {
@@ -194,7 +194,7 @@ class Sound : public ::Sound {
      *
      * @throws raylib::RaylibException Throws if the Sound failed to load.
      */
-    RAYLIB_CPP_EXPECTED_RESULT(void) Load(const ::Wave& wave) RAYLIB_CPP_THROWS {
+    RAYLIB_CPP_EXPECTED_RESULT(void) LoadFromWave(const ::Wave& wave) RAYLIB_CPP_THROWS {
         set(::LoadSoundFromWave(wave));
         if (!IsReady()) {
             RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Wave"));

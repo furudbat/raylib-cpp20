@@ -17,6 +17,17 @@ namespace raylib {
 class FileData {
 public:
     constexpr FileData() = default;
+    FileData(const FileData&) = delete;
+    constexpr FileData(FileData&& other) noexcept : m_data(other.m_data), m_bytesRead(other.m_bytesRead) {
+        other.m_data = nullptr;
+        other.m_bytesRead = 0;
+    }
+    FileData& operator=(const FileData&) = delete;
+    constexpr FileData& operator=(FileData&& other) noexcept {
+        std::swap(m_data, other.m_data);
+        std::swap(m_bytesRead, other.m_bytesRead);
+        return *this;
+    }
     ~FileData() { Unload(); }
 
     explicit FileData(const std::filesystem::path& fileName) {
@@ -49,6 +60,7 @@ public:
         if (m_data != nullptr) {
             ::UnloadFileData(m_data);
             m_data = nullptr;
+            m_bytesRead = 0;
         }
     }
 

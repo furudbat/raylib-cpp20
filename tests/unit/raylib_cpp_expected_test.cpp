@@ -39,3 +39,11 @@ TEST_CASE( "Texture", "[texture]" ) {
     raylib::Texture texture;
     REQUIRE_FALSE(texture.Load("notfound.png"));
 }
+
+TEST_CASE("Load Image") {
+    REQUIRE(raylib::LoadImage("resources/feynman.png"));
+}
+
+TEST_CASE("Load Image Fails") {
+    REQUIRE_FALSE(raylib::LoadImage("notfound.png"));
+}

@@ -17,6 +17,17 @@ namespace raylib {
 class FileText {
 public:
     constexpr FileText() = default;
+    FileText(const FileText&) = delete;
+    FileText(FileText&& other) noexcept : m_data(other.m_data), m_length(other.m_length) {
+        other.m_data = nullptr;
+        other.m_length = 0;
+    }
+    FileText& operator=(const FileText&) = delete;
+    FileText& operator=(FileText&& other) noexcept {
+        std::swap(m_data, other.m_data);
+        std::swap(m_length, other.m_length);
+        return *this;
+    }
     ~FileText() { Unload(); }
 
     explicit FileText(const std::filesystem::path& fileName) {

@@ -21,6 +21,11 @@ struct ColorHSV {
  */
 class Color : public ::Color {
  public:
+    /**
+     * Black.
+     */
+    constexpr Color() : ::Color{0, 0, 0, 255} {}
+
     explicit constexpr Color(::Color color) : ::Color{color.r, color.g, color.b, color.a} {}
 
     constexpr Color(
@@ -28,11 +33,6 @@ class Color : public ::Color {
             uint8_t green,
             uint8_t blue,
             uint8_t alpha = 255) : ::Color{red, green, blue, alpha} {}
-
-    /**
-     * Black.
-     */
-    constexpr Color() : ::Color{0, 0, 0, 255} {}
 
     /**
      * Returns a Color from HSV values

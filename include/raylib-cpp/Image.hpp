@@ -81,7 +81,7 @@ class Image : public ::Image {
      * @see LoadRaw()
      */
     Image(const std::filesystem::path& fileName, int _width, int _height, int _format, int headerSize = 0) RAYLIB_CPP_THROWS {
-        Load(fileName, _width, _height, _format, headerSize);
+        LoadRaw(fileName, _width, _height, _format, headerSize);
     }
 
     /**
@@ -92,7 +92,7 @@ class Image : public ::Image {
      * @see LoadAnim()
      */
     Image(const std::filesystem::path& fileName, int& frames) RAYLIB_CPP_THROWS {
-        Load(fileName, frames);
+        LoadAnim(fileName, frames);
     }
 
     /**
@@ -101,7 +101,7 @@ class Image : public ::Image {
      * @throws raylib::RaylibException Thrown if the image failed to load from the file.
      */
     Image(const std::string& fileType, std::span<const unsigned char> fileData) RAYLIB_CPP_THROWS {
-        Load(fileType, fileData);
+        LoadFromMemory(fileType, fileData);
     }
 
     /**
@@ -110,7 +110,7 @@ class Image : public ::Image {
      * @throws raylib::RaylibException Thrown if the image failed to load from the file.
      */
     explicit Image(const ::Texture2D& texture) RAYLIB_CPP_THROWS {
-        Load(texture);
+        LoadFromTexture(texture);
     }
 
     Image(int _width, int _height, ::Color color = {255, 255, 255, 255}) {
@@ -281,7 +281,7 @@ class Image : public ::Image {
      *
      * @see ::LoadImageRaw()
      */
-    RAYLIB_CPP_EXPECTED_RESULT(void) Load(const std::filesystem::path& fileName, int _width, int _height, int _format, int headerSize) RAYLIB_CPP_THROWS {
+    RAYLIB_CPP_EXPECTED_RESULT(void) LoadRaw(const std::filesystem::path& fileName, int _width, int _height, int _format, int headerSize) RAYLIB_CPP_THROWS {
         set(::LoadImageRaw(fileName.c_str(), _width, _height, _format, headerSize));
         if (!IsReady()) {
             RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Image from file: " + fileName.string()));
@@ -296,7 +296,7 @@ class Image : public ::Image {
      *
      * @see ::LoadImageAnim()
      */
-    RAYLIB_CPP_EXPECTED_RESULT(void) Load(const std::filesystem::path& fileName, int& frames) RAYLIB_CPP_THROWS {
+    RAYLIB_CPP_EXPECTED_RESULT(void) LoadAnim(const std::filesystem::path& fileName, int& frames) RAYLIB_CPP_THROWS {
         set(::LoadImageAnim(fileName.c_str(), &frames));
         if (!IsReady()) {
             RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Image from file: " + fileName.string()));
@@ -311,7 +311,7 @@ class Image : public ::Image {
      *
      * @see ::LoadImageFromMemory()
      */
-    RAYLIB_CPP_EXPECTED_RESULT(void) Load(
+    RAYLIB_CPP_EXPECTED_RESULT(void) LoadFromMemory(
             const std::string& fileType,
             std::span<const unsigned char> fileData) RAYLIB_CPP_THROWS {
         set(::LoadImageFromMemory(fileType.c_str(), fileData.data(), static_cast<int>(fileData.size())));
@@ -328,7 +328,7 @@ class Image : public ::Image {
      *
      * @see ::LoadImageFromTexture()
      */
-    RAYLIB_CPP_EXPECTED_RESULT(void) Load(const ::Texture2D& texture) RAYLIB_CPP_THROWS {
+    RAYLIB_CPP_EXPECTED_RESULT(void) LoadFromTexture(const ::Texture2D& texture) RAYLIB_CPP_THROWS {
         set(::LoadImageFromTexture(texture));
         if (!IsReady()) {
             RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Image from texture."));
@@ -361,13 +361,13 @@ class Image : public ::Image {
     /**
      * Export image to memory buffer
      */
-    RayArrayHolder<unsigned char> ExportToMemory(const char *fileType, int &fileSize) {
-        auto* idata = ::ExportImageToMemory(*this, fileType, &fileSize);
+    RayArrayHolder<unsigned char> ExportToMemory(const std::string &fileType, int &fileSize) {
+        auto* idata = ::ExportImageToMemory(*this, fileType.c_str(), &fileSize);
         return RayArrayHolder<unsigned char>(idata, static_cast<size_t>(fileSize));
     }
-    RayArrayHolder<unsigned char> ExportToMemory(const char *fileType) {
+    RayArrayHolder<unsigned char> ExportToMemory(const std::string &fileType) {
         int fileSize;
-        auto* idata = ::ExportImageToMemory(*this, fileType, &fileSize);
+        auto* idata = ::ExportImageToMemory(*this, fileType.c_str(), &fileSize);
         return RayArrayHolder<unsigned char>(idata, static_cast<size_t>(fileSize));
     }
 
@@ -845,6 +845,7 @@ class Image : public ::Image {
         format = image.format;
     }
 };
+
 }  // namespace raylib
 
 using RImage = raylib::Image;
