@@ -112,3 +112,38 @@ TEST_CASE( "Texture", "[texture]" ) {
         raylib::Texture texture("notfound.png");
     }());
 }
+
+TEST_CASE( "FileData", "[file]" ) {
+    // Get a path to where the executable is so file loading is relative.
+    //std::string path = (argc > 0) ? GetDirectoryPath(argv[0]) : 0;
+
+    SECTION ("load file") {
+        raylib::FileData file("resources/weird.wav");
+        REQUIRE(file.GetBytesRead() > 0); // "Expected wave to be loaded correctly"
+        REQUIRE(file.GetData() != nullptr);
+    }
+
+    SECTION ("file not found") {
+        raylib::FileData file("notfound.png");
+        REQUIRE(file.GetBytesRead() == 0);
+        REQUIRE(file.GetData() == nullptr);
+    }
+}
+
+TEST_CASE( "FileText", "[file]" ) {
+    // Get a path to where the executable is so file loading is relative.
+    //std::string path = (argc > 0) ? GetDirectoryPath(argv[0]) : 0;
+
+    SECTION ("load file") {
+        raylib::FileText file("resources/lorem.txt");
+        REQUIRE(file.GetLength() > 0); // "Expected wave to be loaded correctly"
+        REQUIRE(file.GetData() != nullptr);
+        REQUIRE(file.ToStringView().substr(0, 5) == "Lorem");
+    }
+
+    SECTION ("file not found") {
+        raylib::FileText file("notfound.png");
+        REQUIRE(file.GetLength() == 0);
+        REQUIRE(file.GetData() == nullptr);
+    }
+}
