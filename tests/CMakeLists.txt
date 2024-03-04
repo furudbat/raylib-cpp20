@@ -9,7 +9,6 @@ target_compile_features(raylib_cpp_test_helper INTERFACE cxx_std_20)
 
 add_subdirectory(unit)
 
-option(BUILD_RAYLIB_CPP_INTEGRATION_TESTS "Enable the integration tests (similar to examples)" OFF)
 if(BUILD_RAYLIB_CPP_INTEGRATION_TESTS)
     add_subdirectory(integration)
 endif()

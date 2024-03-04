@@ -383,7 +383,7 @@ class Image : public ::Image {
         RAYLIB_CPP_RETURN_EXPECTED();
     }
 
-    GETTERSETTER(void*, Data, data)
+    CONST_GETTER(void*, Data, data)
     GETTERSETTER(int, Width, width)
     GETTERSETTER(int, Height, height)
     GETTERSETTER(int, Mipmaps, mipmaps)

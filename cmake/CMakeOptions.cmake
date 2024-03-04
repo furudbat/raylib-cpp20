@@ -4,11 +4,13 @@ include(CheckCXXCompilerFlag)
 
 # Testing
 set(RAYLIB_CPP_IS_MAIN ${PROJECT_IS_TOP_LEVEL})
-option(BUILD_RAYLIB_CPP_TESTS "Enable the tests" ${PROJECT_IS_TOP_LEVEL})
+option(BUILD_RAYLIB_CPP_TESTS "Enable the tests" ${RAYLIB_CPP_IS_MAIN})
 if(BUILD_RAYLIB_CPP_TESTS)
   list(APPEND VCPKG_MANIFEST_FEATURES "tests")
 endif()
-option(BUILD_RAYLIB_CPP_EXAMPLES "Enable Examples" ${PROJECT_IS_TOP_LEVEL})
+option(BUILD_RAYLIB_CPP_EXAMPLES "Enable Examples" ${RAYLIB_CPP_IS_MAIN})
+option(BUILD_RAYLIB_CPP_EXTRAS "Enable the raylib-cpp extra libs" OFF)
+option(BUILD_RAYLIB_CPP_INTEGRATION_TESTS "Enable the integration tests (similar to examples)" OFF)
 
 # Static analyzer
 option(ENABLE_STATIC_ANALYZER "Enable Static analyzer" OFF)

@@ -59,7 +59,7 @@ class AutomationEventList : public ::AutomationEventList {
 
     GETTERSETTER(unsigned int, Capacity, capacity)
     GETTERSETTER(unsigned int, Count, count)
-    GETTERSETTER(AutomationEvent*, Events, events)
+    SPAN_GETTER(AutomationEvent, Events, events, capacity)
 
     constexpr AutomationEventList& operator=(const ::AutomationEventList& other) = delete;
     constexpr AutomationEventList& operator=(::AutomationEventList&& other) {

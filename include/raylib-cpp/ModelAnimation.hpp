@@ -44,9 +44,10 @@ class ModelAnimation : public ::ModelAnimation {
     }
 
     GETTERSETTER(int, BoneCount, boneCount)
-    GETTERSETTER(::BoneInfo*, Bones, bones)
+    SPAN_GETTER(::BoneInfo, Bones, bones, boneCount)
     GETTERSETTER(int, FrameCount, frameCount)
-    GETTERSETTER(::Transform**, FramePoses, framePoses)
+    GETTER(::Transform**, FramePoses, framePoses)
+    /// @TODO: make framePoses as mdspan
 
     constexpr ModelAnimation& operator=(const ::ModelAnimation& model) {
         set(model);

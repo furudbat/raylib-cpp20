@@ -104,7 +104,7 @@ class Wave : public ::Wave {
     GETTERSETTER(unsigned int, SampleRate, sampleRate)
     GETTERSETTER(unsigned int, SampleSize, sampleSize)
     GETTERSETTER(unsigned int, Channels, channels)
-    CONST_GETTERSETTER(void *, Data, data)
+    CONST_GETTER(void *, Data, data)
 
     Wave& operator=(const ::Wave& wave) = delete;
     Wave& operator=(::Wave&& wave) {

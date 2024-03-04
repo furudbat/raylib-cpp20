@@ -76,11 +76,11 @@ class Model : public ::Model {
     GETTERSETTER(::Matrix, Transform, transform)
     GETTERSETTER(int, MeshCount, meshCount)
     GETTERSETTER(int, MaterialCount, materialCount)
-    GETTERSETTER(::Mesh*, Meshes, meshes)
-    GETTERSETTER(::Material*, Materials, materials)
+    SPAN_GETTER(::Mesh, Meshes, meshes, meshCount)
+    SPAN_GETTER(::Material, Materials, materials, materialCount)
     GETTERSETTER(int*, MeshMaterial, meshMaterial)
     GETTERSETTER(int, BoneCount, boneCount)
-    GETTERSETTER(::BoneInfo*, Bones, bones)
+    SPAN_GETTER(::BoneInfo, Bones, bones, boneCount)
     GETTERSETTER(::Transform*, BindPose, bindPose)
 
     constexpr Model& operator=(const ::Model& model) = delete;

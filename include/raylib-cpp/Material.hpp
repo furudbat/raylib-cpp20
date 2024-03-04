@@ -20,6 +20,7 @@ struct RayMaterials {
             for (auto &mat: AsSpan()) {
                 if (mat.maps != nullptr) {
                     ::UnloadMaterial(mat);
+                    mat.maps = nullptr;
                 }
             }
         }
@@ -96,7 +97,7 @@ class Material : public ::Material {
     }
 
     GETTERSETTER(::Shader, Shader, shader)
-    GETTERSETTER(::MaterialMap*, Maps, maps)
+    CONST_GETTER(::MaterialMap*, Maps, maps)
     /** Retrieves the params value for the object. @return The params value of the object. */
     constexpr std::array<float, 4> GetParams() const {
         return std::array<float, 4>{ params[0], params[1], params[2], params[3] };

@@ -88,7 +88,8 @@ class Shader : public ::Shader {
     }
 
     GETTERSETTER(unsigned int, Id, id)
-    GETTERSETTER(int*, Locs, locs)
+    CONST_GETTER(int*, Locs, locs)
+    //SPAN_GETTER(int, Locs, locs, RL_MAX_SHADER_LOCATIONS)
 
     constexpr Shader& operator=(const ::Shader& shader) = delete;
     constexpr Shader& operator=(::Shader&& shader) {

@@ -156,19 +156,19 @@ class Mesh : public ::Mesh {
 
     GETTERSETTER(int, VertexCount, vertexCount)
     GETTERSETTER(int, TriangleCount, triangleCount)
-    GETTERSETTER(float*, Vertices, vertices)
-    GETTERSETTER(float *, TexCoords, texcoords)
-    GETTERSETTER(float *, TexCoords2, texcoords2)
-    GETTERSETTER(float *, Normals, normals)
-    GETTERSETTER(float *, Tangents, tangents)
-    GETTERSETTER(unsigned char *, Colors, colors)
-    GETTERSETTER(unsigned short *, Indices, indices) // NOLINT
-    GETTERSETTER(float *, AnimVertices, animVertices)
-    GETTERSETTER(float *, AnimNormals, animNormals)
-    GETTERSETTER(unsigned char *, BoneIds, boneIds)
-    GETTERSETTER(float *, BoneWeights, boneWeights)
-    GETTERSETTER(unsigned int, VaoId, vaoId)
-    GETTERSETTER(unsigned int *, VboId, vboId)
+    CONST_GETTER(float*, Vertices, vertices)
+    CONST_GETTER(float *, TexCoords, texcoords)
+    CONST_GETTER(float *, TexCoords2, texcoords2)
+    CONST_GETTER(float *, Normals, normals)
+    CONST_GETTER(float *, Tangents, tangents)
+    CONST_GETTER(unsigned char *, Colors, colors)
+    CONST_GETTER(unsigned short *, Indices, indices) // NOLINT
+    CONST_GETTER(float *, AnimVertices, animVertices)
+    CONST_GETTER(float *, AnimNormals, animNormals)
+    CONST_GETTER(unsigned char *, BoneIds, boneIds)
+    CONST_GETTER(float *, BoneWeights, boneWeights)
+    GETTER(unsigned int, VaoId, vaoId)
+    CONST_GETTER(unsigned int *, VboId, vboId)
 
     constexpr Mesh& operator=(const ::Mesh& mesh) {
         set(mesh);
