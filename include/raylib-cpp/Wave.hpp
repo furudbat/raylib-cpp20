@@ -148,9 +148,9 @@ class Wave {
         return *this;
     }
 
-    //explicit operator ::Wave() const {
-    //    return m_data;
-    //}
+    explicit operator ::Wave() const {
+        return m_data;
+    }
     [[nodiscard]] ::Wave c_raylib() const & {
         return m_data;
     }

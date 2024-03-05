@@ -105,9 +105,9 @@ class RenderTexture {
         Unload();
     }
 
-    //explicit operator ::RenderTexture() const {
-    //    return m_data;
-    //}
+    explicit operator ::RenderTexture() const {
+        return m_data;
+    }
     [[nodiscard]] ::RenderTexture c_raylib() const & {
         return m_data;
     }

@@ -139,9 +139,9 @@ class Font {
         return *this;
     }
 
-    //explicit operator ::Font() const {
-    //    return m_data;
-    //}
+    explicit operator ::Font() const {
+        return m_data;
+    }
     [[nodiscard]] ::Font c_raylib() const & {
         return m_data;
     }

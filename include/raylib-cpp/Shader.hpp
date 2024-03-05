@@ -123,9 +123,9 @@ class Shader {
         Unload();
     }
 
-    //explicit operator ::Shader() const {
-    //    return m_data;
-    //}
+    explicit operator ::Shader() const {
+        return m_data;
+    }
     [[nodiscard]] ::Shader c_raylib() const & {
         return m_data;
     }

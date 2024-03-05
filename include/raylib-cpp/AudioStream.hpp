@@ -70,9 +70,9 @@ class AudioStream {
         Unload();
     }
 
-    //explicit operator ::AudioStream() const {
-    //    return m_data;
-    //}
+    explicit operator ::AudioStream() const {
+        return m_data;
+    }
     [[nodiscard]] ::AudioStream c_raylib() const & {
         return m_data;
     }
