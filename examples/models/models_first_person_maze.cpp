@@ -25,8 +25,7 @@ int main(void)
 
     raylib::Image imMap("resources/cubicmap.png");      // Load cubicmap image (RAM)
     raylib::Texture cubicmap(imMap);                    // Convert image to texture to display (VRAM)
-    raylib::Mesh mesh = raylib::Mesh::Cubicmap(imMap, Vector3{ 1.0f, 1.0f, 1.0f });
-    raylib::Model model(mesh);
+    raylib::Model model(raylib::Mesh::Cubicmap(imMap, Vector3{ 1.0f, 1.0f, 1.0f }));
 
     // NOTE: By default each cube is mapped to one part of texture atlas
     raylib::Texture texture("resources/cubicmap_atlas.png");    // Load map texture

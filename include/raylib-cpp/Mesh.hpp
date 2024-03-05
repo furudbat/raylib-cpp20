@@ -14,7 +14,7 @@
 namespace raylib {
 
 /**
- * Vertex data definning a mesh
+ * Vertex data defining a mesh
  */
 class Mesh {
  public:
