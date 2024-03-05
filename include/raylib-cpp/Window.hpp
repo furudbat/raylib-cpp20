@@ -243,11 +243,11 @@ class Window {
      * Set icon for window (multiple images, RGBA 32bit, only PLATFORM_DESKTOP)
      */
     [[deprecated("Use SetIcons(span)")]]
-    Window& SetIcons(Image* images, int count) {
+    Window& SetIcons(::Image* images, int count) {
         ::SetWindowIcons(images, count);
         return *this;
     }
-    Window& SetIcons(std::span<Image> images) {
+    Window& SetIcons(std::span<::Image> images) {
         ::SetWindowIcons(images.data(), static_cast<int>(images.size()));
         return *this;
     }

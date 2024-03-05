@@ -25,24 +25,30 @@ class Camera3D : public ::Camera3D {
      * @param fovy Camera field-of-view apperture in Y (degrees) in perspective, used as near plane width in orthographic
      * @param projection Camera projection: CAMERA_PERSPECTIVE or CAMERA_ORTHOGRAPHIC
      */
-    explicit constexpr Camera3D(::Vector3 _position,
-            ::Vector3 _target = ::Vector3{0.0F, 0.0F, 0.0F},
-            ::Vector3 _up = ::Vector3{0.0F, 1.0F, 0.0F},
+    explicit constexpr Camera3D(const ::Vector3& _position,
+            const ::Vector3& _target = ::Vector3{0.0F, 0.0F, 0.0F},
+            const ::Vector3& _up = ::Vector3{0.0F, 1.0F, 0.0F},
             float _fovy = 0.0F,
             int _projection = CAMERA_PERSPECTIVE) : ::Camera3D{_position, _target, _up, _fovy, _projection} {}
 
     Camera3D() = default;
+
+    /*
+    explicit(false) operator ::Camera3D() const {
+        return *this;
+    }
+    */
+
+    constexpr Camera3D& operator=(const ::Camera3D& camera) {
+        set(camera);
+        return *this;
+    }
 
     GETTERSETTER(::Vector3, Position, position)
     GETTERSETTER(::Vector3, Target, target)
     GETTERSETTER(::Vector3, Up, up)
     GETTERSETTER(float, Fovy, fovy)
     GETTERSETTER(int, Projection, projection)
-
-    constexpr Camera3D& operator=(const ::Camera3D& camera) {
-        set(camera);
-        return *this;
-    }
 
     /**
      * Initializes 3D mode with custom camera (3D)
@@ -78,7 +84,7 @@ class Camera3D : public ::Camera3D {
     /**
      * Update camera movement/rotation
      */
-    Camera3D& Update(::Vector3 movement, ::Vector3 rotation, float zoom = 1.0F) {
+    Camera3D& Update(const ::Vector3& movement, const ::Vector3& rotation, float zoom = 1.0F) {
         ::UpdateCameraPro(this, movement, rotation, zoom);
         return *this;
     }
@@ -93,7 +99,7 @@ class Camera3D : public ::Camera3D {
     /**
      * Returns the screen space position for a 3d world space position
      */
-    [[nodiscard]] raylib::Vector2 GetWorldToScreen(::Vector3 _position) const {
+    [[nodiscard]] raylib::Vector2 GetWorldToScreen(const ::Vector3& _position) const {
         return raylib::Vector2{::GetWorldToScreen(_position, *this)};
     }
 
@@ -102,7 +108,7 @@ class Camera3D : public ::Camera3D {
      */
     void DrawBillboard(
             const ::Texture2D& texture,
-            ::Vector3 center,
+            const ::Vector3& center,
             float size,
             ::Color tint = {255, 255, 255, 255}) const {
         ::DrawBillboard(*this, texture, center, size, tint);

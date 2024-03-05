@@ -15,19 +15,19 @@ namespace raylib {
 /**
  * Shader type (generic)
  */
-class Shader : public ::Shader {
+class Shader {
  public:
-    constexpr Shader() : ::Shader{NullShader} {}
+    constexpr Shader() : m_data{NullShader} {}
 
-    constexpr explicit Shader(const ::Shader& shader) = delete;
-    constexpr explicit Shader(::Shader&& shader) {
+    constexpr explicit Shader(owner<const ::Shader&> shader) = delete;
+    constexpr explicit Shader(owner<::Shader&&> shader) {
         set(shader);
 
         shader.id = 0;
         shader.locs = nullptr;
     }
 
-    constexpr Shader(owner<unsigned int> _id, owner<int*> _locs = nullptr) : ::Shader{_id, _locs} {}
+    constexpr Shader(owner<unsigned int> id, owner<int*> locs = nullptr) : m_data{id, locs} {}
 
     struct LoadShaderOptions {
         std::optional<std::filesystem::path> vsFileName;
@@ -47,10 +47,10 @@ class Shader : public ::Shader {
 
     explicit constexpr Shader(const Shader&) = delete;
     explicit constexpr Shader(Shader&& other) {
-        set(other);
+        set(other.m_data);
 
-        other.id = 0;
-        other.locs = nullptr;
+        other.m_data.id = 0;
+        other.m_data.locs = nullptr;
     }
 
     /**
@@ -87,12 +87,12 @@ class Shader : public ::Shader {
         return Shader{::LoadShaderFromMemory(options.vsCode, options.fsCode)};
     }
 
-    GETTERSETTER(unsigned int, Id, id)
-    CONST_GETTER(int*, Locs, locs)
+    GETTERSETTER(unsigned int, Id, m_data.id)
+    CONST_GETTER(int*, Locs, m_data.locs)
     //SPAN_GETTER(int, Locs, locs, RL_MAX_SHADER_LOCATIONS)
 
-    constexpr Shader& operator=(const ::Shader& shader) = delete;
-    constexpr Shader& operator=(::Shader&& shader) {
+    constexpr Shader& operator=(owner<const ::Shader&> shader) = delete;
+    constexpr Shader& operator=(owner<::Shader&&> shader) {
         set(shader);
 
         shader.id = 0;
@@ -108,10 +108,10 @@ class Shader : public ::Shader {
         }
 
         Unload();
-        set(other);
+        set(other.m_data);
 
-        other.id = 0;
-        other.locs = nullptr;
+        other.m_data.id = 0;
+        other.m_data.locs = nullptr;
 
         return *this;
     }
@@ -123,14 +123,21 @@ class Shader : public ::Shader {
         Unload();
     }
 
+    //explicit operator ::Shader() const {
+    //    return m_data;
+    //}
+    [[nodiscard]] ::Shader c_raylib() const & {
+        return m_data;
+    }
+
     /**
      * Unload shader from GPU memory (VRAM)
      */
     void Unload() {
-        if (locs != nullptr) {
-            ::UnloadShader(*this);
-            id = 0;
-            locs = nullptr;
+        if (m_data.locs != nullptr) {
+            ::UnloadShader(m_data);
+            m_data.id = 0;
+            m_data.locs = nullptr;
         }
     }
 
@@ -138,7 +145,7 @@ class Shader : public ::Shader {
      * Begin custom shader drawing.
      */
     Shader& BeginMode() {
-        ::BeginShaderMode(*this);
+        ::BeginShaderMode(m_data);
         return *this;
     }
 
@@ -156,7 +163,7 @@ class Shader : public ::Shader {
      * @see GetShaderLocation()
      */
     [[nodiscard]] int GetLocation(const std::string& uniformName) const {
-        return ::GetShaderLocation(*this, uniformName.c_str());
+        return ::GetShaderLocation(m_data, uniformName.c_str());
     }
 
     /**
@@ -165,7 +172,7 @@ class Shader : public ::Shader {
      * @see GetShaderLocationAttrib()
      */
     [[nodiscard]] int GetLocationAttrib(const std::string& attribName) const {
-        return ::GetShaderLocationAttrib(*this, attribName.c_str());
+        return ::GetShaderLocationAttrib(m_data, attribName.c_str());
     }
 
     /**
@@ -174,7 +181,7 @@ class Shader : public ::Shader {
      * @see SetShaderValue()
      */
     Shader& SetValue(int uniformLoc, const void* value, int uniformType) {
-        ::SetShaderValue(*this, uniformLoc, value, uniformType);
+        ::SetShaderValue(m_data, uniformLoc, value, uniformType);
         return *this;
     }
 
@@ -184,7 +191,7 @@ class Shader : public ::Shader {
      * @see SetShaderValueV()
      */
     Shader& SetValue(int uniformLoc, const void* value, int uniformType, int count) {
-        ::SetShaderValueV(*this, uniformLoc, value, uniformType, count);
+        ::SetShaderValueV(m_data, uniformLoc, value, uniformType, count);
         return *this;
     }
 
@@ -194,7 +201,7 @@ class Shader : public ::Shader {
      * @see SetShaderValueMatrix()
      */
     Shader& SetValue(int uniformLoc, const ::Matrix& mat) {
-        ::SetShaderValueMatrix(*this, uniformLoc, mat);
+        ::SetShaderValueMatrix(m_data, uniformLoc, mat);
         return *this;
     }
 
@@ -204,7 +211,7 @@ class Shader : public ::Shader {
      * @see SetShaderValueTexture()
      */
     Shader& SetValue(int uniformLoc, const ::Texture2D& texture) {
-        ::SetShaderValueTexture(*this, uniformLoc, texture);
+        ::SetShaderValueTexture(m_data, uniformLoc, texture);
         return *this;
     }
 
@@ -212,14 +219,16 @@ class Shader : public ::Shader {
      * Retrieves whether or not the shader is ready.
      */
     [[nodiscard]] constexpr bool IsReady() const {
-        return id != 0 && locs != nullptr;
+        return m_data.id != 0 && m_data.locs != nullptr;
     }
 
  protected:
     constexpr void set(const ::Shader& shader) {
-        id = shader.id;
-        locs = shader.locs;
+        m_data.id = shader.id;
+        m_data.locs = shader.locs;
     }
+
+    ::Shader m_data;
 };
 
 }  // namespace raylib

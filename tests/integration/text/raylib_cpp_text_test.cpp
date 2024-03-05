@@ -48,7 +48,7 @@ TEST_CASE( "font loading", "[text]" ) {
 
             raylib::DrawText("Hold SPACE to use TTF generated font", 20, 20, 20, LIGHTGRAY);
 
-            fontBm.DrawText(msg, Vector2{20.0f, 100.0f}, fontBm.baseSize, 2, MAROON);
+            fontBm.DrawText(msg, Vector2{20.0f, 100.0f}, static_cast<float>(fontBm.GetBaseSize()), 2, MAROON);
             raylib::DrawText("Using BMFont (Angelcode) imported", 20, GetScreenHeight() - 30, 20, GRAY);
         }
         window.EndDrawing();
@@ -65,7 +65,7 @@ TEST_CASE( "font loading", "[text]" ) {
 
             raylib::DrawText("Hold SPACE to use TTF generated font", 20, 20, 20, LIGHTGRAY);
 
-            fontTtf.DrawText(msg, Vector2{20.0f, 100.0f}, fontTtf.baseSize, 2, LIME);
+            fontTtf.DrawText(msg, Vector2{20.0f, 100.0f}, static_cast<float>(fontTtf.GetBaseSize()), 2, LIME);
             raylib::DrawText("Using TTF font generated", 20, GetScreenHeight() - 30, 20, GRAY);
         }
         window.EndDrawing();
@@ -102,8 +102,8 @@ TEST_CASE( "font loading into vector", "[text]" ) {
             raylib::Font fontTtf;
             REQUIRE(fontTtf.Load("resources/pixantiqua.ttf", 32, nullptr, 250));
 
-            ret.emplace_back(std::move(fontBm));
-            ret.emplace_back(std::move(fontTtf));
+            ret.push_back(std::move(fontBm));
+            ret.push_back(std::move(fontTtf));
             return ret;
         }();
 

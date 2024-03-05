@@ -22,9 +22,9 @@ class Vector2 : public ::Vector2 {
     }) : ::Vector2{vec.x, vec.y} {}
 
     [[deprecated("Use Vector2(vec)")]]
-    constexpr Vector2(float px, float py) : ::Vector2{px, py} {}
+    constexpr Vector2(float _x, float _y) : ::Vector2{_x, _y} {}
     [[deprecated("Use Vector2(vec)")]]
-    explicit constexpr Vector2(float px) : ::Vector2{px, 0} {}
+    explicit constexpr Vector2(float _x) : ::Vector2{_x, 0} {}
 
     GETTERSETTER(float, X, x)
     GETTERSETTER(float, Y, y)
@@ -60,11 +60,17 @@ class Vector2 : public ::Vector2 {
         return ToString();
     }
 
+    /*
+    explicit(false) operator ::Vector2() const {
+        return *this;
+    }
+    */
+
 #ifndef RAYLIB_CPP_NO_MATH
     /**
      * Add two vectors (v1 + v2)
      */
-    [[nodiscard]] Vector2 Add(const ::Vector2& vector2) const {
+    [[nodiscard]] Vector2 Add(::Vector2 vector2) const {
         return ::Vector2Add(*this, vector2);
     }
 
@@ -87,7 +93,7 @@ class Vector2 : public ::Vector2 {
     /**
      * Subtract two vectors (v1 - v2)
      */
-    [[nodiscard]] Vector2 Subtract(const ::Vector2& vector2) const {
+    [[nodiscard]] Vector2 Subtract(::Vector2 vector2) const {
         return ::Vector2Subtract(*this, vector2);
     }
 
@@ -124,7 +130,7 @@ class Vector2 : public ::Vector2 {
     /**
      * Multiply vector by vector
      */
-    [[nodiscard]] Vector2 Multiply(const ::Vector2& vector2) const {
+    [[nodiscard]] Vector2 Multiply(::Vector2 vector2) const {
         return ::Vector2Multiply(*this, vector2);
     }
 
@@ -147,21 +153,21 @@ class Vector2 : public ::Vector2 {
     /**
      * Scale vector (multiply by value)
      */
-    [[nodiscard]] Vector2 Scale(const float scale) const {
+    [[nodiscard]] Vector2 Scale(float scale) const {
         return ::Vector2Scale(*this, scale);
     }
 
     /**
      * Scale vector (multiply by value)
      */
-    Vector2 operator*(const float scale) const {
+    Vector2 operator*(float scale) const {
         return ::Vector2Scale(*this, scale);
     }
 
     /**
      * Scale vector (multiply by value)
      */
-    Vector2& operator*=(const float scale) {
+    Vector2& operator*=(float scale) {
         set(::Vector2Scale(*this, scale));
 
         return *this;
@@ -170,7 +176,7 @@ class Vector2 : public ::Vector2 {
     /**
      * Divide vector by vector
      */
-    [[nodiscard]] Vector2 Divide(const ::Vector2& vector2) const {
+    [[nodiscard]] Vector2 Divide(::Vector2 vector2) const {
         return ::Vector2Divide(*this, vector2);
     }
 
@@ -193,23 +199,23 @@ class Vector2 : public ::Vector2 {
     /**
      * Divide vector by value
      */
-    [[nodiscard]] constexpr Vector2 Divide(const float div) const {
-        return ::Vector2{x / div, y / div};
+    [[nodiscard]] constexpr raylib::Vector2 Divide(float div) const {
+        return raylib::Vector2{::Vector2{x / div, y / div}};
     }
 
     /**
      * Divide vector by value
      */
-    constexpr Vector2 operator/(const float div) const {
+    constexpr Vector2 operator/(float div) const {
         return Divide(div);
     }
 
     /**
      * Divide vector by value
      */
-    constexpr Vector2& operator/=(const float div) {
-        this->x /= div;
-        this->y /= div;
+    constexpr Vector2& operator/=(float div) {
+        x /= div;
+        y /= div;
 
         return *this;
     }
@@ -413,9 +419,14 @@ class Vector2 : public ::Vector2 {
     [[nodiscard]] bool CheckCollisionLines(
             ::Vector2 endPos1,
             ::Vector2 startPos2, ::Vector2 endPos2,
-            ::Vector2 *collisionPoint) const {
-        return ::CheckCollisionLines(*this, endPos1, startPos2, endPos2, collisionPoint);
+            ::Vector2 &collisionPoint) const {
+        return ::CheckCollisionLines(*this, endPos1, startPos2, endPos2, &collisionPoint);
     }
+        [[nodiscard]] bool CheckCollisionLines(
+                ::Vector2 endPos1,
+                ::Vector2 startPos2, ::Vector2 endPos2) const {
+            return ::CheckCollisionLines(*this, endPos1, startPos2, endPos2, nullptr);
+        }
 
     /**
      * Check if point belongs to line created between two points [p1] and [p2] with defined margin in pixels [threshold]

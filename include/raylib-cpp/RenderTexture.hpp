@@ -13,16 +13,20 @@ namespace raylib {
 /**
  * RenderTexture type, for texture rendering
  */
-class RenderTexture : public ::RenderTexture {
+class RenderTexture {
  public:
     /**
      * Default constructor to build an empty RenderTexture.
      */
-    constexpr RenderTexture() : ::RenderTexture({0, {}, {}}) {}
+    constexpr RenderTexture() : m_data({0, {}, {}}) {}
 
-    /// @TODO: make movable ???
-    constexpr explicit RenderTexture(/*Owner<::RenderTexture>*/ const ::RenderTexture& renderTexture) {
+    constexpr explicit RenderTexture(const ::RenderTexture& renderTexture) = delete;
+    constexpr explicit RenderTexture(owner<::RenderTexture&&> renderTexture) {
         set(renderTexture);
+
+        renderTexture.id = 0;
+        renderTexture.texture = NullTexture;
+        renderTexture.depth = NullTexture;
     }
 
     /// Questionable Ownership, where is id coming from
@@ -38,25 +42,25 @@ class RenderTexture : public ::RenderTexture {
 
     constexpr RenderTexture(const RenderTexture&) = delete;
     constexpr RenderTexture(RenderTexture&& other) {
-        set(other);
+        set(other.m_data);
 
-        other.id = 0;
-        other.texture = NullTexture;
-        other.depth = NullTexture;
+        other.m_data.id = 0;
+        other.m_data.texture = NullTexture;
+        other.m_data.depth = NullTexture;
     }
 
-    GETTERSETTER(unsigned int, Id, id)
+    GETTER(unsigned int, Id, m_data.id)
 
     /**
      * Get the color buffer attachment texture.
      */
     TextureUnmanaged GetTexture() {
-        return texture;
+        return TextureUnmanaged{m_data.texture};
     }
 
-    void SetTexture(const ::Texture& newTexture) = delete;
-    void SetTexture(::Texture&& newTexture) {
-        texture = newTexture;
+    void SetTexture(owner<const ::Texture&> newTexture) = delete;
+    void SetTexture(owner<::Texture&&> newTexture) {
+        m_data.texture = newTexture;
         newTexture = NullTexture;
     }
 
@@ -64,20 +68,19 @@ class RenderTexture : public ::RenderTexture {
      * Depth buffer attachment texture
      */
     TextureUnmanaged GetDepth() {
-        return depth;
+        return TextureUnmanaged{m_data.depth};
     }
-
     void SetDepth(const ::Texture& newDepth) {
-        depth = newDepth;
+        m_data.depth = newDepth;
     }
 
-    RenderTexture& operator=(const ::RenderTexture& _texture) = delete;
-    RenderTexture& operator=(::RenderTexture&& _texture) {
-        set(_texture);
+    RenderTexture& operator=(const ::RenderTexture& texture) = delete;
+    RenderTexture& operator=(::RenderTexture&& texture) {
+        set(texture);
 
-        _texture.id = 0;
-        _texture.texture = NullTexture;
-        _texture.depth = NullTexture;
+        texture.id = 0;
+        texture.texture = NullTexture;
+        texture.depth = NullTexture;
 
         return *this;
     }
@@ -89,11 +92,11 @@ class RenderTexture : public ::RenderTexture {
         }
 
         Unload();
-        set(other);
+        set(other.m_data);
 
-        other.id = 0;
-        other.texture = NullTexture;
-        other.depth = NullTexture;
+        other.m_data.id = 0;
+        other.m_data.texture = NullTexture;
+        other.m_data.depth = NullTexture;
 
         return *this;
     }
@@ -102,15 +105,24 @@ class RenderTexture : public ::RenderTexture {
         Unload();
     }
 
+    //explicit operator ::RenderTexture() const {
+    //    return m_data;
+    //}
+    [[nodiscard]] ::RenderTexture c_raylib() const & {
+        return m_data;
+    }
+
     void Unload() {
-        UnloadRenderTexture(*this);
+        UnloadRenderTexture(m_data);
+        m_data.id = 0;
+        m_data.texture = NullTexture;
     }
 
     /**
      * Initializes render texture for drawing
      */
     RenderTexture& BeginMode() {
-        ::BeginTextureMode(*this);
+        ::BeginTextureMode(m_data);
         return *this;
     }
 
@@ -133,15 +145,17 @@ class RenderTexture : public ::RenderTexture {
      * Retrieves whether or not the render texture is ready.
      */
     [[nodiscard]] bool IsReady() const {
-        return ::IsRenderTextureReady(*this);
+        return ::IsRenderTextureReady(m_data);
     }
 
  protected:
     constexpr void set(const ::RenderTexture& renderTexture) {
-        id = renderTexture.id;
-        texture = renderTexture.texture;
-        depth = renderTexture.depth;
+        m_data.id = renderTexture.id;
+        m_data.texture = renderTexture.texture;
+        m_data.depth = renderTexture.depth;
     }
+
+    ::RenderTexture m_data;
 };
 using RenderTexture2D = RenderTexture;
 }  // namespace raylib

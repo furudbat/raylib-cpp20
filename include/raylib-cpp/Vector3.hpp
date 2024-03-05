@@ -26,11 +26,11 @@ class Vector3 : public ::Vector3 {
     }
 
     [[deprecated("Use Vector3(vec)")]]
-    constexpr Vector3(float px, float py, float pz) : ::Vector3{px, py, pz} {}
+    constexpr Vector3(float _x, float _y, float _z) : ::Vector3{_x, _y, _z} {}
     [[deprecated("Use Vector3(vec)")]]
-    constexpr Vector3(float px, float py) : ::Vector3{px, py, 0} {}
+    constexpr Vector3(float _x, float _y) : ::Vector3{_x, _y, 0} {}
     [[deprecated("Use Vector3(vec)")]]
-    /*explicit*/ constexpr Vector3(float px) : ::Vector3{px, 0, 0} {}
+    /*explicit*/ constexpr Vector3(float _x) : ::Vector3{_x, 0, 0} {}
 
     GETTERSETTER(float, X, x)
     GETTERSETTER(float, Y, y)
@@ -59,22 +59,28 @@ class Vector3 : public ::Vector3 {
         return ToString();
     }
 
+    /*
+    explicit(false) operator ::Vector3() const {
+        return *this;
+    }
+    */
+
 #ifndef RAYLIB_CPP_NO_MATH
     /**
      * Add two vectors
      */
-    [[nodiscard]] Vector3 Add(::Vector3 vector3) const {
+    [[nodiscard]] Vector3 Add(const ::Vector3& vector3) const {
         return Vector3{::Vector3Add(*this, vector3)};
     }
 
     /**
      * Add two vectors
      */
-    Vector3 operator+(::Vector3 vector3) const {
+    Vector3 operator+(const ::Vector3& vector3) const {
         return Vector3{::Vector3Add(*this, vector3)};
     }
 
-    Vector3& operator+=(::Vector3 vector3) {
+    Vector3& operator+=(const ::Vector3& vector3) {
         set(::Vector3Add(*this, vector3));
 
         return *this;
@@ -117,7 +123,7 @@ class Vector3 : public ::Vector3 {
     /**
      * Multiply vector by vector
      */
-    [[nodiscard]] Vector3 Multiply(const ::Vector3& vector3) const {
+    [[nodiscard]] Vector3 Multiply(::Vector3 vector3) const {
         return Vector3{::Vector3Multiply(*this, vector3)};
     }
 
@@ -140,21 +146,21 @@ class Vector3 : public ::Vector3 {
     /**
      * Multiply vector by scalar
      */
-    Vector3 Scale(const float scaler) const {
+    [[nodiscard]] Vector3 Scale(const float scaler) const {
         return Vector3{::Vector3Scale(*this, scaler)};
     }
 
     /**
      * Multiply vector by scalar
      */
-    Vector3 operator*(const float scaler) const {
+    Vector3 operator*(float scaler) const {
         return Vector3{::Vector3Scale(*this, scaler)};
     }
 
     /**
      * Multiply vector by scalar
      */
-    Vector3& operator*=(const float scaler) {
+    Vector3& operator*=(float scaler) {
         set(::Vector3Scale(*this, scaler));
 
         return *this;
@@ -163,7 +169,7 @@ class Vector3 : public ::Vector3 {
     /**
      * Divide vector by vector
      */
-    Vector3 Divide(::Vector3 vector3) const {
+    [[nodiscard]] Vector3 Divide(::Vector3 vector3) const {
         return Vector3{::Vector3Divide(*this, vector3)};
     }
 
@@ -188,21 +194,21 @@ class Vector3 : public ::Vector3 {
     /**
      * Divide a vector by a value.
      */
-    constexpr Vector3 Divide(const float div) const {
+    [[nodiscard]] constexpr Vector3 Divide(float div) const {
         return Vector3{::Vector3{.x = x / div, .y = y / div, .z = z / div}};
     }
 
     /**
      * Divide a vector by a value.
      */
-    constexpr Vector3 operator/(const float div) const {
+    [[nodiscard]] constexpr Vector3 operator/(float div) const {
         return Divide(div);
     }
 
     /**
      * Divide a vector by a value.
      */
-    constexpr Vector3& operator/=(const float div) {
+    constexpr Vector3& operator/=(float div) {
         x /= div;
         y /= div;
         z /= div;
@@ -213,59 +219,61 @@ class Vector3 : public ::Vector3 {
     /**
      * Calculate vector length
      */
-    float Length() const {
+    [[nodiscard]] float Length() const {
         return ::Vector3Length(*this);
     }
 
-    Vector3 Normalize() const {
+    [[nodiscard]] Vector3 Normalize() const {
         return Vector3{::Vector3Normalize(*this)};
     }
 
-    float DotProduct(::Vector3 vector3) const {
+    [[nodiscard]] float DotProduct(::Vector3 vector3) const {
         return ::Vector3DotProduct(*this, vector3);
     }
 
-    float Distance(::Vector3 vector3) const {
+    [[nodiscard]] float Distance(::Vector3 vector3) const {
         return ::Vector3Distance(*this, vector3);
     }
 
-    Vector3 Lerp(::Vector3 vector3, const float amount) const {
+    [[nodiscard]] Vector3 Lerp(::Vector3 vector3, float amount) const {
         return Vector3{::Vector3Lerp(*this, vector3, amount)};
     }
 
-    Vector3 CrossProduct(::Vector3 vector3) const {
+    [[nodiscard]] Vector3 CrossProduct(::Vector3 vector3) const {
         return Vector3{::Vector3CrossProduct(*this, vector3)};
     }
 
-    Vector3 Perpendicular() const {
+    [[nodiscard]] Vector3 Perpendicular() const {
         return Vector3{Vector3Perpendicular(*this)};
     }
 
-    void OrthoNormalize(::Vector3& vector3) {
+    Vector3& OrthoNormalize(::Vector3& vector3) {
         Vector3OrthoNormalize(this, &vector3);
+
+        return *this;
     }
 
-    Vector3 Transform(::Matrix matrix) const {
+    [[nodiscard]] Vector3 Transform(const ::Matrix& matrix) const {
         return Vector3{::Vector3Transform(*this, matrix)};
     }
 
-    Vector3 RotateByQuaternion(::Quaternion quaternion) const {
+    [[nodiscard]] Vector3 RotateByQuaternion(::Quaternion quaternion) const {
         return Vector3{Vector3RotateByQuaternion(*this, quaternion)};
     }
 
-    Vector3 Reflect(const ::Vector3& normal) const {
+    [[nodiscard]] Vector3 Reflect(::Vector3 normal) const {
         return Vector3{Vector3Reflect(*this, normal)};
     }
 
-    Vector3 Min(const ::Vector3& vector3) const {
+    [[nodiscard]] Vector3 Min(::Vector3 vector3) const {
         return Vector3{::Vector3Min(*this, vector3)};
     }
 
-    Vector3 Max(const ::Vector3& vector3) const {
+    [[nodiscard]] Vector3 Max(::Vector3 vector3) const {
         return Vector3{::Vector3Max(*this, vector3)};
     }
 
-    Vector3 Barycenter(::Vector3 a, ::Vector3 b, ::Vector3 c) const {
+    [[nodiscard]] Vector3 Barycenter(::Vector3 a, ::Vector3 b, ::Vector3 c) const {
         return Vector3{::Vector3Barycenter(*this, a, b, c)};
     }
 
@@ -332,7 +340,7 @@ class Vector3 : public ::Vector3 {
         ::DrawCylinderWires(*this, radiusTop, radiusBottom, height, slices, color);
     }
 
-    void DrawPlane(const ::Vector2& size, ::Color color) const {
+    void DrawPlane(::Vector2 size, ::Color color) const {
         ::DrawPlane(*this, size, color);
     }
 

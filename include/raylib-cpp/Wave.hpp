@@ -26,10 +26,10 @@ using RayWaveSamples = RayArrayHolder<float, RayWaveSamplesDeleter>;
 /**
  * Wave type, defines audio wave data
  */
-class Wave : public ::Wave {
+class Wave {
  public:
-    constexpr explicit Wave(const ::Wave& wave) = delete;
-    constexpr explicit Wave(::Wave&& wave = {
+    constexpr explicit Wave(owner<const ::Wave&> wave) = delete;
+    constexpr explicit Wave(owner<::Wave&&> wave = {
             .frameCount = 0,
             .sampleRate = 0,
             .sampleSize = 0,
@@ -47,11 +47,11 @@ class Wave : public ::Wave {
 
     [[deprecated("Use Wave(wave)")]]
     constexpr explicit Wave(
-            unsigned int _frameCount,
-            unsigned int _sampleRate = 0,
-            unsigned int _sampleSize = 0,
-            unsigned int _channels = 0,
-            owner<void*> _data = nullptr) : ::Wave{_frameCount, _sampleRate, _sampleSize, _channels, _data} {
+            unsigned int frameCount,
+            unsigned int sampleRate = 0,
+            unsigned int sampleSize = 0,
+            unsigned int channels = 0,
+            owner<void*> data = nullptr) : m_data{frameCount, sampleRate, sampleSize, channels, data} {
         // Nothing.
     }
 
@@ -75,22 +75,22 @@ class Wave : public ::Wave {
 
     Wave(const Wave& other) {
         auto copy = other.Copy();
-        set(copy);
+        set(copy.m_data);
 
-        copy.frameCount = 0;
-        copy.sampleRate = 0;
-        copy.sampleSize = 0;
-        copy.channels = 0;
-        copy.data = nullptr;
+        copy.m_data.frameCount = 0;
+        copy.m_data.sampleRate = 0;
+        copy.m_data.sampleSize = 0;
+        copy.m_data.channels = 0;
+        copy.m_data.data = nullptr;
     }
     Wave(Wave&& other) {
-        set(other);
+        set(other.m_data);
 
-        other.frameCount = 0;
-        other.sampleRate = 0;
-        other.sampleSize = 0;
-        other.channels = 0;
-        other.data = nullptr;
+        other.m_data.frameCount = 0;
+        other.m_data.sampleRate = 0;
+        other.m_data.sampleSize = 0;
+        other.m_data.channels = 0;
+        other.m_data.data = nullptr;
     }
 
     /**
@@ -99,12 +99,6 @@ class Wave : public ::Wave {
     ~Wave() {
         Unload();
     }
-
-    GETTERSETTER(unsigned int, FrameCount, frameCount)
-    GETTERSETTER(unsigned int, SampleRate, sampleRate)
-    GETTERSETTER(unsigned int, SampleSize, sampleSize)
-    GETTERSETTER(unsigned int, Channels, channels)
-    CONST_GETTER(void *, Data, data)
 
     Wave& operator=(const ::Wave& wave) = delete;
     Wave& operator=(::Wave&& wave) {
@@ -126,13 +120,13 @@ class Wave : public ::Wave {
 
         Unload();
         auto copy = other.Copy();
-        set(copy);
+        set(copy.m_data);
 
-        copy.frameCount = 0;
-        copy.sampleRate = 0;
-        copy.sampleSize = 0;
-        copy.channels = 0;
-        copy.data = nullptr;
+        copy.m_data.frameCount = 0;
+        copy.m_data.sampleRate = 0;
+        copy.m_data.sampleSize = 0;
+        copy.m_data.channels = 0;
+        copy.m_data.data = nullptr;
 
         return *this;
     }
@@ -142,29 +136,42 @@ class Wave : public ::Wave {
         }
 
         Unload();
-        set(other);
+        set(other.m_data);
 
-        other.frameCount = 0;
-        other.sampleRate = 0;
-        other.sampleSize = 0;
-        other.channels = 0;
-        other.data = nullptr;
+        other.m_data.frameCount = 0;
+        other.m_data.sampleRate = 0;
+        other.m_data.sampleSize = 0;
+        other.m_data.channels = 0;
+        other.m_data.data = nullptr;
 
         return *this;
     }
+
+    //explicit operator ::Wave() const {
+    //    return m_data;
+    //}
+    [[nodiscard]] ::Wave c_raylib() const & {
+        return m_data;
+    }
+
+    GETTER(unsigned int, FrameCount, m_data.frameCount)
+    GETTER(unsigned int, SampleRate, m_data.sampleRate)
+    GETTER(unsigned int, SampleSize, m_data.sampleSize)
+    GETTER(unsigned int, Channels, m_data.channels)
+    CONST_GETTER(void *, Data, m_data.data)
 
     /**
      * Copy a wave to a new wave
      */
     Wave Copy() const {
-        return Wave{::WaveCopy(*this)};
+        return Wave{::WaveCopy(m_data)};
     }
 
     /**
      * Crop a wave to defined samples range
      */
     Wave& Crop(int initSample, int finalSample) {
-        ::WaveCrop(this, initSample, finalSample);
+        ::WaveCrop(&m_data, initSample, finalSample);
         return *this;
     }
 
@@ -172,7 +179,7 @@ class Wave : public ::Wave {
      * Convert wave data to desired format
      */
     Wave& Format(int SampleRate, int SampleSize, int Channels = 2) {
-        ::WaveFormat(this, SampleRate, SampleSize, Channels);
+        ::WaveFormat(&m_data, SampleRate, SampleSize, Channels);
         return *this;
     }
 
@@ -181,7 +188,7 @@ class Wave : public ::Wave {
      */
     RayWaveSamples LoadSamples() {
         /// @Note: assume allocated size
-        return RayWaveSamples{::LoadWaveSamples(*this), frameCount*channels*sizeof(float)};
+        return RayWaveSamples{::LoadWaveSamples(m_data), m_data.frameCount*m_data.channels*sizeof(float)};
     }
 
     /**
@@ -196,7 +203,7 @@ class Wave : public ::Wave {
      */
     bool Export(const std::filesystem::path& fileName) {
         // TODO(RobLoach): Throw exception on error.
-        return ::ExportWave(*this, fileName.c_str());
+        return ::ExportWave(m_data, fileName.c_str());
     }
 
     /**
@@ -204,7 +211,7 @@ class Wave : public ::Wave {
      */
     bool ExportAsCode(const std::filesystem::path& fileName) {
         // TODO(RobLoach): Throw exception on error.
-        return ::ExportWaveAsCode(*this, fileName.c_str());
+        return ::ExportWaveAsCode(m_data, fileName.c_str());
     }
 
     /**
@@ -212,9 +219,9 @@ class Wave : public ::Wave {
      */
     void Unload() {
         // Protect against calling UnloadWave() twice.
-        if (data != nullptr) {
-            ::UnloadWave(*this);
-            data = nullptr;
+        if (m_data.data != nullptr) {
+            ::UnloadWave(m_data);
+            m_data.data = nullptr;
         }
     }
 
@@ -222,15 +229,17 @@ class Wave : public ::Wave {
      * Load sound from wave data
      */
     raylib::Sound LoadSound() const {
-        return raylib::Sound{::LoadSoundFromWave(*this)};
+        return raylib::Sound{::LoadSoundFromWave(m_data)};
     }
 
     /**
      * Load sound from wave data
      */
+    /*
     explicit operator raylib::Sound() const {
         return LoadSound();
     }
+    */
 
     /**
      * Load wave data from file.
@@ -264,17 +273,19 @@ class Wave : public ::Wave {
      * @return True or false depending on whether the wave data has been loaded.
      */
     [[nodiscard]] bool IsReady() const {
-        return ::IsWaveReady(*this);
+        return ::IsWaveReady(m_data);
     }
 
  protected:
     constexpr void set(const ::Wave& wave) noexcept {
-        frameCount = wave.frameCount;
-        sampleRate = wave.sampleRate;
-        sampleSize = wave.sampleSize;
-        channels = wave.channels;
-        data = wave.data;
+        m_data.frameCount = wave.frameCount;
+        m_data.sampleRate = wave.sampleRate;
+        m_data.sampleSize = wave.sampleSize;
+        m_data.channels = wave.channels;
+        m_data.data = wave.data;
     }
+
+    ::Wave m_data;
 };
 
 }  // namespace raylib

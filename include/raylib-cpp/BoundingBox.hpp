@@ -27,13 +27,19 @@ class BoundingBox : public ::BoundingBox {
     explicit constexpr BoundingBox(::Vector3 minMax = ::Vector3{0.0F, 0.0F, 0.0F}) : ::BoundingBox{minMax, minMax} {}
     constexpr BoundingBox(::Vector3 pMin, ::Vector3 pMax) : ::BoundingBox{pMin, pMax} {}
 
-    GETTERSETTER(::Vector3, Min, min)
-    GETTERSETTER(::Vector3, Max, max)
+    /*
+    explicit(false) operator ::BoundingBox() const {
+        return *this;
+    }
+    */
 
     constexpr BoundingBox& operator=(const ::BoundingBox& box) {
         set(box);
         return *this;
     }
+
+    GETTERSETTER(::Vector3, Min, min)
+    GETTERSETTER(::Vector3, Max, max)
 
     /**
      * Draw a bounding box with wires
@@ -72,12 +78,12 @@ class BoundingBox : public ::BoundingBox {
 
  protected:
     constexpr void set(const ::BoundingBox& box) {
-        min = box.min;
-        max = box.max;
+        this->min = box.min;
+        this->max = box.max;
     }
     constexpr void set(const ::Vector3& _min, const ::Vector3& _max) {
-        min = _min;
-        max = _max;
+        this->min = _min;
+        this->max = _max;
     }
 };
 }  // namespace raylib

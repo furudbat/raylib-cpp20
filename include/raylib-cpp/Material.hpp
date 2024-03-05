@@ -5,6 +5,8 @@
 #include <vector>
 #include <array>
 
+#include "Mesh.hpp"
+#include "Texture.hpp"
 #include "./raylib.hpp"
 #include "./raylib-cpp-utils.hpp"
 
@@ -40,7 +42,7 @@ struct RayMaterials {
 /**
  * Material type (generic)
  */
-class Material : public ::Material {
+class Material {
  public:
     /**
      * Load default material (Supports: DIFFUSE, SPECULAR, NORMAL maps)
@@ -49,8 +51,8 @@ class Material : public ::Material {
         set(LoadMaterialDefault());
     }
 
-    explicit constexpr Material(const ::Material& material) = delete;
-    explicit constexpr Material(::Material&& material) {
+    explicit constexpr Material(owner<const ::Material&> material) = delete;
+    explicit constexpr Material(owner<::Material&&> material) {
         set(material);
 
         material.maps = nullptr;
@@ -63,18 +65,50 @@ class Material : public ::Material {
 
     Material(const Material&) = delete;
     Material(Material&& other) {
-        set(other);
+        set(other.m_data);
 
-        other.maps = nullptr;
-        other.shader = NullShader;
-        other.params[0] = 0.0F;
-        other.params[1] = 0.0F;
-        other.params[2] = 0.0F;
-        other.params[3] = 0.0F;
+        other.m_data.maps = nullptr;
+        other.m_data.shader = NullShader;
+        other.m_data.params[0] = 0.0F;
+        other.m_data.params[1] = 0.0F;
+        other.m_data.params[2] = 0.0F;
+        other.m_data.params[3] = 0.0F;
     }
 
     ~Material() {
         Unload();
+    }
+
+    //explicit operator ::Material() const {
+    //    return m_data;
+    //}
+    [[nodiscard]] ::Material c_raylib() const & {
+        return m_data;
+    }
+
+    constexpr Material& operator=(const ::Material& material) = delete;
+    constexpr Material& operator=(::Material&& material) {
+        set(material);
+
+        material.maps = nullptr;
+        material.shader = NullShader;
+
+        return *this;
+    }
+
+    constexpr Material& operator=(const Material&) = delete;
+    Material& operator=(Material&& other) noexcept {
+        if (this == &other) {
+            return *this;
+        }
+
+        Unload();
+        set(other.m_data);
+
+        other.m_data.maps = nullptr;
+        other.m_data.shader = NullShader;
+
+        return *this;
     }
 
     /**
@@ -96,53 +130,29 @@ class Material : public ::Material {
         return ret;
     }
 
-    GETTERSETTER(::Shader, Shader, shader)
-    CONST_GETTER(::MaterialMap*, Maps, maps)
+    GETTERSETTER(::Shader, Shader, m_data.shader)
+    CONST_GETTER(::MaterialMap*, Maps, m_data.maps)
     /** Retrieves the params value for the object. @return The params value of the object. */
     constexpr std::array<float, 4> GetParams() const {
-        return std::array<float, 4>{ params[0], params[1], params[2], params[3] };
+        return std::array<float, 4>{ m_data.params[0], m_data.params[1], m_data.params[2], m_data.params[3] };
     }
     /** Sets the params value for the object. @param value The value of which to set params to. */
     constexpr void SetParams(std::array<float, 4> value) {
-        params[0] = value[0];
-        params[1] = value[1];
-        params[2] = value[2];
-        params[3] = value[3];
+        m_data.params[0] = value[0];
+        m_data.params[1] = value[1];
+        m_data.params[2] = value[2];
+        m_data.params[3] = value[3];
     }
 
-    constexpr Material& operator=(const ::Material& material) = delete;
-    constexpr Material& operator=(::Material&& material) {
-        set(material);
-
-        material.maps = nullptr;
-        material.shader = NullShader;
-
-        return *this;
-    }
-
-    constexpr Material& operator=(const Material&) = delete;
-    Material& operator=(Material&& other) noexcept {
-        if (this == &other) {
-            return *this;
-        }
-
-        Unload();
-        set(other);
-
-        other.maps = nullptr;
-        other.shader = NullShader;
-
-        return *this;
-    }
 
     /**
      * Unload material from memory
      */
     void Unload() {
-        if (maps != nullptr) {
-            ::UnloadMaterial(*this);
-            maps = nullptr;
-            shader = NullShader;
+        if (m_data.maps != nullptr) {
+            ::UnloadMaterial(m_data);
+            m_data.maps = nullptr;
+            m_data.shader = NullShader;
         }
     }
 
@@ -150,7 +160,11 @@ class Material : public ::Material {
      * Set texture for a material map type (MAP_DIFFUSE, MAP_SPECULAR...)
      */
     Material& SetTexture(int mapType, const ::Texture2D& texture) {
-        ::SetMaterialTexture(this, mapType, texture);
+        ::SetMaterialTexture(&m_data, mapType, texture);
+        return *this;
+    }
+    Material& SetTexture(int mapType, const raylib::Texture2D& texture) {
+        ::SetMaterialTexture(&m_data, mapType, texture.c_raylib());
         return *this;
     }
 
@@ -158,32 +172,40 @@ class Material : public ::Material {
      * Draw a 3d mesh with material and transform
      */
     void DrawMesh(const ::Mesh& mesh, ::Matrix transform) const {
-        ::DrawMesh(mesh, *this, transform);
+        ::DrawMesh(mesh, m_data, transform);
+    }
+    void DrawMesh(const raylib::Mesh& mesh, ::Matrix transform) const {
+        ::DrawMesh(mesh.c_raylib(), m_data, transform);
     }
 
     /**
      * Draw multiple mesh instances with material and different transforms
      */
     void DrawMesh(const ::Mesh& mesh, ::Matrix* transforms, int instances) const {
-        ::DrawMeshInstanced(mesh, *this, transforms, instances);
+        ::DrawMeshInstanced(mesh, m_data, transforms, instances);
+    }
+    void DrawMesh(const raylib::Mesh& mesh, ::Matrix* transforms, int instances) const {
+        ::DrawMeshInstanced(mesh.c_raylib(), m_data, transforms, instances);
     }
 
     /**
      * Check if material is ready
      */
     [[nodiscard]] bool IsReady() const {
-        return ::IsMaterialReady(*this);
+        return ::IsMaterialReady(m_data);
     }
 
  protected:
     constexpr void set(const ::Material& material) noexcept {
-        shader = material.shader;
-        maps = material.maps;
-        params[0] = material.params[0];
-        params[1] = material.params[1];
-        params[2] = material.params[2];
-        params[3] = material.params[3];
+        m_data.shader = material.shader;
+        m_data.maps = material.maps;
+        m_data.params[0] = material.params[0];
+        m_data.params[1] = material.params[1];
+        m_data.params[2] = material.params[2];
+        m_data.params[3] = material.params[3];
     }
+
+    ::Material m_data;
 };
 }  // namespace raylib
 

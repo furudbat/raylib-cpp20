@@ -57,9 +57,9 @@ int main() {
 
     for (int i = 0; i < fonts.size(); i++)
     {
-        auto size = fonts[i].MeasureText(messages[i], fonts[i].baseSize * 2, spacings[i]);
-        positions[i].x = screenWidth/2 - size.x/2;
-        positions[i].y = 60 + fonts[i].baseSize + 45*i;
+        auto size = fonts[i].MeasureText(messages[i], fonts[i].GetBaseSize() * 2, spacings[i]);
+        positions[i].SetX(screenWidth/2 - size.GetX()/2);
+        positions[i].SetY(60 + fonts[i].GetBaseSize() + 45*i);
     }
 
     // Small Y position corrections
@@ -89,7 +89,7 @@ int main() {
 
             for (int i = 0; i < fonts.size(); i++)
             {
-                fonts[i].DrawText(messages[i], positions[i], fonts[i].baseSize*2, spacings[i], colors[i]);
+                fonts[i].DrawText(messages[i], positions[i], fonts[i].GetBaseSize()*2, spacings[i], colors[i]);
             }
         }
         EndDrawing();

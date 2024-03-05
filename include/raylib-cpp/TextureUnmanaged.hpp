@@ -5,9 +5,8 @@
 #include <string>
 
 #include "./raylib.hpp"
-#include "./Material.hpp"
-#include "./Vector2.hpp"
 #include "./Image.hpp"
+#include "./Vector2.hpp"
 #include "./raylib-cpp-utils.hpp"
 #ifdef __cpp_exceptions
 #include "./RaylibException.hpp"
@@ -16,6 +15,8 @@
 
 namespace raylib {
 
+class Texture;
+
 /**
  * A Texture that is not managed by the C++ RAII.
  *
@@ -23,133 +24,64 @@ namespace raylib {
  *
  * @see raylib::Texture
  */
-class TextureUnmanaged : public ::Texture {
+class TextureUnmanaged {
  public:
     /**
      * Default texture constructor.
      */
-    constexpr TextureUnmanaged() : ::Texture{NullTexture} {
+    constexpr TextureUnmanaged() : m_data{NullTexture} {
         // Nothing.
     }
 
     /**
      * Move/Create a texture structure manually.
      */
-    constexpr TextureUnmanaged(owner<unsigned int> _id,
-            int _width, int _height,
-            int _mipmaps = 1,
-            int _format = PIXELFORMAT_UNCOMPRESSED_R8G8B8A8)
-            : ::Texture{_id, _width, _height, _mipmaps, _format} {
+    constexpr TextureUnmanaged(unsigned int id,
+            int width, int height,
+            int mipmaps = 1,
+            int format = PIXELFORMAT_UNCOMPRESSED_R8G8B8A8)
+            : m_data{id, width, height, mipmaps, format} {
         // Nothing.
     }
 
     /**
      * Creates a texture object based on the given Texture struct data.
      */
-    constexpr TextureUnmanaged(const ::Texture& texture) :
-            ::Texture{texture.id, texture.width, texture.height, texture.mipmaps, texture.format} {
+    explicit constexpr TextureUnmanaged(const ::Texture& texture) :
+            m_data{texture.id, texture.width, texture.height, texture.mipmaps, texture.format} {
         // Nothing.
     }
-    explicit TextureUnmanaged(::Texture&& other) :
-            ::Texture{other.id, other.width, other.height, other.mipmaps, other.format} {
-        // Nothing.
-    }
-
-    /**
-     * Creates a texture from the given Image.
-     *
-     * @throws raylib::RaylibException Throws if failed to create the texture from the given image.
-     */
-    TextureUnmanaged(const ::Image& image) RAYLIB_CPP_THROWS {
-        Load(image);
-    }
-
-    /**
-     * Load cubemap from image, multiple image cubemap layouts supported.
-     *
-     * @throws raylib::RaylibException Throws if failed to create the texture from the given cubemap.
-     *
-     * @see LoadTextureCubemap()
-     */
-    TextureUnmanaged(const ::Image& image, int layout) RAYLIB_CPP_THROWS {
-        Load(image, layout);
-    }
-
-    /**
-     * Load texture from file into GPU memory (VRAM)
-     *
-     * @throws raylib::RaylibException Throws if failed to create the texture from the given file.
-     */
-    explicit TextureUnmanaged(const std::filesystem::path& fileName) RAYLIB_CPP_THROWS {
-        Load(fileName);
-    }
-
-    GETTERSETTER(unsigned int, Id, id)
-    GETTERSETTER(int, Width, width)
-    GETTERSETTER(int, Height, height)
-    GETTERSETTER(int, Mipmaps, mipmaps)
-    GETTERSETTER(int, Format, format)
 
     constexpr TextureUnmanaged& operator=(const ::Texture& texture) {
         set(texture);
         return *this;
     }
 
+    //explicit operator ::Texture() const {
+    //    return m_data;
+    //}
+    [[nodiscard]] ::Texture c_raylib() const & {
+        return m_data;
+    }
+
+    GETTER(unsigned int, Id, m_data.id)
+    GETTER(int, Width, m_data.width)
+    GETTER(int, Height, m_data.height)
+    GETTER(int, Mipmaps, m_data.mipmaps)
+    GETTER(int, Format, m_data.format)
+
     /**
      * Retrieve the width and height of the texture.
      */
     [[nodiscard]] constexpr raylib::Vector2 GetSize() const {
-        return raylib::Vector2{{.x = static_cast<float>(width), .y = static_cast<float>(height)}};
-    }
-
-    /**
-     * Load texture from image data
-     */
-    RAYLIB_CPP_EXPECTED_RESULT(void) Load(const ::Image& image) RAYLIB_CPP_THROWS {
-        set(::LoadTextureFromImage(image));
-        if (!IsReady()) {
-            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Texture from Image"));
-        }
-        RAYLIB_CPP_RETURN_EXPECTED();
-    }
-
-    /**
-     * Load cubemap from image, multiple image cubemap layouts supported
-     */
-    RAYLIB_CPP_EXPECTED_RESULT(void) Load(const ::Image& image, int layoutType) RAYLIB_CPP_THROWS {
-        set(::LoadTextureCubemap(image, layoutType));
-        if (!IsReady()) {
-            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Texture from Cubemap"));
-        }
-    }
-
-    /**
-     * Load texture from file into GPU memory (VRAM)
-     */
-    RAYLIB_CPP_EXPECTED_RESULT(void) Load(const std::filesystem::path& fileName) RAYLIB_CPP_THROWS {
-        set(::LoadTexture(fileName.c_str()));
-        if (!IsReady()) {
-            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Texture from file: " + fileName.string()));
-        }
-        RAYLIB_CPP_RETURN_EXPECTED();
-    }
-
-    /**
-     * Unload texture from GPU memory (VRAM)
-     */
-    void Unload() {
-        // Protect against calling UnloadTexture() twice.
-        if (id != 0) {
-            ::UnloadTexture(*this);
-            id = 0;
-        }
+        return raylib::Vector2{{.x = static_cast<float>(m_data.width), .y = static_cast<float>(m_data.height)}};
     }
 
     /**
      * Update GPU texture with new data
      */
     TextureUnmanaged& Update(const void *pixels) {
-        ::UpdateTexture(*this, pixels);
+        ::UpdateTexture(m_data, pixels);
         return *this;
     }
 
@@ -157,7 +89,7 @@ class TextureUnmanaged : public ::Texture {
      * Update GPU texture rectangle with new data
      */
     TextureUnmanaged& Update(::Rectangle rec, const void *pixels) {
-        UpdateTextureRec(*this, rec, pixels);
+        UpdateTextureRec(m_data, rec, pixels);
         return *this;
     }
 
@@ -165,7 +97,7 @@ class TextureUnmanaged : public ::Texture {
      * Get pixel data from GPU texture and return an Image
      */
     [[nodiscard]] raylib::Image GetData() const {
-        return raylib::Image{::LoadImageFromTexture(*this)};
+        return raylib::Image{::LoadImageFromTexture(m_data)};
     }
 
     /**
@@ -179,7 +111,7 @@ class TextureUnmanaged : public ::Texture {
      * Generate GPU mipmaps for a texture
      */
     TextureUnmanaged& GenMipmaps() {
-        ::GenTextureMipmaps(this);
+        ::GenTextureMipmaps(&m_data);
         return *this;
     }
 
@@ -187,7 +119,7 @@ class TextureUnmanaged : public ::Texture {
      * Set texture scaling filter mode
      */
     TextureUnmanaged& SetFilter(int filterMode) {
-        ::SetTextureFilter(*this, filterMode);
+        ::SetTextureFilter(m_data, filterMode);
         return *this;
     }
 
@@ -195,7 +127,7 @@ class TextureUnmanaged : public ::Texture {
      * Set texture wrapping mode
      */
     TextureUnmanaged& SetWrap(int wrapMode) {
-        ::SetTextureWrap(*this, wrapMode);
+        ::SetTextureWrap(m_data, wrapMode);
         return *this;
     }
 
@@ -205,7 +137,7 @@ class TextureUnmanaged : public ::Texture {
      * @see ::DrawTexture()
      */
     void Draw(int posX = 0, int posY = 0, ::Color tint = {255, 255, 255, 255}) const {
-        ::DrawTexture(*this, posX, posY, tint);
+        ::DrawTexture(m_data, posX, posY, tint);
     }
 
     /**
@@ -214,7 +146,7 @@ class TextureUnmanaged : public ::Texture {
      * @see ::DrawTextureV()
      */
     void Draw(::Vector2 position, ::Color tint = {255, 255, 255, 255}) const {
-        ::DrawTextureV(*this, position, tint);
+        ::DrawTextureV(m_data, position, tint);
     }
 
     /**
@@ -224,7 +156,7 @@ class TextureUnmanaged : public ::Texture {
      */
     void Draw(::Vector2 position, float rotation, float scale = 1.0F,
             ::Color tint = {255, 255, 255, 255}) const {
-        ::DrawTextureEx(*this, position, rotation, scale, tint);
+        ::DrawTextureEx(m_data, position, rotation, scale, tint);
     }
 
     /**
@@ -234,7 +166,7 @@ class TextureUnmanaged : public ::Texture {
      */
     void Draw(::Rectangle sourceRec, ::Vector2 position = {0, 0},
             ::Color tint = {255, 255, 255, 255}) const {
-        ::DrawTextureRec(*this, sourceRec, position, tint);
+        ::DrawTextureRec(m_data, sourceRec, position, tint);
     }
 
     /**
@@ -244,7 +176,7 @@ class TextureUnmanaged : public ::Texture {
      */
     void Draw(::Rectangle sourceRec, ::Rectangle destRec, ::Vector2 origin = {0, 0},
             float rotation = 0, ::Color tint = {255, 255, 255, 255}) const {
-        ::DrawTexturePro(*this, sourceRec, destRec, origin, rotation, tint);
+        ::DrawTexturePro(m_data, sourceRec, destRec, origin, rotation, tint);
     }
 
     /**
@@ -254,7 +186,7 @@ class TextureUnmanaged : public ::Texture {
      */
     void Draw(::NPatchInfo nPatchInfo, ::Rectangle destRec, ::Vector2 origin = {0, 0},
             float rotation = 0, ::Color tint = {255, 255, 255, 255}) const {
-        ::DrawTextureNPatch(*this, nPatchInfo, destRec, origin, rotation, tint);
+        ::DrawTextureNPatch(m_data, nPatchInfo, destRec, origin, rotation, tint);
     }
 
     /**
@@ -265,7 +197,7 @@ class TextureUnmanaged : public ::Texture {
     void DrawBillboard(const ::Camera& camera,
             ::Vector3 position, float size,
             ::Color tint = WHITE) const {
-        ::DrawBillboard(camera, *this, position, size, tint);
+        ::DrawBillboard(camera, m_data, position, size, tint);
     }
 
     /**
@@ -276,7 +208,7 @@ class TextureUnmanaged : public ::Texture {
     void DrawBillboard(const ::Camera& camera,
             ::Rectangle source, ::Vector3 position, ::Vector2 size,
             ::Color tint = WHITE) const {
-        DrawBillboardRec(camera, *this, source, position, size, tint);
+        DrawBillboardRec(camera, m_data, source, position, size, tint);
     }
 
     /**
@@ -288,22 +220,24 @@ class TextureUnmanaged : public ::Texture {
             ::Rectangle source, Vector3 position,
             ::Vector3 up, Vector2 size, Vector2 origin, float rotation = 0.0F,
             ::Color tint = WHITE) const {
-        DrawBillboardPro(camera, *this, source, position, up, size, origin, rotation, tint);
+        DrawBillboardPro(camera, m_data, source, position, up, size, origin, rotation, tint);
     }
 
     /**
      * Set texture for a material map type (MAP_DIFFUSE, MAP_SPECULAR...)
      */
+    /*
     TextureUnmanaged& SetMaterial(::Material &material, int mapType = MATERIAL_MAP_NORMAL) {
         ::SetMaterialTexture(&material, mapType, *this);
         return *this;
     }
+    */
 
     /**
      * Set texture and rectangle to be used on shapes drawing.
      */
     TextureUnmanaged& SetShapes(const ::Rectangle& source) {
-        ::SetShapesTexture(*this, source);
+        ::SetShapesTexture(m_data, source);
         return *this;
     }
 
@@ -311,7 +245,7 @@ class TextureUnmanaged : public ::Texture {
      * Set shader uniform value for texture (sampler2d)
      */
     TextureUnmanaged& SetShaderValue(const ::Shader& shader, int locIndex) {
-        ::SetShaderValueTexture(shader, locIndex, *this);
+        ::SetShaderValueTexture(shader, locIndex, m_data);
         return *this;
     }
 
@@ -321,17 +255,21 @@ class TextureUnmanaged : public ::Texture {
      * @return True or false depending on whether the Texture has data.
      */
     [[nodiscard]] bool IsReady() const {
-        return id != 0;
+        return m_data.id != 0;
     }
 
  protected:
     constexpr void set(const ::Texture& texture) {
-        id = texture.id;
-        width = texture.width;
-        height = texture.height;
-        mipmaps = texture.mipmaps;
-        format = texture.format;
+        m_data.id = texture.id;
+        m_data.width = texture.width;
+        m_data.height = texture.height;
+        m_data.mipmaps = texture.mipmaps;
+        m_data.format = texture.format;
     }
+
+    ::Texture m_data;
+
+    friend class Texture;
 };
 
 // Create the TextureUnmanaged aliases.

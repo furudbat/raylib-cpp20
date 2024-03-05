@@ -15,14 +15,14 @@ namespace raylib {
 /**
  * AudioStream management functions
  */
-class AudioStream : public ::AudioStream {
+class AudioStream {
  public:
     inline static constexpr uint32_t LoadDefaultChannels = 2;
     inline static constexpr float SetDefaultVolume = 1.0F;
     inline static constexpr float SetDefaultPan = 0.5F;
 
-    explicit constexpr AudioStream(const ::AudioStream& music) = delete;
-    explicit constexpr AudioStream(::AudioStream&& music = {
+    explicit constexpr AudioStream(owner<const ::AudioStream&> music) = delete;
+    explicit constexpr AudioStream(owner<::AudioStream&&> music = {
         .buffer = nullptr,
         .processor = nullptr,
         .sampleRate = 0,
@@ -43,7 +43,7 @@ class AudioStream : public ::AudioStream {
             owner<rAudioProcessor*> _processor = nullptr,
             unsigned int _sampleRate = 0,
             unsigned int _sampleSize = 0,
-            unsigned int _channels = 0) : ::AudioStream{_buffer, _processor, _sampleRate, _sampleSize, _channels} {
+            unsigned int _channels = 0) : m_data{_buffer, _processor, _sampleRate, _sampleSize, _channels} {
         // Nothing.
     }
 
@@ -58,23 +58,30 @@ class AudioStream : public ::AudioStream {
 
     constexpr AudioStream(const AudioStream&) = delete;
     constexpr AudioStream(AudioStream&& other) {
-        set(other);
+        set(other.m_data);
 
-        other.buffer = nullptr;
-        other.processor = nullptr;
-        other.sampleRate = 0;
-        other.sampleSize = 0;
-        other.channels = 0;
+        other.m_data.buffer = nullptr;
+        other.m_data.processor = nullptr;
+        other.m_data.sampleRate = 0;
+        other.m_data.sampleSize = 0;
+        other.m_data.channels = 0;
     }
     ~AudioStream() {
         Unload();
     }
 
-    GETTERSETTER(rAudioBuffer *, Buffer, buffer)
-    GETTERSETTER(rAudioProcessor *, Processor, processor)
-    GETTERSETTER(unsigned int, SampleRate, sampleRate)
-    GETTERSETTER(unsigned int, SampleSize, sampleSize)
-    GETTERSETTER(unsigned int, Channels, channels)
+    //explicit operator ::AudioStream() const {
+    //    return m_data;
+    //}
+    [[nodiscard]] ::AudioStream c_raylib() const & {
+        return m_data;
+    }
+
+    GETTERSETTER(rAudioBuffer *, Buffer, m_data.buffer)
+    GETTERSETTER(rAudioProcessor *, Processor, m_data.processor)
+    GETTERSETTER(unsigned int, SampleRate, m_data.sampleRate)
+    GETTERSETTER(unsigned int, SampleSize, m_data.sampleSize)
+    GETTERSETTER(unsigned int, Channels, m_data.channels)
 
     constexpr AudioStream& operator=(const ::AudioStream& stream) = delete;
     constexpr AudioStream& operator=(::AudioStream&& stream) {
@@ -95,13 +102,13 @@ class AudioStream : public ::AudioStream {
         }
 
         Unload();
-        set(other);
+        set(other.m_data);
 
-        other.buffer = nullptr;
-        other.processor = nullptr;
-        other.sampleRate = 0;
-        other.sampleSize = 0;
-        other.channels = 0;
+        other.m_data.buffer = nullptr;
+        other.m_data.processor = nullptr;
+        other.m_data.sampleRate = 0;
+        other.m_data.sampleSize = 0;
+        other.m_data.channels = 0;
 
         return *this;
     }
@@ -110,7 +117,7 @@ class AudioStream : public ::AudioStream {
      * Update audio stream buffers with data
      */
     AudioStream& Update(const void *data, int samplesCount) {
-        ::UpdateAudioStream(*this, data, samplesCount);
+        ::UpdateAudioStream(m_data, data, samplesCount);
         return *this;
     }
 
@@ -119,8 +126,8 @@ class AudioStream : public ::AudioStream {
      */
     void Unload() {
         if (IsReady()) {
-            ::UnloadAudioStream(*this);
-            buffer = nullptr;
+            ::UnloadAudioStream(m_data);
+            m_data.buffer = nullptr;
         }
     }
 
@@ -128,14 +135,14 @@ class AudioStream : public ::AudioStream {
      * Check if any audio stream buffers requires refill
      */
     [[nodiscard]] bool IsProcessed() const {
-        return ::IsAudioStreamProcessed(*this);
+        return ::IsAudioStreamProcessed(m_data);
     }
 
     /**
      * Play audio stream
      */
     AudioStream& Play() {
-        ::PlayAudioStream(*this);
+        ::PlayAudioStream(m_data);
         return *this;
     }
 
@@ -143,7 +150,7 @@ class AudioStream : public ::AudioStream {
      * Pause audio stream
      */
     AudioStream& Pause() {
-        ::PauseAudioStream(*this);
+        ::PauseAudioStream(m_data);
         return *this;
     }
 
@@ -151,7 +158,7 @@ class AudioStream : public ::AudioStream {
      * Resume audio stream
      */
     AudioStream& Resume() {
-        ::ResumeAudioStream(*this);
+        ::ResumeAudioStream(m_data);
         return *this;
     }
 
@@ -159,14 +166,14 @@ class AudioStream : public ::AudioStream {
      * Check if audio stream is playing
      */
     [[nodiscard]] bool IsPlaying() const {
-        return ::IsAudioStreamPlaying(*this);
+        return ::IsAudioStreamPlaying(m_data);
     }
 
     /**
      * Stop audio stream
      */
     AudioStream& Stop() {
-        ::StopAudioStream(*this);
+        ::StopAudioStream(m_data);
         return *this;
     }
 
@@ -174,7 +181,7 @@ class AudioStream : public ::AudioStream {
      * Set volume for audio stream (1.0 is max level)
      */
     AudioStream& SetVolume(float volume = SetDefaultVolume) {
-        ::SetAudioStreamVolume(*this, volume);
+        ::SetAudioStreamVolume(m_data, volume);
         return *this;
     }
 
@@ -182,7 +189,7 @@ class AudioStream : public ::AudioStream {
      * Set pitch for audio stream (1.0 is base level)
      */
     AudioStream& SetPitch(float pitch) {
-        ::SetAudioStreamPitch(*this, pitch);
+        ::SetAudioStreamPitch(m_data, pitch);
         return *this;
     }
 
@@ -190,7 +197,7 @@ class AudioStream : public ::AudioStream {
      * Set pan for audio stream (0.5 is centered)
      */
     AudioStream& SetPan(float pan = SetDefaultPan) {
-        ::SetAudioStreamPan(*this, pan);
+        ::SetAudioStreamPan(m_data, pan);
         return *this;
     }
 
@@ -205,28 +212,28 @@ class AudioStream : public ::AudioStream {
      * Audio thread callback to request new data
      */
     void SetCallback(::AudioCallback callback) {
-        ::SetAudioStreamCallback(*this, callback);
+        ::SetAudioStreamCallback(m_data, callback);
     }
 
     /**
      * Attach audio stream processor to stream
      */
     void AttachProcessor(::AudioCallback pProcessor) {
-        ::AttachAudioStreamProcessor(*this, pProcessor);
+        ::AttachAudioStreamProcessor(m_data, pProcessor);
     }
 
     /**
      * Detach audio stream processor from stream
      */
     void DetachProcessor(::AudioCallback pProcessor) {
-        ::DetachAudioStreamProcessor(*this, pProcessor);
+        ::DetachAudioStreamProcessor(m_data, pProcessor);
     }
 
     /**
      * Retrieve whether or not the audio stream is ready.
      */
     [[nodiscard]] bool IsReady() const {
-        return ::IsAudioStreamReady(*this);
+        return ::IsAudioStreamReady(m_data);
     }
 
     /**
@@ -245,12 +252,14 @@ class AudioStream : public ::AudioStream {
 
  protected:
     constexpr void set(const ::AudioStream& stream) noexcept {
-        buffer = stream.buffer;
-        processor = stream.processor;
-        sampleRate = stream.sampleRate;
-        sampleSize = stream.sampleSize;
-        channels = stream.channels;
+        m_data.buffer = stream.buffer;
+        m_data.processor = stream.processor;
+        m_data.sampleRate = stream.sampleRate;
+        m_data.sampleSize = stream.sampleSize;
+        m_data.channels = stream.channels;
     }
+
+    ::AudioStream m_data;
 };
 }  // namespace raylib
 

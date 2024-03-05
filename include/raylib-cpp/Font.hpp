@@ -16,14 +16,14 @@ namespace raylib {
 /**
  * Font type, includes texture and charSet array data
  */
-class Font : public ::Font {
+class Font {
  public:
     constexpr Font(int _baseSize,
             int _glyphCount,
             int _glyphPadding,
             owner<::Texture2D> _texture,
             owner<::Rectangle*> _recs = nullptr,
-            owner<::GlyphInfo*> _glyphs = nullptr) : ::Font{_baseSize, _glyphCount, _glyphPadding, _texture, _recs, _glyphs} {
+            owner<::GlyphInfo*> _glyphs = nullptr) : m_data{_baseSize, _glyphCount, _glyphPadding, _texture, _recs, _glyphs} {
         // Nothing.
     }
 
@@ -34,8 +34,8 @@ class Font : public ::Font {
         set(::GetFontDefault());
     }
 
-    constexpr Font(const ::Font& font) = delete;
-    constexpr Font(::Font&& font) {
+    explicit constexpr Font(owner<const ::Font&> font) = delete;
+    explicit constexpr Font(owner<::Font&&> font) {
         set(font);
 
         font.baseSize = 0;
@@ -85,6 +85,9 @@ class Font : public ::Font {
     Font(const ::Image& image, ::Color key, int firstChar) RAYLIB_CPP_THROWS {
         Load(image, key, firstChar);
     }
+    Font(const raylib::Image& image, ::Color key, int firstChar) RAYLIB_CPP_THROWS {
+        Load(image.c_raylib(), key, firstChar);
+    }
 
     /**
      * Loads a font from memory, based on the given file type and file data.
@@ -102,55 +105,8 @@ class Font : public ::Font {
         Load(fileType, fileData, fontSize, codepoints, codepointCount);
     }
 
-    constexpr Font(const Font&) = delete;
-    constexpr Font(Font&& other) {
-        set(other);
-
-        other.baseSize = 0;
-        other.glyphCount = 0;
-        other.glyphPadding = 0;
-        other.texture = NullTexture;
-        other.recs = nullptr;
-        other.glyphs = nullptr;
-    }
-    ~Font() {
-        Unload();
-    }
-
-    void Unload() {
-        if (texture.id != 0 && texture.id != GetFontDefault().texture.id) {
-            ::UnloadFont(*this);
-            texture.id = 0;
-            glyphs = nullptr;
-            glyphCount = 0;
-            recs = nullptr;
-        }
-    }
-
-    GETTERSETTER(int, BaseSize, baseSize)
-    GETTERSETTER(int, GlyphCount, glyphCount)
-    GETTERSETTER(int, GlyphPadding, glyphPadding)
-    SPAN_GETTER(::Rectangle, Recs, recs, glyphCount)
-    SPAN_GETTER(::GlyphInfo, Glyphs, glyphs, glyphCount)
-
-    /**
-     * Get the texture atlas containing the glyphs.
-     */
-    TextureUnmanaged GetTexture() {
-        return TextureUnmanaged{texture};
-    }
-
-    /**
-     * Set the texture atlas containing the glyphs.
-     */
-    constexpr void SetTexture(const ::Texture& newTexture) = delete;
-    constexpr void SetTexture(::Texture&& newTexture) {
-        texture = newTexture;
-        newTexture = NullTexture;
-    }
-
-    Font& operator=(const ::Font& font) = delete;
-    Font& operator=(::Font&& font) {
+    Font& operator=(owner<const ::Font&> font) = delete;
+    Font& operator=(owner<::Font&&> font) {
         Unload();
         set(font);
 
@@ -171,16 +127,70 @@ class Font : public ::Font {
         }
 
         Unload();
-        set(other);
+        set(other.m_data);
 
-        other.baseSize = 0;
-        other.glyphCount = 0;
-        other.glyphPadding = 0;
-        other.texture = NullTexture;
-        other.recs = nullptr;
-        other.glyphs = nullptr;
+        other.m_data.baseSize = 0;
+        other.m_data.glyphCount = 0;
+        other.m_data.glyphPadding = 0;
+        other.m_data.texture = NullTexture;
+        other.m_data.recs = nullptr;
+        other.m_data.glyphs = nullptr;
 
         return *this;
+    }
+
+    //explicit operator ::Font() const {
+    //    return m_data;
+    //}
+    [[nodiscard]] ::Font c_raylib() const & {
+        return m_data;
+    }
+
+    constexpr Font(const Font&) = delete;
+    constexpr Font(Font&& other) {
+        set(other.m_data);
+
+        other.m_data.baseSize = 0;
+        other.m_data.glyphCount = 0;
+        other.m_data.glyphPadding = 0;
+        other.m_data.texture = NullTexture;
+        other.m_data.recs = nullptr;
+        other.m_data.glyphs = nullptr;
+    }
+    ~Font() {
+        Unload();
+    }
+
+    void Unload() {
+        if (m_data.texture.id != 0 && m_data.texture.id != GetFontDefault().texture.id) {
+            ::UnloadFont(m_data);
+            m_data.texture.id = 0;
+            m_data.glyphs = nullptr;
+            m_data.glyphCount = 0;
+            m_data.recs = nullptr;
+        }
+    }
+
+    GETTERSETTER(int, BaseSize, m_data.baseSize)
+    GETTERSETTER(int, GlyphCount, m_data.glyphCount)
+    GETTERSETTER(int, GlyphPadding, m_data.glyphPadding)
+    SPAN_GETTER(::Rectangle, Recs, m_data.recs, m_data.glyphCount)
+    SPAN_GETTER(::GlyphInfo, Glyphs, m_data.glyphs, m_data.glyphCount)
+
+    /**
+     * Get the texture atlas containing the glyphs.
+     */
+    TextureUnmanaged GetTexture() {
+        return TextureUnmanaged{m_data.texture};
+    }
+
+    /**
+     * Set the texture atlas containing the glyphs.
+     */
+    constexpr void SetTexture(const ::Texture& newTexture) = delete;
+    constexpr void SetTexture(::Texture&& newTexture) {
+        m_data.texture = newTexture;
+        newTexture = NullTexture;
     }
 
     /**
@@ -256,7 +266,7 @@ class Font : public ::Font {
      * Returns if the font is ready to be used.
      */
     [[nodiscard]] bool IsReady() const {
-        return ::IsFontReady(*this);
+        return ::IsFontReady(m_data);
     }
 
     /**
@@ -264,7 +274,7 @@ class Font : public ::Font {
      */
     void DrawText(const char* text, ::Vector2 position, float fontSize,
                   float spacing, ::Color tint = WHITE) const {
-        ::DrawTextEx(*this, text, position,  fontSize,  spacing,  tint);
+        ::DrawTextEx(m_data, text, position,  fontSize,  spacing,  tint);
     }
 
     /**
@@ -272,7 +282,7 @@ class Font : public ::Font {
      */
     void DrawText(const std::string& text, ::Vector2 position, float fontSize,
                   float spacing, ::Color tint = WHITE) const {
-        ::DrawTextEx(*this, text.c_str(), position,  fontSize,  spacing,  tint);
+        ::DrawTextEx(m_data, text.c_str(), position,  fontSize,  spacing,  tint);
     }
 
     /**
@@ -280,7 +290,7 @@ class Font : public ::Font {
      */
     void DrawText(const char* text, int posX, int posY, float fontSize,
                   float spacing, ::Color tint = WHITE) const {
-        ::DrawTextEx(*this, text,
+        ::DrawTextEx(m_data, text,
             { .x = static_cast<float>(posX), .y = static_cast<float>(posY) },
             fontSize, spacing, tint);
     }
@@ -290,7 +300,7 @@ class Font : public ::Font {
      */
     void DrawText(const std::string& text, int posX, int posY, float fontSize,
                   float spacing, ::Color tint = WHITE) const {
-        ::DrawTextEx(*this, text.c_str(),
+        ::DrawTextEx(m_data, text.c_str(),
             { .x = static_cast<float>(posX), .y = static_cast<float>(posY) },
             fontSize, spacing, tint);
     }
@@ -303,7 +313,7 @@ class Font : public ::Font {
             float fontSize,
             float spacing,
             ::Color tint = WHITE) const {
-        ::DrawTextPro(*this, text,
+        ::DrawTextPro(m_data, text,
             position, origin,
             rotation, fontSize,
             spacing, tint);
@@ -317,7 +327,7 @@ class Font : public ::Font {
             float fontSize,
             float spacing,
             ::Color tint = WHITE) const {
-        ::DrawTextPro(*this, text.c_str(),
+        ::DrawTextPro(m_data, text.c_str(),
             position, origin,
             rotation, fontSize,
             spacing, tint);
@@ -330,7 +340,7 @@ class Font : public ::Font {
             ::Vector2 position,
             float fontSize,
             ::Color tint = WHITE) const {
-        ::DrawTextCodepoint(*this, codepoint, position, fontSize, tint);
+        ::DrawTextCodepoint(m_data, codepoint, position, fontSize, tint);
     }
 
     /**
@@ -340,7 +350,7 @@ class Font : public ::Font {
             ::Vector2 position,
             float fontSize, float spacing,
             ::Color tint = WHITE) const {
-        ::DrawTextCodepoints(*this,
+        ::DrawTextCodepoints(m_data,
             codepoints.data(), static_cast<int>(codepoints.size()),
             position, fontSize,
             spacing, tint);
@@ -350,48 +360,50 @@ class Font : public ::Font {
      * Measure string size for Font
      */
     Vector2 MeasureText(const char* text, float fontSize, float spacing) const {
-        return ::MeasureTextEx(*this, text, fontSize, spacing);
+        return ::MeasureTextEx(m_data, text, fontSize, spacing);
     }
 
     /**
      * Measure string size for Font
      */
     [[nodiscard]] Vector2 MeasureText(const std::string& text, float fontSize, float spacing) const {
-        return ::MeasureTextEx(*this, text.c_str(), fontSize, spacing);
+        return ::MeasureTextEx(m_data, text.c_str(), fontSize, spacing);
     }
 
     /**
      * Get index position for a unicode character on font
      */
     [[nodiscard]] int GetGlyphIndex(int character) const {
-        return ::GetGlyphIndex(*this, character);
+        return ::GetGlyphIndex(m_data, character);
     }
 
     /**
      * Create an image from text (custom sprite font)
      */
-    ::Image ImageText(const char* text, float fontSize,
+    raylib::Image ImageText(const char* text, float fontSize,
                       float spacing, ::Color tint) const {
-        return ::ImageTextEx(*this, text, fontSize, spacing, tint);
+        return raylib::Image{::ImageTextEx(m_data, text, fontSize, spacing, tint)};
     }
 
     /**
      * Create an image from text (custom sprite font)
      */
-    [[nodiscard]] ::Image ImageText(const std::string& text, float fontSize,
+    [[nodiscard]] raylib::Image ImageText(const std::string& text, float fontSize,
                                     float spacing, ::Color tint) const {
-        return ::ImageTextEx(*this, text.c_str(), fontSize, spacing, tint);
+        return raylib::Image{::ImageTextEx(m_data, text.c_str(), fontSize, spacing, tint)};
     }
 
  protected:
     constexpr void set(const ::Font& font) noexcept {
-        baseSize = font.baseSize;
-        glyphCount = font.glyphCount;
-        glyphPadding = font.glyphPadding;
-        texture = font.texture;
-        recs = font.recs;
-        glyphs = font.glyphs;
+        m_data.baseSize = font.baseSize;
+        m_data.glyphCount = font.glyphCount;
+        m_data.glyphPadding = font.glyphPadding;
+        m_data.texture = font.texture;
+        m_data.recs = font.recs;
+        m_data.glyphs = font.glyphs;
     }
+
+    ::Font m_data;
 };
 }  // namespace raylib
 
