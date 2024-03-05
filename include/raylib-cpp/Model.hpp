@@ -7,6 +7,7 @@
 #include "./raylib.hpp"
 #include "./raylib-cpp-utils.hpp"
 
+#include "./Mesh.hpp"
 #ifdef __cpp_exceptions
 #include "./RaylibException.hpp"
 #endif
@@ -19,7 +20,7 @@ class Mesh;
 /**
  * Model type
  */
-class Model : public ::Model {
+class Model {
  public:
     constexpr Model() = default;
 
@@ -54,15 +55,9 @@ class Model : public ::Model {
     Model(const ::Mesh& mesh) RAYLIB_CPP_THROWS {
         Load(mesh);
     }
-
-    /**
-     * The Model constructor with a Mesh() is removed.
-     *
-     * Use `raylib::MeshUnmanaged` or `::Mesh` instead, as raylib will take ownership of the data.
-     *
-     * @see raylib::MeshUnmanaged
-     */
-    Model(const raylib::Mesh& mesh) = delete;
+    Model(const raylib::Mesh& mesh) RAYLIB_CPP_THROWS {
+        Load(mesh);
+    }
 
     ~Model() {
         Unload();
@@ -70,30 +65,20 @@ class Model : public ::Model {
 
     constexpr Model(const Model&) = delete;
     Model(Model&& other) {
-        set(other);
+        set(other.m_data);
 
-        other.meshCount = 0;
-        other.materialCount = 0;
-        other.meshes = nullptr;
-        other.materials = nullptr;
-        other.meshMaterial = nullptr;
-        other.boneCount = 0;
-        other.bones = nullptr;
-        other.bindPose = nullptr;
+        other.m_data.meshCount = 0;
+        other.m_data.materialCount = 0;
+        other.m_data.meshes = nullptr;
+        other.m_data.materials = nullptr;
+        other.m_data.meshMaterial = nullptr;
+        other.m_data.boneCount = 0;
+        other.m_data.bones = nullptr;
+        other.m_data.bindPose = nullptr;
     }
 
-    GETTERSETTER(::Matrix, Transform, transform)
-    GETTERSETTER(int, MeshCount, meshCount)
-    GETTERSETTER(int, MaterialCount, materialCount)
-    GETTERSETTER(::Mesh*, Meshes, meshes)
-    GETTERSETTER(::Material*, Materials, materials)
-    GETTERSETTER(int*, MeshMaterial, meshMaterial)
-    GETTERSETTER(int, BoneCount, boneCount)
-    GETTERSETTER(::BoneInfo*, Bones, bones)
-    GETTERSETTER(::Transform*, BindPose, bindPose)
-
-    constexpr Model& operator=(const ::Model& model) = delete;
-    constexpr Model& operator=(::Model&& model) {
+    constexpr Model& operator=(owner<const ::Model&> model) = delete;
+    constexpr Model& operator=(owner<::Model&&> model) {
         set(model);
 
         model.meshCount = 0;
@@ -115,28 +100,45 @@ class Model : public ::Model {
         }
 
         Unload();
-        set(other);
+        set(other.m_data);
 
-        other.meshCount = 0;
-        other.materialCount = 0;
-        other.meshes = nullptr;
-        other.materials = nullptr;
-        other.meshMaterial = nullptr;
-        other.boneCount = 0;
-        other.bones = nullptr;
-        other.bindPose = nullptr;
+        other.m_data.meshCount = 0;
+        other.m_data.materialCount = 0;
+        other.m_data.meshes = nullptr;
+        other.m_data.materials = nullptr;
+        other.m_data.meshMaterial = nullptr;
+        other.m_data.boneCount = 0;
+        other.m_data.bones = nullptr;
+        other.m_data.bindPose = nullptr;
 
         return *this;
     }
+
+    //explicit operator ::Model() const {
+    //    return m_data;
+    //}
+    [[nodiscard]] ::Model c_raylib() const & {
+        return m_data;
+    }
+
+    GETTER(::Matrix, Transform, m_data.transform)
+    GETTER(int, MeshCount, m_data.meshCount)
+    GETTER(int, MaterialCount, m_data.materialCount)
+    SPAN_GETTER(::Mesh, Meshes, m_data.meshes, m_data.meshCount)
+    SPAN_GETTER(::Material, Materials, m_data.materials, m_data.materialCount)
+    CONST_GETTER(int*, MeshMaterial, m_data.meshMaterial)
+    GETTER(int, BoneCount, m_data.boneCount)
+    SPAN_GETTER(::BoneInfo, Bones, m_data.bones, m_data.boneCount)
+    CONST_GETTER(::Transform*, BindPose, m_data.bindPose)
 
     /**
      * Unload model (including meshes) from memory (RAM and/or VRAM)
      */
     void Unload() {
-        if (meshes != nullptr || materials != nullptr) {
-            ::UnloadModel(*this);
-            meshes = nullptr;
-            materials = nullptr;
+        if (m_data.meshes != nullptr || m_data.materials != nullptr) {
+            ::UnloadModel(m_data);
+            m_data.meshes = nullptr;
+            m_data.materials = nullptr;
         }
     }
 
@@ -144,7 +146,7 @@ class Model : public ::Model {
      * Set material for a mesh
      */
     Model& SetMeshMaterial(int meshId, int materialId) {
-        ::SetModelMeshMaterial(this, meshId, materialId);
+        ::SetModelMeshMaterial(&m_data, meshId, materialId);
         return *this;
     }
 
@@ -152,7 +154,7 @@ class Model : public ::Model {
      * Update model animation pose
      */
     Model& UpdateAnimation(const ::ModelAnimation& anim, int frame) {
-        ::UpdateModelAnimation(*this, anim, frame);
+        ::UpdateModelAnimation(m_data, anim, frame);
         return *this;
     }
 
@@ -160,7 +162,7 @@ class Model : public ::Model {
      * Check model animation skeleton match
      */
     [[nodiscard]] bool IsModelAnimationValid(const ::ModelAnimation& anim) const {
-        return ::IsModelAnimationValid(*this, anim);
+        return ::IsModelAnimationValid(m_data, anim);
     }
 
     /**
@@ -169,7 +171,7 @@ class Model : public ::Model {
     void Draw(::Vector3 position,
             float scale = 1.0F,
             ::Color tint = WHITE) const {
-        ::DrawModel(*this, position, scale, tint);
+        ::DrawModel(m_data, position, scale, tint);
     }
 
     /**
@@ -181,7 +183,7 @@ class Model : public ::Model {
             float rotationAngle = 0.0F,
             ::Vector3 scale = {1.0F, 1.0F, 1.0F},
             ::Color tint = {255, 255, 255, 255}) const {
-        ::DrawModelEx(*this, position, rotationAxis, rotationAngle, scale, tint);
+        ::DrawModelEx(m_data, position, rotationAxis, rotationAngle, scale, tint);
     }
 
     /**
@@ -190,7 +192,7 @@ class Model : public ::Model {
     void DrawWires(::Vector3 position,
             float scale = 1.0F,
             ::Color tint = WHITE) const {
-        ::DrawModelWires(*this, position, scale, tint);
+        ::DrawModelWires(m_data, position, scale, tint);
     }
 
     /**
@@ -202,28 +204,28 @@ class Model : public ::Model {
             float rotationAngle = 0.0F,
             ::Vector3 scale = {1.0F, 1.0F, 1.0F},
             ::Color tint = WHITE) const {
-        ::DrawModelWiresEx(*this, position, rotationAxis, rotationAngle, scale, tint);
+        ::DrawModelWiresEx(m_data, position, rotationAxis, rotationAngle, scale, tint);
     }
 
     /**
      * Compute model bounding box limits (considers all meshes)
      */
     [[nodiscard]] raylib::BoundingBox GetBoundingBox() const {
-        return raylib::BoundingBox{::GetModelBoundingBox(*this)};
+        return raylib::BoundingBox{::GetModelBoundingBox(m_data)};
     }
 
     /**
      * Compute model bounding box limits (considers all meshes)
      */
     explicit operator raylib::BoundingBox() const {
-        return raylib::BoundingBox{::GetModelBoundingBox(*this)};
+        return raylib::BoundingBox{::GetModelBoundingBox(m_data)};
     }
 
     /**
      * Determines whether or not the Model has data in it.
      */
     [[nodiscard]] bool IsReady() const {
-        return ::IsModelReady(*this);
+        return ::IsModelReady(m_data);
     }
 
     /**
@@ -251,21 +253,26 @@ class Model : public ::Model {
         }
         RAYLIB_CPP_RETURN_EXPECTED();
     }
+    inline RAYLIB_CPP_EXPECTED_RESULT(void) Load(const raylib::Mesh& mesh) RAYLIB_CPP_THROWS {
+        return Load(mesh.c_raylib());
+    }
 
  protected:
     constexpr void set(const ::Model& model) noexcept {
-        transform = model.transform;
+        m_data.transform = model.transform;
 
-        meshCount = model.meshCount;
-        materialCount = model.materialCount;
-        meshes = model.meshes;
-        materials = model.materials;
-        meshMaterial = model.meshMaterial;
+        m_data.meshCount = model.meshCount;
+        m_data.materialCount = model.materialCount;
+        m_data.meshes = model.meshes;
+        m_data.materials = model.materials;
+        m_data.meshMaterial = model.meshMaterial;
 
-        boneCount = model.boneCount;
-        bones = model.bones;
-        bindPose = model.bindPose;
+        m_data.boneCount = model.boneCount;
+        m_data.bones = model.bones;
+        m_data.bindPose = model.bindPose;
     }
+
+    ::Model m_data;
 };
 
 }  // namespace raylib

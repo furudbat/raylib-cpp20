@@ -42,28 +42,10 @@ class Matrix : public ::Matrix {
         // Nothing.
     }
 
-    GETTERSETTER(float, M0, m0)
-    GETTERSETTER(float, M1, m1)
-    GETTERSETTER(float, M2, m2)
-    GETTERSETTER(float, M3, m3)
-    GETTERSETTER(float, M4, m4)
-    GETTERSETTER(float, M5, m5)
-    GETTERSETTER(float, M6, m6)
-    GETTERSETTER(float, M7, m7)
-    GETTERSETTER(float, M8, m8)
-    GETTERSETTER(float, M9, m9)
-    GETTERSETTER(float, M10, m10)
-    GETTERSETTER(float, M11, m11)
-    GETTERSETTER(float, M12, m12)
-    GETTERSETTER(float, M13, m13)
-    GETTERSETTER(float, M14, m14)
-    GETTERSETTER(float, M15, m15)
-
     constexpr Matrix& operator=(const ::Matrix& matrix) {
         set(matrix);
         return *this;
     }
-
     constexpr Matrix& operator=(const Matrix& matrix) {
         set(matrix);
         return *this;
@@ -91,6 +73,29 @@ class Matrix : public ::Matrix {
     constexpr bool operator!=(const ::Matrix& other) {
         return !(*this == other);
     }
+
+    /*
+    explicit(false) operator ::Matrix() const {
+        return m_data;
+    }
+    */
+
+    GETTERSETTER(float, M0, m0)
+    GETTERSETTER(float, M1, m1)
+    GETTERSETTER(float, M2, m2)
+    GETTERSETTER(float, M3, m3)
+    GETTERSETTER(float, M4, m4)
+    GETTERSETTER(float, M5, m5)
+    GETTERSETTER(float, M6, m6)
+    GETTERSETTER(float, M7, m7)
+    GETTERSETTER(float, M8, m8)
+    GETTERSETTER(float, M9, m9)
+    GETTERSETTER(float, M10, m10)
+    GETTERSETTER(float, M11, m11)
+    GETTERSETTER(float, M12, m12)
+    GETTERSETTER(float, M13, m13)
+    GETTERSETTER(float, M14, m14)
+    GETTERSETTER(float, M15, m15)
 
 #ifndef RAYLIB_CPP_NO_MATH
     /**
@@ -196,16 +201,22 @@ class Matrix : public ::Matrix {
     /**
      * Set shader uniform value (matrix 4x4)
      */
+    /*
     Matrix& SetShaderValue(const ::Shader& shader, int uniformLoc) {
         ::SetShaderValueMatrix(shader, uniformLoc, *this);
         return *this;
     }
+    Matrix& SetShaderValue(const raylib::Shader& shader, int uniformLoc) {
+        ::SetShaderValueMatrix(shader.c_raylib(), uniformLoc, *this);
+        return *this;
+    }
+    */
 
-    static Matrix GetCamera(const ::Camera& camera) {
+    static Matrix FromCamera(const ::Camera& camera) {
         return ::GetCameraMatrix(camera);
     }
 
-    static Matrix GetCamera(const ::Camera2D& camera) {
+    static Matrix FromCamera(const ::Camera2D& camera) {
         return ::GetCameraMatrix2D(camera);
     }
 
@@ -231,6 +242,7 @@ class Matrix : public ::Matrix {
         m15 = mat.m15;
     }
 };
+
 }  // namespace raylib
 
 using RMatrix = raylib::Matrix;

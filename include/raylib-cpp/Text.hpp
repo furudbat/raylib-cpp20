@@ -86,6 +86,19 @@ class Text {
             spacing(pSpacing) {
         // Nothing.
     }
+    explicit Text(
+            const raylib::Font& pFont,
+            const std::string& pText = "",
+            float pFontSize = 10.0F,
+            float pSpacing = 0,
+            ::Color pColor = WHITE) :
+            text(pText),
+            fontSize(pFontSize),
+            color(pColor),
+            font(pFont.c_raylib()),
+            spacing(pSpacing) {
+        // Nothing.
+    }
 
     GETTERSETTER(std::string, Text, text)
     GETTERSETTER(float, FontSize, fontSize)

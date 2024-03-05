@@ -33,10 +33,10 @@ class Bunny {
         position.x += speed.x;
         position.y += speed.y;
 
-        if (((position.x + texBunny.width/2) > GetScreenWidth()) ||
-            ((position.x + texBunny.width/2) < 0)) speed.x *= -1;
-        if (((position.y + texBunny.height/2) > GetScreenHeight()) ||
-            ((position.y + texBunny.height/2 - 40) < 0)) speed.y *= -1;
+        if (((position.x + texBunny.GetWidth()/2) > GetScreenWidth()) ||
+            ((position.x + texBunny.GetWidth()/2) < 0)) speed.x *= -1;
+        if (((position.y + texBunny.GetHeight()/2) > GetScreenHeight()) ||
+            ((position.y + texBunny.GetHeight()/2 - 40) < 0)) speed.y *= -1;
     }
 
     Vector2 position;

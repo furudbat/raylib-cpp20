@@ -43,6 +43,19 @@
     constexpr type Get##method() && { return std::move(name); }
 #endif
 
+#ifndef COMPOSITION_METHODE_CALL
+#define COMPOSITION_METHODE_CALL(method, name) \
+    constexpr auto method(auto&&... args) { return name.method(std::forward<decltype(args)>(args)...); }
+#endif
+#ifndef CONST_COMPOSITION_METHODE_CALL
+#define CONST_COMPOSITION_METHODE_CALL(method, name) \
+    constexpr auto method(auto&&... args) const { return name.method(std::forward<decltype(args)>(args)...); }
+#endif
+#ifndef COMPOSITION_METHODE_CALL_RETURN_THIS
+#define COMPOSITION_METHODE_CALL_RETURN_THIS(method, name) \
+    constexpr auto& method(auto&&... args) { name.method(std::forward<decltype(args)>(args)...); return *this; }
+#endif
+
 #if defined(RAYLIB_CPP_INCLUDE_EXPECTED) || defined(RAYLIB_CPP_EXPECTED)
 #ifdef RAYLIB_CPP_INCLUDE_EXPECTED
 #include RAYLIB_CPP_INCLUDE_EXPECTED

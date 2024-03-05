@@ -8,8 +8,7 @@
 #include "./raylib.hpp"
 #include "./raylib-cpp-utils.hpp"
 #include "./BoundingBox.hpp"
-#include "./Model.hpp"
-#include "./MeshUnmanaged.hpp"
+#include "./Image.hpp"
 
 namespace raylib {
 
@@ -20,24 +19,24 @@ namespace raylib {
  *
  * @see raylib::MeshUnmanaged
  */
-class Mesh : public ::Mesh {
+class Mesh {
  public:
     constexpr Mesh() {
-        vertexCount = 0;
-        triangleCount = 0;
-        vertices = nullptr;
-        texcoords = nullptr;
-        texcoords2 = nullptr;
-        normals = nullptr;
-        tangents = nullptr;
-        colors = nullptr;
-        indices = nullptr;
-        animVertices = nullptr;
-        animNormals = nullptr;
-        boneIds = nullptr;
-        boneWeights = nullptr;
-        vaoId = 0;
-        vboId = nullptr;
+        m_data.vertexCount = 0;
+        m_data.triangleCount = 0;
+        m_data.vertices = nullptr;
+        m_data.texcoords = nullptr;
+        m_data.texcoords2 = nullptr;
+        m_data.normals = nullptr;
+        m_data.tangents = nullptr;
+        m_data.colors = nullptr;
+        m_data.indices = nullptr;
+        m_data.animVertices = nullptr;
+        m_data.animNormals = nullptr;
+        m_data.boneIds = nullptr;
+        m_data.boneWeights = nullptr;
+        m_data.vaoId = 0;
+        m_data.vboId = nullptr;
     }
 
     constexpr explicit Mesh(owner<const ::Mesh&> mesh) = delete;
@@ -63,24 +62,47 @@ class Mesh : public ::Mesh {
 
     constexpr Mesh(const Mesh&) = delete;
     constexpr Mesh(Mesh&& other) {
-        set(other);
+        set(other.m_data);
 
-        other.vertexCount = 0;
-        other.triangleCount = 0;
-        other.vertices = nullptr;
-        other.texcoords = nullptr;
-        other.texcoords2 = nullptr;
-        other.normals = nullptr;
-        other.tangents = nullptr;
-        other.colors = nullptr;
-        other.indices = nullptr;
-        other.animVertices = nullptr;
-        other.animNormals = nullptr;
-        other.boneIds = nullptr;
-        other.boneWeights = nullptr;
-        other.vaoId = 0;
-        other.vboId = nullptr;
+        other.m_data.vertexCount = 0;
+        other.m_data.triangleCount = 0;
+        other.m_data.vertices = nullptr;
+        other.m_data.texcoords = nullptr;
+        other.m_data.texcoords2 = nullptr;
+        other.m_data.normals = nullptr;
+        other.m_data.tangents = nullptr;
+        other.m_data.colors = nullptr;
+        other.m_data.indices = nullptr;
+        other.m_data.animVertices = nullptr;
+        other.m_data.animNormals = nullptr;
+        other.m_data.boneIds = nullptr;
+        other.m_data.boneWeights = nullptr;
+        other.m_data.vaoId = 0;
+        other.m_data.vboId = nullptr;
     }
+
+    //explicit operator ::Mesh() const {
+    //    return m_data;
+    //}
+    [[nodiscard]] ::Mesh c_raylib() const & {
+        return m_data;
+    }
+
+    GETTER(int, VertexCount, m_data.vertexCount)
+    GETTER(int, TriangleCount, m_data.triangleCount)
+    CONST_GETTER(float*, Vertices, m_data.vertices)
+    CONST_GETTER(float *, TexCoords, m_data.texcoords)
+    CONST_GETTER(float *, TexCoords2, m_data.texcoords2)
+    CONST_GETTER(float *, Normals, m_data.normals)
+    CONST_GETTER(float *, Tangents, m_data.tangents)
+    CONST_GETTER(unsigned char *, Colors, m_data.colors)
+    CONST_GETTER(unsigned short *, Indices, m_data.indices) // NOLINT
+    CONST_GETTER(float *, AnimVertices, m_data.animVertices)
+    CONST_GETTER(float *, AnimNormals, m_data.animNormals)
+    CONST_GETTER(unsigned char *, BoneIds, m_data.boneIds)
+    CONST_GETTER(float *, BoneWeights, m_data.boneWeights)
+    GETTER(unsigned int, VaoId, m_data.vaoId)
+    CONST_GETTER(unsigned int *, VboId, m_data.vboId)
 
     /**
      * Generate polygonal mesh
@@ -151,6 +173,9 @@ class Mesh : public ::Mesh {
     static raylib::Mesh Heightmap(const ::Image& heightmap, ::Vector3 size) {
         return raylib::Mesh{::GenMeshHeightmap(heightmap, size)};
     }
+    static raylib::Mesh Heightmap(const raylib::Image& heightmap, ::Vector3 size) {
+        return raylib::Mesh{::GenMeshHeightmap(heightmap.c_raylib(), size)};
+    }
 
     /**
      * Generate cubes-based map mesh from image data
@@ -158,22 +183,9 @@ class Mesh : public ::Mesh {
     static raylib::Mesh Cubicmap(const ::Image& cubicmap, ::Vector3 cubeSize) {
         return raylib::Mesh{::GenMeshCubicmap(cubicmap, cubeSize)};
     }
-
-    GETTERSETTER(int, VertexCount, vertexCount)
-    GETTERSETTER(int, TriangleCount, triangleCount)
-    GETTERSETTER(float*, Vertices, vertices)
-    GETTERSETTER(float *, TexCoords, texcoords)
-    GETTERSETTER(float *, TexCoords2, texcoords2)
-    GETTERSETTER(float *, Normals, normals)
-    GETTERSETTER(float *, Tangents, tangents)
-    GETTERSETTER(unsigned char *, Colors, colors)
-    GETTERSETTER(unsigned short *, Indices, indices) // NOLINT
-    GETTERSETTER(float *, AnimVertices, animVertices)
-    GETTERSETTER(float *, AnimNormals, animNormals)
-    GETTERSETTER(unsigned char *, BoneIds, boneIds)
-    GETTERSETTER(float *, BoneWeights, boneWeights)
-    GETTERSETTER(unsigned int, VaoId, vaoId)
-    GETTERSETTER(unsigned int *, VboId, vboId)
+    static raylib::Mesh Cubicmap(const raylib::Image& cubicmap, ::Vector3 cubeSize) {
+        return raylib::Mesh{::GenMeshCubicmap(cubicmap.c_raylib(), cubeSize)};
+    }
 
     constexpr Mesh& operator=(const ::Mesh& mesh) {
         set(mesh);
@@ -187,23 +199,23 @@ class Mesh : public ::Mesh {
         }
 
         Unload();
-        set(other);
+        set(other.m_data);
 
-        other.vertexCount = 0;
-        other.triangleCount = 0;
-        other.vertices = nullptr;
-        other.texcoords = nullptr;
-        other.texcoords2 = nullptr;
-        other.normals = nullptr;
-        other.tangents = nullptr;
-        other.colors = nullptr;
-        other.indices = nullptr;
-        other.animVertices = nullptr;
-        other.animNormals = nullptr;
-        other.boneIds = nullptr;
-        other.boneWeights = nullptr;
-        other.vaoId = 0;
-        other.vboId = nullptr;
+        other.m_data.vertexCount = 0;
+        other.m_data.triangleCount = 0;
+        other.m_data.vertices = nullptr;
+        other.m_data.texcoords = nullptr;
+        other.m_data.texcoords2 = nullptr;
+        other.m_data.normals = nullptr;
+        other.m_data.tangents = nullptr;
+        other.m_data.colors = nullptr;
+        other.m_data.indices = nullptr;
+        other.m_data.animVertices = nullptr;
+        other.m_data.animNormals = nullptr;
+        other.m_data.boneIds = nullptr;
+        other.m_data.boneWeights = nullptr;
+        other.m_data.vaoId = 0;
+        other.m_data.vboId = nullptr;
 
         return *this;
     }
@@ -217,19 +229,19 @@ class Mesh : public ::Mesh {
      */
     [[deprecated("Use Upload(UploadOption)")]]
     void Upload(bool dynamic = false) {
-        ::UploadMesh(this, dynamic);
+        ::UploadMesh(&m_data, dynamic);
     }
 
     enum class UploadOption : bool { Static = false, Dynamic = true};
     void Upload(UploadOption dynamic = UploadOption::Static) {
-        ::UploadMesh(this, dynamic == UploadOption::Dynamic);
+        ::UploadMesh(&m_data, dynamic == UploadOption::Dynamic);
     }
 
     /**
      * Upload mesh vertex data to GPU (VRAM)
      */
     void UpdateBuffer(int index, void *data, int dataSize, int offset = 0) {
-        ::UpdateMeshBuffer(*this, index, data, dataSize, offset);
+        ::UpdateMeshBuffer(m_data, index, data, dataSize, offset);
     }
     /// @FIXME: can't use std::span<void>
     /*
@@ -242,14 +254,14 @@ class Mesh : public ::Mesh {
      * Draw a 3d mesh with material and transform
      */
     void Draw(const ::Material& material, const ::Matrix& transform) const {
-        ::DrawMesh(*this, material, transform);
+        ::DrawMesh(m_data, material, transform);
     }
 
     /**
      * Draw multiple mesh instances with material and different transforms
      */
     void Draw(const ::Material& material, ::Matrix* transforms, int instances) const {
-        ::DrawMeshInstanced(*this, material, transforms, instances);
+        ::DrawMeshInstanced(m_data, material, transforms, instances);
     }
 
     /**
@@ -258,7 +270,7 @@ class Mesh : public ::Mesh {
      * @throws raylib::RaylibException Throws if failed to export the Mesh.
      */
     RAYLIB_CPP_EXPECTED_RESULT(void) Export(const std::string& fileName) RAYLIB_CPP_THROWS {
-        if (!::ExportMesh(*this, fileName.c_str())) {
+        if (!::ExportMesh(m_data, fileName.c_str())) {
             RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to export the Mesh"));
         }
         RAYLIB_CPP_RETURN_EXPECTED();
@@ -268,9 +280,9 @@ class Mesh : public ::Mesh {
      * Unload mesh from memory (RAM and/or VRAM)
      */
     void Unload() {
-        if (vboId != nullptr) {
-            ::UnloadMesh(*this);
-            vboId = nullptr;
+        if (m_data.vboId != nullptr) {
+            ::UnloadMesh(m_data);
+            m_data.vboId = nullptr;
         }
     }
 
@@ -278,7 +290,7 @@ class Mesh : public ::Mesh {
      * Compute mesh bounding box limits
      */
     [[nodiscard]] raylib::BoundingBox BoundingBox() const {
-        return raylib::BoundingBox{::GetMeshBoundingBox(*this)};
+        return raylib::BoundingBox{::GetMeshBoundingBox(m_data)};
     }
 
     /**
@@ -292,42 +304,49 @@ class Mesh : public ::Mesh {
      * Compute mesh tangents
      */
     Mesh& GenTangents() {
-        ::GenMeshTangents(this);
+        ::GenMeshTangents(&m_data);
         return *this;
     }
 
-    /**
-     * Load model from generated mesh
-     */
-    [[nodiscard]] raylib::Model LoadModelFrom() const {
-        return raylib::Model{::LoadModelFromMesh(*this)};
-    }
 
     /**
      * Load model from generated mesh
      */
-    explicit operator raylib::Model() const {
-        return raylib::Model{::LoadModelFromMesh(*this)};
+    /*
+    [[nodiscard]] raylib::Model LoadFromMesh() const {
+        return raylib::Model{::LoadModelFromMesh(m_data)};
     }
+    */
+
+    /**
+     * Load model from generated mesh
+     */
+    /*
+    explicit operator raylib::Model() const {
+        return raylib::Model{::LoadModelFromMesh(m_data)};
+    }
+    */
 
  protected:
     constexpr void set(const ::Mesh& mesh) {
-        vertexCount = mesh.vertexCount;
-        triangleCount = mesh.triangleCount;
-        vertices = mesh.vertices;
-        texcoords = mesh.texcoords;
-        texcoords2 = mesh.texcoords2;
-        normals = mesh.normals;
-        tangents = mesh.tangents;
-        colors = mesh.colors;
-        indices = mesh.indices;
-        animVertices = mesh.animVertices;
-        animNormals = mesh.animNormals;
-        boneIds = mesh.boneIds;
-        boneWeights = mesh.boneWeights;
-        vaoId = mesh.vaoId;
-        vboId = mesh.vboId;
+        m_data.vertexCount = mesh.vertexCount;
+        m_data.triangleCount = mesh.triangleCount;
+        m_data.vertices = mesh.vertices;
+        m_data.texcoords = mesh.texcoords;
+        m_data.texcoords2 = mesh.texcoords2;
+        m_data.normals = mesh.normals;
+        m_data.tangents = mesh.tangents;
+        m_data.colors = mesh.colors;
+        m_data.indices = mesh.indices;
+        m_data.animVertices = mesh.animVertices;
+        m_data.animNormals = mesh.animNormals;
+        m_data.boneIds = mesh.boneIds;
+        m_data.boneWeights = mesh.boneWeights;
+        m_data.vaoId = mesh.vaoId;
+        m_data.vboId = mesh.vboId;
     }
+
+    ::Mesh m_data;
 };
 }  // namespace raylib
 

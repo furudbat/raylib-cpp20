@@ -15,7 +15,7 @@ class Ray : public ::Ray {
         set(ray);
     }
 
-    explicit constexpr Ray(::Vector3 _position = {0.0F, 0.0F, 0.0F}, ::Vector3 _direction = {0.0F, 0.0F, 0.0F}) :
+    explicit constexpr Ray(const ::Vector3& _position = {0.0F, 0.0F, 0.0F}, const ::Vector3& _direction = {0.0F, 0.0F, 0.0F}) :
             ::Ray{_position, _direction} {
         // Nothing.
     }
@@ -28,6 +28,12 @@ class Ray : public ::Ray {
         set(ray);
         return *this;
     }
+
+    /*
+    explicit(false) operator ::Ray() const {
+        return m_data;
+    }
+    */
 
     GETTERSETTER(::Vector3, Position, position)
     GETTERSETTER(::Vector3, Direction, direction)
@@ -94,6 +100,7 @@ class Ray : public ::Ray {
         direction = ray.direction;
     }
 };
+
 }  // namespace raylib
 
 using RRay = raylib::Ray;

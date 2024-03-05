@@ -31,7 +31,7 @@ int main(void)
     // NOTE: On 2D drawing it won't be noticeable, it looks like FILTER_BILINEAR
     font.GetTexture().GenMipmaps();
 
-    raylib::Text msg("Loaded Font", font.GetBaseSize(), BLACK, font);
+    raylib::Text msg("Loaded Font", font.GetBaseSize(), BLACK);
 
     Vector2 fontPosition = { 40.0f, screenHeight/2.0f - 80.0f };
     Vector2 textSize = { 0.0f, 0.0f };
@@ -76,7 +76,8 @@ int main(void)
         // Load a dropped TTF file dynamically (at current fontSize)
         for (const auto& file : raylib::LoadDroppedFiles()) {
             if (raylib::IsFileExtension(file, ".ttf")) {
-                msg.font = font = raylib::Font(file, font.GetBaseSize());
+                font = raylib::Font(file, font.GetBaseSize());
+                msg.font = font.c_raylib();
             }
         }
         //----------------------------------------------------------------------------------

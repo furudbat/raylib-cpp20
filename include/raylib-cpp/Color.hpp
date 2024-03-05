@@ -93,6 +93,12 @@ class Color : public ::Color {
         return ToString();
     }
 
+    /*
+    explicit(false) operator ::Color() const {
+        return *this;
+    }
+    */
+
     /**
      * Returns color with alpha applied, alpha goes from 0.0f to 1.0f
      */
@@ -176,7 +182,7 @@ class Color : public ::Color {
         ::DrawLineEx(startPos, endPos, thick, *this);
     }
 
-    void DrawLineBezier(::Vector2 startPos, ::Vector2 endPos, float thick = 1.0f) const {
+    void DrawLineBezier(::Vector2 startPos, ::Vector2 endPos, float thick = 1.0F) const {
         ::DrawLineBezier(startPos, endPos, thick, *this);
     }
 
@@ -184,11 +190,11 @@ class Color : public ::Color {
         ::DrawLineStrip(points, numPoints, *this);
     }
 
-    void DrawText(const char* text, int posX = 0, int posY = 0, int fontSize = 10.0f) const {
+    void DrawText(const char* text, int posX = 0, int posY = 0, int fontSize = 10.0F) const {
         ::DrawText(text, posX, posY, fontSize, *this);
     }
 
-    void DrawText(const std::string& text, int posX = 0, int posY = 0, int fontSize = 10.0f) const {
+    void DrawText(const std::string& text, int posX = 0, int posY = 0, int fontSize = 10.0F) const {
         ::DrawText(text.c_str(), posX, posY, fontSize, *this);
     }
 

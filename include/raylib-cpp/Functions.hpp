@@ -242,14 +242,14 @@ struct LoadImageAnimResult { raylib::Image image; int frames; };
  * Export image data to file
  */
 [[maybe_unused]] RLCPPAPI inline bool ExportImage(const raylib::Image& image, const std::filesystem::path& fileName) {
-    return ::ExportImage(image, fileName.c_str());
+    return ::ExportImage(image.c_raylib(), fileName.c_str());
 }
 
 /**
  * Export image as code file (.h) defining an array of bytes
  */
 [[maybe_unused]] RLCPPAPI inline bool ExportImageAsCode(const raylib::Image& image, const std::filesystem::path& fileName) {
-    return ::ExportImageAsCode(image, fileName.c_str());
+    return ::ExportImageAsCode(image.c_raylib(), fileName.c_str());
 }
 
 /**
@@ -273,33 +273,33 @@ struct LoadImageAnimResult { raylib::Image image; int frames; };
 /**
  * Draw text using font and additional parameters
  */
-[[maybe_unused]] RLCPPAPI inline void DrawTextEx(const Font& font, const char* text, Vector2 position,
+[[maybe_unused]] RLCPPAPI inline void DrawTextEx(const Font& font, const char* text, ::Vector2 position,
                                                  float fontSize, float spacing, ::Color tint) {
-    ::DrawTextEx(font, text, position, fontSize, spacing, tint);
+    ::DrawTextEx(font.c_raylib(), text, position, fontSize, spacing, tint);
 }
 
 /**
  * Draw text using font and additional parameters
  */
-[[maybe_unused]] RLCPPAPI inline void DrawTextEx(const Font& font, const std::string& text, Vector2 position,
+[[maybe_unused]] RLCPPAPI inline void DrawTextEx(const Font& font, const std::string& text, ::Vector2 position,
         float fontSize, float spacing, ::Color tint) {
-    ::DrawTextEx(font, text.c_str(), position, fontSize, spacing, tint);
+    ::DrawTextEx(font.c_raylib(), text.c_str(), position, fontSize, spacing, tint);
 }
 
 /**
  * Draw text using Font and pro parameters (rotation)
  */
-[[maybe_unused]] RLCPPAPI inline void DrawTextPro(const Font& font, const char* text, Vector2 position,
-        Vector2 origin, float rotation, float fontSize, float spacing, ::Color tint) {
-    ::DrawTextPro(font, text, position, origin, rotation, fontSize, spacing, tint);
+[[maybe_unused]] RLCPPAPI inline void DrawTextPro(const Font& font, const char* text, ::Vector2 position,
+        ::Vector2 origin, float rotation, float fontSize, float spacing, ::Color tint) {
+    ::DrawTextPro(font.c_raylib(), text, position, origin, rotation, fontSize, spacing, tint);
 }
 
 /**
  * Draw text using Font and pro parameters (rotation)
  */
-[[maybe_unused]] RLCPPAPI inline void DrawTextPro(const Font& font, const std::string& text, Vector2 position,
-        Vector2 origin, float rotation, float fontSize, float spacing, ::Color tint) {
-    ::DrawTextPro(font, text.c_str(), position, origin, rotation, fontSize, spacing, tint);
+[[maybe_unused]] RLCPPAPI inline void DrawTextPro(const Font& font, const std::string& text, ::Vector2 position,
+        ::Vector2 origin, float rotation, float fontSize, float spacing, ::Color tint) {
+    ::DrawTextPro(font.c_raylib(), text.c_str(), position, origin, rotation, fontSize, spacing, tint);
 }
 
 /**

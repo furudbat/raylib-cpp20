@@ -17,19 +17,19 @@ namespace raylib {
 /**
  * AutomationEventList management functions
  */
-class AutomationEventList : public ::AutomationEventList {
+class AutomationEventList {
  public:
     inline static constexpr int DefaultCapacity = 16384;
 
     [[deprecated("Use AutomationEventList(automationEventList)")]]
     explicit constexpr AutomationEventList(uint32_t _capacity,
                                  uint32_t _count = 0,
-                                 owner<AutomationEvent*> _events = nullptr) : ::AutomationEventList{_capacity, _count, _events} {
+                                 owner<AutomationEvent*> _events = nullptr) : m_data{_capacity, _count, _events} {
         // Nothing.
     }
 
-    constexpr AutomationEventList(const ::AutomationEventList& automationEventList) = delete;
-    constexpr AutomationEventList(::AutomationEventList&& automationEventList = {
+    constexpr AutomationEventList(owner<const ::AutomationEventList&> automationEventList) = delete;
+    constexpr AutomationEventList(owner<::AutomationEventList&&> automationEventList = {
             .capacity = DefaultCapacity,
             .count = 0,
             .events = nullptr,
@@ -43,23 +43,26 @@ class AutomationEventList : public ::AutomationEventList {
 
     constexpr AutomationEventList(const AutomationEventList&) = delete;
     constexpr AutomationEventList(AutomationEventList&& other) {
-        set(other);
+        set(other.m_data);
 
-        other.capacity = 0;
-        other.count = 0;
-        other.events = nullptr;
+        other.m_data.capacity = 0;
+        other.m_data.count = 0;
+        other.m_data.events = nullptr;
     }
     ~AutomationEventList() {
         Unload();
     }
 
+    //explicit operator ::AutomationEventList() const {
+    //    return m_data;
+    //}
+    [[nodiscard]] ::AutomationEventList c_raylib() const & {
+        return m_data;
+    }
+
     explicit AutomationEventList(const std::filesystem::path& fileName) RAYLIB_CPP_THROWS {
         Load(fileName.c_str());
     }
-
-    GETTERSETTER(unsigned int, Capacity, capacity)
-    GETTERSETTER(unsigned int, Count, count)
-    GETTERSETTER(AutomationEvent*, Events, events)
 
     constexpr AutomationEventList& operator=(const ::AutomationEventList& other) = delete;
     constexpr AutomationEventList& operator=(::AutomationEventList&& other) {
@@ -79,14 +82,18 @@ class AutomationEventList : public ::AutomationEventList {
         }
 
         Unload();
-        set(other);
+        set(other.m_data);
 
-        other.capacity = 0;
-        other.count = 0;
-        other.events = nullptr;
+        other.m_data.capacity = 0;
+        other.m_data.count = 0;
+        other.m_data.events = nullptr;
 
         return *this;
     }
+
+    GETTERSETTER(unsigned int, Capacity, m_data.capacity)
+    GETTERSETTER(unsigned int, Count, m_data.count)
+    SPAN_GETTER(AutomationEvent, Events, m_data.events, m_data.capacity)
 
     /**
      * Load audio stream (to stream raw audio pcm data)
@@ -113,25 +120,25 @@ class AutomationEventList : public ::AutomationEventList {
         // The function signature of UnloadAutomationEventList() changes from raylib 5.0.
         #if RAYLIB_VERSION_MAJOR == 5
             #if RAYLIB_VERSION_MINOR == 0
-                ::UnloadAutomationEventList(this);
+                ::UnloadAutomationEventList(&m_data);
             #elif RAYLIB_VERSION_MINOR >= 1
-                ::UnloadAutomationEventList(*this);
+                ::UnloadAutomationEventList(m_data);
             #endif
         #else
-            ::UnloadAutomationEventList(*this);
+            ::UnloadAutomationEventList(m_data);
         #endif
     }
 
     bool IsReady() {
-        return events != nullptr;
+        return m_data.events != nullptr;
     }
 
     bool Export(const std::filesystem::path& fileName) {
-        return ::ExportAutomationEventList(*this, fileName.c_str());
+        return ::ExportAutomationEventList(m_data, fileName.c_str());
     }
 
     void Set() {
-        ::SetAutomationEventList(this);
+        ::SetAutomationEventList(&m_data);
     }
 
     void SetBaseFrame(int frame) {
@@ -150,20 +157,22 @@ class AutomationEventList : public ::AutomationEventList {
     }
 
     void Play(int index) {
-        if (index < 0 || std::cmp_greater_equal(index, count)) {
+        if (index < 0 || std::cmp_greater_equal(index, m_data.count)) {
             return;
         }
 
         Set();
-        ::PlayAutomationEvent(events[index]);
+        ::PlayAutomationEvent(m_data.events[index]);
     }
 
  protected:
     constexpr void set(const ::AutomationEventList& other) noexcept {
-        capacity = other.capacity;
-        count = other.count;
-        events = other.events;
+        m_data.capacity = other.capacity;
+        m_data.count = other.count;
+        m_data.events = other.events;
     }
+
+    ::AutomationEventList m_data;
 };
 }  // namespace raylib
 

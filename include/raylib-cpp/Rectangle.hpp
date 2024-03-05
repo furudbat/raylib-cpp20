@@ -43,16 +43,19 @@ class Rectangle : public ::Rectangle {
         return *this;
     }
 
-    /// @FIXME: Rectangle is already included in Vector4
     /*
+    explicit(false) operator ::Rectangle() const {
+        return *this;
+    }
+    */
+
     [[nodiscard]] constexpr raylib::Vector4 ToVector4() {
-        return raylib::Vector4{{.x = x, .y = y, .width = width, .height = height}};
+        return raylib::Vector4{{.x = x, .y = y, .z = width, .w = height}};
     }
 
     explicit constexpr operator raylib::Vector4() const {
-        return raylib::Vector4{{.x = x, .y = y, .width = width, .height = height}};
+        return raylib::Vector4{{.x = x, .y = y, .z = width, .w = height}};
     }
-    */
 
     /**
      * Draw a color-filled rectangle

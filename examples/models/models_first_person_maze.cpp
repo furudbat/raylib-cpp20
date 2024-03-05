@@ -30,7 +30,7 @@ int main(void)
 
     // NOTE: By default each cube is mapped to one part of texture atlas
     raylib::Texture texture("resources/cubicmap_atlas.png");    // Load map texture
-    model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = texture;     // Set map diffuse texture
+    model.GetMaterials()[0].maps[MATERIAL_MAP_DIFFUSE].texture = texture.c_raylib();     // Set map diffuse texture
 
     // Get map image data to be used for collision detection
     auto mapPixels = imMap.LoadColors();
@@ -60,20 +60,20 @@ int main(void)
 
         // Out-of-limits security check
         if (playerCellX < 0) playerCellX = 0;
-        else if (playerCellX >= cubicmap.width) playerCellX = cubicmap.width - 1;
+        else if (playerCellX >= cubicmap.GetWidth()) playerCellX = cubicmap.GetWidth() - 1;
 
         if (playerCellY < 0) playerCellY = 0;
-        else if (playerCellY >= cubicmap.height) playerCellY = cubicmap.height - 1;
+        else if (playerCellY >= cubicmap.GetHeight()) playerCellY = cubicmap.GetHeight() - 1;
 
         // Check map collisions using image data and player position
         // TODO: Improvement: Just check player surrounding cells for collision
-        for (int y = 0; y < cubicmap.height; y++)
+        for (int y = 0; y < cubicmap.GetHeight(); y++)
         {
-            for (int x = 0; x < cubicmap.width; x++)
+            for (int x = 0; x < cubicmap.GetWidth(); x++)
             {
                 std::span data = mapPixels.AsSpan();
                 /// @TODO: check data for size
-                if ((data[y*cubicmap.width + x].r == 255) &&       // Collision: white pixel, only check R channel
+                if ((data[y*cubicmap.GetWidth() + x].r == 255) &&       // Collision: white pixel, only check R channel
                     (playerPos.CheckCollisionCircle(playerRadius,
                     Rectangle{ mapPosition.x - 0.5f + x*1.0f, mapPosition.z - 0.5f + y*1.0f, 1.0f, 1.0f })))
                 {
@@ -97,11 +97,11 @@ int main(void)
             }
             camera.EndMode();
 
-            cubicmap.Draw(Vector2{ static_cast<float>(GetScreenWidth() - cubicmap.width*4 - 20), 20 }, 0.0f, 4.0f, WHITE);
-            DrawRectangleLines(GetScreenWidth() - cubicmap.width*4 - 20, 20, cubicmap.width*4, cubicmap.height*4, GREEN);
+            cubicmap.Draw(Vector2{ static_cast<float>(GetScreenWidth() - cubicmap.GetWidth()*4 - 20), 20 }, 0.0f, 4.0f, WHITE);
+            DrawRectangleLines(GetScreenWidth() - cubicmap.GetWidth()*4 - 20, 20, cubicmap.GetWidth()*4, cubicmap.GetHeight()*4, GREEN);
 
             // Draw player position radar
-            DrawRectangle(GetScreenWidth() - cubicmap.width*4 - 20 + playerCellX*4, 20 + playerCellY*4, 4, 4, RED);
+            DrawRectangle(GetScreenWidth() - cubicmap.GetWidth()*4 - 20 + playerCellX*4, 20 + playerCellY*4, 4, 4, RED);
 
             DrawFPS(10, 10);
         }

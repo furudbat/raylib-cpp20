@@ -22,6 +22,23 @@ class Camera2D : public ::Camera2D {
     constexpr Camera2D(::Vector2 pOffset, ::Vector2 pTarget,
                        float pRotation = DefaultRotation, float pZoom = DefaultZoom) : ::Camera2D{pOffset, pTarget, pRotation, pZoom} {}
 
+    /*
+    explicit(false) operator ::Camera2D() const {
+        return *this;
+    }
+    */
+
+    constexpr Camera2D& operator=(const ::Camera2D& camera) {
+        set(camera);
+        return *this;
+    }
+
+
+    GETTERSETTER(::Vector2, Offset, offset)
+    GETTERSETTER(::Vector2, Target, target)
+    GETTERSETTER(float, Rotation, rotation)
+    GETTERSETTER(float, Zoom, zoom)
+
     Camera2D& BeginMode() {
         ::BeginMode2D(*this);
         return *this;
@@ -29,16 +46,6 @@ class Camera2D : public ::Camera2D {
 
     Camera2D& EndMode() {
         ::EndMode2D();
-        return *this;
-    }
-
-    GETTERSETTER(::Vector2, Offset, offset)
-    GETTERSETTER(::Vector2, Target, target)
-    GETTERSETTER(float, Rotation, rotation)
-    GETTERSETTER(float, Zoom, zoom)
-
-    constexpr Camera2D& operator=(const ::Camera2D& camera) {
-        set(camera);
         return *this;
     }
 

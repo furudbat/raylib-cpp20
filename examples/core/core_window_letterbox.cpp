@@ -57,7 +57,9 @@ int main(void)
         // Update
         //----------------------------------------------------------------------------------
         // Compute required framebuffer scaling
-        float scale = MIN((float)GetScreenWidth()/gameScreenWidth, (float)GetScreenHeight()/gameScreenHeight);
+        float scale = std::min<float>(static_cast<const float>(GetScreenWidth()) / static_cast<float>(gameScreenWidth),
+                                      static_cast<const float>(GetScreenHeight()) /
+                                      static_cast<float>(gameScreenHeight));
 
         if (IsKeyPressed(KEY_SPACE))
         {
@@ -68,8 +70,8 @@ int main(void)
         // Update virtual mouse (clamped mouse value behind game screen)
         raylib::Vector2 mouse = raylib::Mouse::GetPosition();
         raylib::Vector2 virtualMouse(
-            (mouse.x - (GetScreenWidth() - (gameScreenWidth*scale))*0.5f)/scale,
-            (mouse.y - (GetScreenHeight() - (gameScreenHeight*scale))*0.5f)/scale
+            (mouse.GetX() - (GetScreenWidth() - (gameScreenWidth*scale))*0.5f)/scale,
+            (mouse.GetY() - (GetScreenHeight() - (gameScreenHeight*scale))*0.5f)/scale
         );
         virtualMouse = virtualMouse.Clamp(raylib::Vector2::Zero(), raylib::Vector2(gameScreenWidth, gameScreenHeight));
 
@@ -95,7 +97,7 @@ int main(void)
             ClearBackground(BLACK);     // Clear screen background
 
             // Draw render texture to screen, properly scaled
-            target.GetTexture().Draw(raylib::Rectangle(0.0f, 0.0f, target.texture.width, -target.texture.height),
+            target.GetTexture().Draw(raylib::Rectangle(0.0f, 0.0f, target.GetTexture().GetWidth(), -target.GetTexture().GetHeight()),
                 raylib::Rectangle(
                     (GetScreenWidth() - (gameScreenWidth*scale))*0.5f,
                     (GetScreenHeight() - (gameScreenHeight*scale))*0.5f,
