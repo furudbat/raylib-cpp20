@@ -201,9 +201,9 @@ class Image {
         return *this;
     }
 
-    //explicit operator ::Image() const {
-    //    return m_data;
-    //}
+    explicit operator ::Image() const {
+        return m_data;
+    }
     [[nodiscard]] ::Image c_raylib() const & {
         return m_data;
     }

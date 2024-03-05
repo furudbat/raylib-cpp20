@@ -79,9 +79,9 @@ class Material {
         Unload();
     }
 
-    //explicit operator ::Material() const {
-    //    return m_data;
-    //}
+    explicit operator ::Material() const {
+        return m_data;
+    }
     [[nodiscard]] ::Material c_raylib() const & {
         return m_data;
     }

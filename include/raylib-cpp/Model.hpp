@@ -52,11 +52,13 @@ class Model {
      *
      * @throws raylib::RaylibException Throws if failed to load the Modal.
      */
-    Model(const ::Mesh& mesh) RAYLIB_CPP_THROWS {
-        Load(mesh);
+    Model(const ::Mesh& mesh) = delete;
+    Model(::Mesh&& mesh) RAYLIB_CPP_THROWS {
+        Load(std::move(mesh));
     }
-    Model(const raylib::Mesh& mesh) RAYLIB_CPP_THROWS {
-        Load(mesh);
+    Model(const raylib::Mesh& mesh) = delete;
+    Model(raylib::Mesh&& mesh) RAYLIB_CPP_THROWS {
+        Load(std::move(mesh));
     }
 
     ~Model() {
@@ -114,9 +116,9 @@ class Model {
         return *this;
     }
 
-    //explicit operator ::Model() const {
-    //    return m_data;
-    //}
+    explicit operator ::Model() const {
+        return m_data;
+    }
     [[nodiscard]] ::Model c_raylib() const & {
         return m_data;
     }
@@ -130,6 +132,8 @@ class Model {
     GETTER(int, BoneCount, m_data.boneCount)
     SPAN_GETTER(::BoneInfo, Bones, m_data.bones, m_data.boneCount)
     CONST_GETTER(::Transform*, BindPose, m_data.bindPose)
+
+    constexpr MeshUnmanaged GetMesh() const { return m_data.meshes != nullptr ? MeshUnmanaged{*m_data.meshes} : MeshUnmanaged{}; }
 
     /**
      * Unload model (including meshes) from memory (RAM and/or VRAM)
@@ -246,15 +250,56 @@ class Model {
      *
      * @throws raylib::RaylibException Throws if failed to load the Modal.
      */
-    RAYLIB_CPP_EXPECTED_RESULT(void) Load(const ::Mesh& mesh) RAYLIB_CPP_THROWS {
+    RAYLIB_CPP_EXPECTED_RESULT(void) Load(const ::Mesh& mesh) = delete;
+    RAYLIB_CPP_EXPECTED_RESULT(void) Load(::Mesh&& mesh) RAYLIB_CPP_THROWS {
         set(::LoadModelFromMesh(mesh));
         if (!IsReady()) {
             RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Model from Mesh"));
         }
+
+        mesh.vertexCount = 0;
+        mesh.triangleCount = 0;
+        mesh.vertices = nullptr;
+        mesh.texcoords = nullptr;
+        mesh.texcoords2 = nullptr;
+        mesh.normals = nullptr;
+        mesh.tangents = nullptr;
+        mesh.colors = nullptr;
+        mesh.indices = nullptr;
+        mesh.animVertices = nullptr;
+        mesh.animNormals = nullptr;
+        mesh.boneIds = nullptr;
+        mesh.boneWeights = nullptr;
+        mesh.vaoId = 0;
+        mesh.vboId = nullptr;
+
         RAYLIB_CPP_RETURN_EXPECTED();
     }
-    inline RAYLIB_CPP_EXPECTED_RESULT(void) Load(const raylib::Mesh& mesh) RAYLIB_CPP_THROWS {
-        return Load(mesh.c_raylib());
+
+    RAYLIB_CPP_EXPECTED_RESULT(void) Load(const raylib::Mesh& mesh) = delete;
+    RAYLIB_CPP_EXPECTED_RESULT(void) Load(raylib::Mesh&& mesh) RAYLIB_CPP_THROWS {
+        set(::LoadModelFromMesh(mesh.m_mesh.m_data));
+        if (!IsReady()) {
+            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Model from Mesh"));
+        }
+
+        mesh.m_mesh.m_data.vertexCount = 0;
+        mesh.m_mesh.m_data.triangleCount = 0;
+        mesh.m_mesh.m_data.vertices = nullptr;
+        mesh.m_mesh.m_data.texcoords = nullptr;
+        mesh.m_mesh.m_data.texcoords2 = nullptr;
+        mesh.m_mesh.m_data.normals = nullptr;
+        mesh.m_mesh.m_data.tangents = nullptr;
+        mesh.m_mesh.m_data.colors = nullptr;
+        mesh.m_mesh.m_data.indices = nullptr;
+        mesh.m_mesh.m_data.animVertices = nullptr;
+        mesh.m_mesh.m_data.animNormals = nullptr;
+        mesh.m_mesh.m_data.boneIds = nullptr;
+        mesh.m_mesh.m_data.boneWeights = nullptr;
+        mesh.m_mesh.m_data.vaoId = 0;
+        mesh.m_mesh.m_data.vboId = nullptr;
+
+        RAYLIB_CPP_RETURN_EXPECTED();
     }
 
  protected:

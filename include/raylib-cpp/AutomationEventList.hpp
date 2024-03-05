@@ -53,9 +53,9 @@ class AutomationEventList {
         Unload();
     }
 
-    //explicit operator ::AutomationEventList() const {
-    //    return m_data;
-    //}
+    explicit operator ::AutomationEventList() const {
+        return m_data;
+    }
     [[nodiscard]] ::AutomationEventList c_raylib() const & {
         return m_data;
     }

@@ -70,9 +70,9 @@ class Sound {
         Unload();
     }
 
-    //explicit operator ::Sound() const {
-    //    return m_data;
-    //}
+    explicit operator ::Sound() const {
+        return m_data;
+    }
     [[nodiscard]] ::Sound c_raylib() const & {
         return m_data;
     }

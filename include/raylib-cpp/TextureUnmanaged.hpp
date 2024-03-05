@@ -57,9 +57,9 @@ class TextureUnmanaged {
         return *this;
     }
 
-    //explicit operator ::Texture() const {
-    //    return m_data;
-    //}
+    explicit operator ::Texture() const {
+        return m_data;
+    }
     [[nodiscard]] ::Texture c_raylib() const & {
         return m_data;
     }

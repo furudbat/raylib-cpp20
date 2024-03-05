@@ -62,9 +62,9 @@ class ModelAnimation {
         return *this;
     }
 
-    //explicit operator ::ModelAnimation() const {
-    //    return m_data;
-    //}
+    explicit operator ::ModelAnimation() const {
+        return m_data;
+    }
     [[nodiscard]] ::ModelAnimation c_raylib() const & {
         return m_data;
     }

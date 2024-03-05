@@ -100,9 +100,9 @@ class Music {
         return *this;
     }
 
-    //explicit operator ::Music() const {
-    //    return m_data;
-    //}
+    explicit operator ::Music() const {
+        return m_data;
+    }
     [[nodiscard]] ::Music c_raylib() const & {
         return m_data;
     }
