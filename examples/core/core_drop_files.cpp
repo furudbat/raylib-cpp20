@@ -28,11 +28,11 @@ int main() {
     while (!window.ShouldClose()) {    // Detect window close button or ESC key
         // Update
         //----------------------------------------------------------------------------------
-        std::vector<std::filesystem::path> droppedFiles = [] -> std::vector<std::filesystem::path> {
-            if (IsFileDropped()) {
+        std::vector<std::filesystem::path> droppedFiles = []{
+            if (::IsFileDropped()) {
                 return raylib::LoadDroppedFiles();
             }
-            return {};
+            return std::vector<std::filesystem::path>{};
         }();
         //----------------------------------------------------------------------------------
 
