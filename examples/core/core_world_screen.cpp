@@ -14,10 +14,10 @@
 int main() {
     // Initialization
     //--------------------------------------------------------------------------------------
-    const int screenWidth = 800;
-    const int screenHeight = 450;
+    constexpr int ScreenWidth = 800;
+    constexpr int ScreenHeight = 450;
 
-    raylib::Window window(screenWidth, screenHeight, "raylib [core] example - 3d camera free");
+    raylib::Window window(ScreenWidth, ScreenHeight, "raylib [core] example - 3d camera free");
 
     // Define the camera to look into our 3d world
     raylib::Camera camera(
@@ -27,8 +27,8 @@ int main() {
         45.0F,
         CAMERA_PERSPECTIVE);
 
-    Vector3 cubePosition;
-    Vector2 cubeScreenPosition;
+    raylib::Vector3 cubePosition;
+    raylib::Vector2 cubeScreenPosition;
 
     SetTargetFPS(60);                   // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
@@ -40,7 +40,7 @@ int main() {
         camera.Update(CAMERA_THIRD_PERSON);                // Update camera
 
         // Calculate cube screen space position (with a little offset to be in top)
-        cubeScreenPosition = GetWorldToScreen(Vector3{cubePosition.x, cubePosition.y + 2.5f, cubePosition.z}, camera);
+        cubeScreenPosition = ::GetWorldToScreen(::Vector3{cubePosition.x, cubePosition.y + 2.5F, cubePosition.z}, camera);
         //----------------------------------------------------------------------------------
 
         // Draw
@@ -51,19 +51,20 @@ int main() {
 
             camera.BeginMode();
             {
-                DrawCube(cubePosition, 2.0f, 2.0f, 2.0f, RED);
-                DrawCubeWires(cubePosition, 2.0f, 2.0f, 2.0f, MAROON);
+                DrawCube(cubePosition, 2.0F, 2.0F, 2.0F, RED);
+                DrawCubeWires(cubePosition, 2.0F, 2.0F, 2.0F, MAROON);
 
-                DrawGrid(10, 1.0f);
+                DrawGrid(10, 1.0F);
             }
             camera.EndMode();
 
             raylib::DrawText("Enemy: 100 / 100",
-                cubeScreenPosition.x - MeasureText("Enemy: 100/100", 20) / 2,
-                cubeScreenPosition.y, 20,
-                BLACK);
+                             static_cast<int>(cubeScreenPosition.x -
+                                              static_cast<float>(::MeasureText("Enemy: 100/100", 20) / 2.0F)),
+                             static_cast<int>(cubeScreenPosition.y), 20,
+                             BLACK);
             raylib::DrawText("Text is always on top of the cube",
-                (screenWidth - MeasureText("Text is always on top of the cube", 20)) / 2,
+                (ScreenWidth - ::MeasureText("Text is always on top of the cube", 20)) / 2,
                 25, 20, GRAY);
         }
         EndDrawing();

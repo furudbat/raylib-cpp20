@@ -5,6 +5,7 @@
 #include <filesystem>
 #include <optional>
 #include <utility>
+#include <variant>
 
 #include "./raylib.hpp"
 #include "./raylib-cpp-utils.hpp"
@@ -180,9 +181,51 @@ class Shader {
      *
      * @see SetShaderValue()
      */
+    [[deprecated("Use SetValue<T>(...) or SetValue(..., variant)")]]
     Shader& SetValue(int uniformLoc, const void* value, int uniformType) {
         ::SetShaderValue(m_data, uniformLoc, value, uniformType);
         return *this;
+    }
+    template<typename T>
+    /// @TODO: requires T can only be vec, ivec, int, float, ... (SHADER_UNIFORM)
+    Shader& SetValue(int uniformLoc, const T& value, int uniformType) {
+        ::SetShaderValue(m_data, uniformLoc, &value, uniformType);
+        return *this;
+    }
+    Shader& SetValue(int uniformLoc, std::variant<float,
+                     std::array<float, 2>, ///< vec2 (2 float)
+                     std::array<float, 3>, ///< vec3 (3 float)
+                     std::array<float, 4>, ///< vec4 (4 float)
+                     ::Vector2,            ///< vec2 (2 float)
+                     ::Vector3,            ///< vec3 (3 float)
+                     ::Vector4,            ///< vec4 (4 float)
+                     int,
+                     std::array<int, 2>,   ///< ivec2 (2 int)
+                     std::array<int, 3>,   ///< ivec3 (3 int)
+                     std::array<int, 4>,   ///< ivec4 (4 int)
+                     ::Texture2D> value) {
+        std::visit([&](auto&& val) {
+           using T = std::decay_t<decltype(val)>;
+           if constexpr (std::is_same_v<T, float>)
+               ::SetShaderValue(m_data, uniformLoc, &val, SHADER_UNIFORM_FLOAT);
+           else if constexpr (std::is_same_v<T, ::Vector2> || std::is_same_v<T, std::array<float, 2>>)
+               ::SetShaderValue(m_data, uniformLoc, &val, SHADER_UNIFORM_VEC2);
+           else if constexpr (std::is_same_v<T, ::Vector3> || std::is_same_v<T, std::array<float, 3>>)
+               ::SetShaderValue(m_data, uniformLoc, &val, SHADER_UNIFORM_VEC3);
+           else if constexpr (std::is_same_v<T, ::Vector4> || std::is_same_v<T, std::array<float, 4>>)
+               ::SetShaderValue(m_data, uniformLoc, &val, SHADER_UNIFORM_VEC4);
+           else if constexpr (std::is_same_v<T, int>)
+               ::SetShaderValue(m_data, uniformLoc, &val, SHADER_UNIFORM_INT);
+           else if constexpr (std::is_same_v<T, std::array<int, 2>>)
+               ::SetShaderValue(m_data, uniformLoc, &val, SHADER_UNIFORM_IVEC2);
+           else if constexpr (std::is_same_v<T, std::array<int, 3>>)
+               ::SetShaderValue(m_data, uniformLoc, &val, SHADER_UNIFORM_IVEC3);
+           else if constexpr (std::is_same_v<T, std::array<int, 4>>)
+               ::SetShaderValue(m_data, uniformLoc, &val, SHADER_UNIFORM_IVEC4);
+           else if constexpr (std::is_same_v<T, ::Texture2D>)
+               ::SetShaderValue(m_data, uniformLoc, &val.id, SHADER_UNIFORM_SAMPLER2D);
+       }, value);
+       return *this;
     }
 
     /**
@@ -190,8 +233,50 @@ class Shader {
      *
      * @see SetShaderValueV()
      */
+    [[deprecated("Use SetValue<T>(..., span) or SetValueV(..., variant)")]]
     Shader& SetValue(int uniformLoc, const void* value, int uniformType, int count) {
         ::SetShaderValueV(m_data, uniformLoc, value, uniformType, count);
+        return *this;
+    }
+    template<typename T>
+    /// @TODO: requires T can only be vec, ivec, int, float, ... (SHADER_UNIFORM)
+    Shader& SetValue(int uniformLoc, std::span<const T> value, int uniformType) {
+        ::SetShaderValueV(m_data, uniformLoc, value.data(), uniformType, value.size());
+        return *this;
+    }
+    Shader& SetValueV(int uniformLoc, std::variant<std::span<float>,
+            std::span<std::array<float, 2>>, ///< vec2 (2 float)
+            std::span<std::array<float, 3>>, ///< vec3 (3 float)
+            std::span<std::array<float, 4>>, ///< vec4 (4 float)
+            std::span<::Vector2>,            ///< vec2 (2 float)
+            std::span<::Vector3>,            ///< vec3 (3 float)
+            std::span<::Vector4>,            ///< vec4 (4 float)
+            std::span<int>,
+            std::span<std::array<int, 2>>,   ///< ivec2 (2 int)
+            std::span<std::array<int, 3>>,   ///< ivec3 (3 int)
+            std::span<std::array<int, 4>>    ///< ivec4 (4 int)
+            /// @TODO: add mdspan for vecX and ivecX
+            /// @TODO: Shader uniform type: sampler2d
+            > value) {
+        std::visit([&](auto&& val) {
+            using T = std::decay_t<decltype(val)>;
+            if constexpr (std::is_same_v<T, std::span<float>>)
+                ::SetShaderValueV(m_data, uniformLoc, val.data(), SHADER_UNIFORM_FLOAT, static_cast<int>(val.size()));
+            else if constexpr (std::is_same_v<T, std::span<::Vector2>> || std::is_same_v<T, std::span<std::array<float, 2>>>)
+                ::SetShaderValueV(m_data, uniformLoc, val.data(), SHADER_UNIFORM_VEC2, static_cast<int>(val.size()));
+            else if constexpr (std::is_same_v<T, std::span<::Vector3>> || std::is_same_v<T, std::span<std::array<float, 3>>>)
+                ::SetShaderValueV(m_data, uniformLoc, val.data(), SHADER_UNIFORM_VEC3, static_cast<int>(val.size()));
+            else if constexpr (std::is_same_v<T, std::span<::Vector4>> || std::is_same_v<T, std::span<std::array<float, 4>>>)
+                ::SetShaderValueV(m_data, uniformLoc, val.data(), SHADER_UNIFORM_VEC4, static_cast<int>(val.size()));
+            else if constexpr (std::is_same_v<T, std::span<int>>)
+                ::SetShaderValueV(m_data, uniformLoc, val.data(), SHADER_UNIFORM_INT, static_cast<int>(val.size()));
+            else if constexpr (std::is_same_v<T, std::span<std::array<int, 2>>>)
+                ::SetShaderValueV(m_data, uniformLoc, val.data(), SHADER_UNIFORM_IVEC2, static_cast<int>(val.size()));
+            else if constexpr (std::is_same_v<T, std::span<std::array<int, 3>>>)
+                ::SetShaderValueV(m_data, uniformLoc, val.data(), SHADER_UNIFORM_IVEC3, static_cast<int>(val.size()));
+            else if constexpr (std::is_same_v<T, std::span<std::array<int, 4>>>)
+                ::SetShaderValueV(m_data, uniformLoc, val.data(), SHADER_UNIFORM_IVEC4, static_cast<int>(val.size()));
+        }, value);
         return *this;
     }
 
@@ -212,6 +297,10 @@ class Shader {
      */
     Shader& SetValue(int uniformLoc, const ::Texture2D& texture) {
         ::SetShaderValueTexture(m_data, uniformLoc, texture);
+        return *this;
+    }
+    Shader& SetValue(int uniformLoc, const raylib::Texture& texture) {
+        ::SetShaderValueTexture(m_data, uniformLoc, texture.c_raylib());
         return *this;
     }
 

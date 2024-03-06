@@ -16,12 +16,12 @@
 int main() {
     // Initialization
     //--------------------------------------------------------------------------------------
-    int screenWidth = 800;
-    int screenHeight = 450;
+    constexpr int ScreenWidth = 800;
+    constexpr int ScreenHeight = 450;
 
-    raylib::Window window(screenWidth, screenHeight, "raylib [textures] example - image loading");
+    raylib::Window window(ScreenWidth, ScreenHeight, "raylib [textures] example - image loading");
     raylib::Texture texture("resources/raylib_logo.png");
-    raylib::Color textColor = raylib::Color::LightGray();
+    const raylib::Color textColor = raylib::Color::LightGray();
 
     // Main game loop
     while (!window.ShouldClose()) {    // Detect window close button or ESC key
@@ -36,7 +36,7 @@ int main() {
         {
             window.ClearBackground(raylib::Color::RayWhite());
 
-            texture.Draw(screenWidth / 2 - texture.GetWidth() / 2, screenHeight / 2 - texture.GetHeight() / 2);
+            texture.Draw(ScreenWidth / 2 - texture.GetWidth() / 2, ScreenHeight / 2 - texture.GetHeight() / 2);
 
             textColor.DrawText("this IS a texture loaded from an image!", 300, 370, 10);
         }

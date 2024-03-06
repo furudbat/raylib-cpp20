@@ -28,7 +28,7 @@ int main() {
         CAMERA_PERSPECTIVE);
 
     raylib::Texture2D bill("resources/billboard.png");     // Our texture billboard
-    raylib::Vector3 billPosition(0.0f, 2.0f, 0.0f);                // Position where draw billboard
+    raylib::Vector3 billPosition{{.x = 0.0F, .y = 2.0F, .z = 0.0F}};                // Position where draw billboard
 
     SetTargetFPS(60);                       // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
@@ -42,20 +42,20 @@ int main() {
 
         // Draw
         //----------------------------------------------------------------------------------
-        BeginDrawing();
+        ::BeginDrawing();
         {
             window.ClearBackground(RAYWHITE);
 
             camera.BeginMode();
             {
-                DrawGrid(10, 1.0f);        // Draw a grid
-                bill.DrawBillboard(camera, billPosition, 2.0f);
+                ::DrawGrid(10, 1.0F);        // Draw a grid
+                bill.DrawBillboard(camera, billPosition, 2.0F);
             }
             camera.EndMode();
 
             DrawFPS(10, 10);
         }
-        EndDrawing();
+        ::EndDrawing();
         //----------------------------------------------------------------------------------
     }
 

@@ -16,12 +16,10 @@
 int main() {
     // Initialization
     //--------------------------------------------------------------------------------------
-    const int screenWidth = 800;
-    const int screenHeight = 450;
+    constexpr int ScreenWidth = 800;
+    constexpr int ScreenHeight = 450;
 
-    raylib::Window window(screenWidth, screenHeight, "raylib [core] example - drop files");
-
-    std::vector<std::filesystem::path> droppedFiles;
+    raylib::Window window(ScreenWidth, ScreenHeight, "raylib [core] example - drop files");
 
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
@@ -30,9 +28,12 @@ int main() {
     while (!window.ShouldClose()) {    // Detect window close button or ESC key
         // Update
         //----------------------------------------------------------------------------------
-        if (IsFileDropped()) {
-            droppedFiles = raylib::LoadDroppedFiles();
-        }
+        std::vector<std::filesystem::path> droppedFiles = [] -> std::vector<std::filesystem::path> {
+            if (IsFileDropped()) {
+                return raylib::LoadDroppedFiles();
+            }
+            return {};
+        }();
         //----------------------------------------------------------------------------------
 
         // Draw
@@ -48,17 +49,17 @@ int main() {
                 raylib::DrawText("Dropped files:", 100, 40, 20, DARKGRAY);
 
                 // Iterate through all the dropped files.
-                for (int i = 0; i < droppedFiles.size(); i++) {
+                for (size_t i = 0; i < droppedFiles.size(); i++) {
                     if (i % 2 == 0)
-                        DrawRectangle(0, 85 + 40*i, screenWidth, 40, Fade(LIGHTGRAY, 0.5f));
+                        DrawRectangle(0, static_cast<int>(85 + 40*i), ScreenWidth, 40, Fade(LIGHTGRAY, 0.5F));
                     else
-                        DrawRectangle(0, 85 + 40*i, screenWidth, 40, Fade(LIGHTGRAY, 0.3f));
+                        DrawRectangle(0, static_cast<int>(85 + 40*i), ScreenWidth, 40, Fade(LIGHTGRAY, 0.3F));
 
                     // Display the path to the dropped file.
-                    raylib::DrawText(droppedFiles[i].c_str(), 120, 100 + 40 * i, 10, GRAY);
+                    raylib::DrawText(droppedFiles[i].c_str(), 120, static_cast<int>(100 + 40 * i), 10, GRAY);
                 }
 
-                raylib::DrawText("Drop new files...", 100, 110 + 40 * droppedFiles.size(), 20, DARKGRAY);
+                raylib::DrawText("Drop new files...", 100, 110 + 40 * static_cast<int>(droppedFiles.size()), 20, DARKGRAY);
             }
         }
         EndDrawing();

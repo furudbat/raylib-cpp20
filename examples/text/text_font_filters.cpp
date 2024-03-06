@@ -15,14 +15,14 @@
 
 #include "raylib-cpp.hpp"
 
-int main(void)
+int main()
 {
     // Initialization
     //--------------------------------------------------------------------------------------
-    const int screenWidth = 800;
-    const int screenHeight = 450;
+    constexpr int ScreenWidth = 800;
+    constexpr int ScreenHeight = 450;
 
-    raylib::Window window(screenWidth, screenHeight, "raylib [text] example - font filters");
+    raylib::Window window(ScreenWidth, ScreenHeight, "raylib [text] example - font filters");
 
     // TTF Font loading with custom generation parameters
     raylib::Font font("resources/KAISG.ttf", 96);
@@ -31,14 +31,14 @@ int main(void)
     // NOTE: On 2D drawing it won't be noticeable, it looks like FILTER_BILINEAR
     font.GetTexture().GenMipmaps();
 
-    raylib::Text msg("Loaded Font", font.GetBaseSize(), BLACK);
+    raylib::Text msg("Loaded Font", static_cast<float>(font.GetBaseSize()), BLACK);
 
-    Vector2 fontPosition = { 40.0f, screenHeight/2.0f - 80.0f };
-    Vector2 textSize = { 0.0f, 0.0f };
+    raylib::Vector2 fontPosition {{ .x = 40.0F, .y = ScreenHeight/2.0F - 80.0F }};
+    raylib::Vector2 textSize {{ .x = 0.0F, .y = 0.0F }};
 
     // Setup texture scaling filter
     font.GetTexture().SetFilter(TEXTURE_FILTER_POINT);
-    int currentFontFilter = 0;      // TEXTURE_FILTER_POINT
+    int currentFontFilter {0};      // TEXTURE_FILTER_POINT
 
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
@@ -48,7 +48,7 @@ int main(void)
     {
         // Update
         //----------------------------------------------------------------------------------
-        msg.fontSize += GetMouseWheelMove() * 4.0f;
+        msg.fontSize += GetMouseWheelMove() * 4.0F;
 
         // Choose font texture filter method
         if (IsKeyPressed(KEY_ONE))
@@ -98,9 +98,11 @@ int main(void)
             // TODO: It seems texSize measurement is not accurate due to chars offsets...
             //DrawRectangleLines(fontPosition.x, fontPosition.y, textSize.x, textSize.y, RED);
 
-            DrawRectangle(0, screenHeight - 80, screenWidth, 80, LIGHTGRAY);
-            DrawText(TextFormat("Font size: %02.02f", msg.GetFontSize()), 20, screenHeight - 50, 10, DARKGRAY);
-            DrawText(TextFormat("Text size: [%02.02f, %02.02f]", textSize.x, textSize.y), 20, screenHeight - 30, 10, DARKGRAY);
+            DrawRectangle(0, ScreenHeight - 80, ScreenWidth, 80, LIGHTGRAY);
+            DrawText(::TextFormat("Font size: %02.02f", static_cast<double>(msg.GetFontSize())),
+                     20, ScreenHeight - 50, 10, DARKGRAY);
+            DrawText(::TextFormat("Text size: [%02.02f, %02.02f]", static_cast<double>(textSize.x), static_cast<double>(textSize.y)),
+                     20, ScreenHeight - 30, 10, DARKGRAY);
             DrawText("CURRENT TEXTURE FILTER:", 250, 400, 20, GRAY);
 
             if (currentFontFilter == 0) DrawText("POINT", 570, 400, 20, BLACK);

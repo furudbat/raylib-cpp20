@@ -14,12 +14,12 @@
 int main() {
     // Initialization
     //--------------------------------------------------------------------------------------
-    const int screenWidth = 800;
-    const int screenHeight = 450;
+    constexpr int ScreenWidth = 800;
+    constexpr int ScreenHeight = 450;
 
-    raylib::Window window(screenWidth, screenHeight, "raylib [audio] example - sound loading and playing");
+    raylib::Window window(ScreenWidth, ScreenHeight, "raylib [audio] example - sound loading and playing");
 
-    raylib::AudioDevice audiodevice;      // Initialize audio device
+    raylib::AudioDevice audioDevice;      // Initialize audio device
 
     raylib::Sound fxWav("resources/sound.wav");         // Load WAV audio file
     raylib::Sound fxOgg("resources/target.ogg");      // Load OGG audio file

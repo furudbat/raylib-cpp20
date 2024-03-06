@@ -54,8 +54,8 @@ int main(void)
         raylib::Vector2 playerPos({.x = camera.position.x,.y = camera.position.z});
         float playerRadius = 0.1F;  // Collision radius (player is modelled as a cilinder for collision)
 
-        int playerCellX = static_cast<int>(playerPos.x - mapPosition.x + 0.5F);
-        int playerCellY = static_cast<int>(playerPos.y - mapPosition.z + 0.5F);
+        int playerCellX = static_cast<int>(playerPos.x - static_cast<float>(std::lround(mapPosition.x + 0.5F)));
+        int playerCellY = static_cast<int>(playerPos.y - static_cast<float>(std::lround(mapPosition.z + 0.5F)));
 
         // Out-of-limits security check
         if (playerCellX < 0) playerCellX = 0;
@@ -74,7 +74,7 @@ int main(void)
                 /// @TODO: check data for size
                 if ((data[y*cubicmap.GetWidth() + x].r == 255) &&       // Collision: white pixel, only check R channel
                     (playerPos.CheckCollisionCircle(playerRadius,
-                    Rectangle{ mapPosition.x - 0.5f + x*1.0f, mapPosition.z - 0.5f + y*1.0f, 1.0f, 1.0f })))
+                    Rectangle{ mapPosition.x - 0.5F + static_cast<float>(x)*1.0F, mapPosition.z - 0.5F + static_cast<float>(y)*1.0F, 1.0F, 1.0F })))
                 {
                     // Collision detected, reset camera position
                     camera.position = oldCamPos;
@@ -96,13 +96,13 @@ int main(void)
             }
             camera.EndMode();
 
-            cubicmap.Draw(Vector2{ static_cast<float>(GetScreenWidth() - cubicmap.GetWidth()*4 - 20), 20 }, 0.0f, 4.0f, WHITE);
-            DrawRectangleLines(GetScreenWidth() - cubicmap.GetWidth()*4 - 20, 20, cubicmap.GetWidth()*4, cubicmap.GetHeight()*4, GREEN);
+            cubicmap.Draw(Vector2{ static_cast<float>(GetScreenWidth() - cubicmap.GetWidth()*4 - 20), 20 }, 0.0F, 4.0F, WHITE);
+            ::DrawRectangleLines(GetScreenWidth() - cubicmap.GetWidth()*4 - 20, 20, cubicmap.GetWidth()*4, cubicmap.GetHeight()*4, GREEN);
 
             // Draw player position radar
-            DrawRectangle(GetScreenWidth() - cubicmap.GetWidth()*4 - 20 + playerCellX*4, 20 + playerCellY*4, 4, 4, RED);
+            ::DrawRectangle(GetScreenWidth() - cubicmap.GetWidth()*4 - 20 + playerCellX*4, 20 + playerCellY*4, 4, 4, RED);
 
-            DrawFPS(10, 10);
+            ::DrawFPS(10, 10);
         }
         EndDrawing();
         //----------------------------------------------------------------------------------

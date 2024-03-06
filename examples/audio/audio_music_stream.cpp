@@ -14,18 +14,17 @@
 int main() {
     // Initialization
     //--------------------------------------------------------------------------------------
-    const int screenWidth = 800;
-    const int screenHeight = 450;
+    constexpr int ScreenWidth = 800;
+    constexpr int ScreenHeight = 450;
 
-    raylib::Window window(screenWidth, screenHeight, "raylib [audio] example - music playing (streaming)");
+    raylib::Window window(ScreenWidth, ScreenHeight, "raylib [audio] example - music playing (streaming)");
 
     raylib::AudioDevice audio;              // Initialize audio device
-
     raylib::Music music("resources/target.ogg");
 
     music.Play();
 
-    float timePlayed = 0.0f;
+    float timePlayed = 0.0F;
     bool pause = false;
 
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second

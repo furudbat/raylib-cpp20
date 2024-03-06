@@ -3,8 +3,10 @@
 class Player {
     public:
     Player();
-    raylib::Rectangle position;
-    int speed;
-    void Draw();
+
+    void Draw() const;
     void Update();
+
+    raylib::Rectangle position;
+    int speed{3};
 };
