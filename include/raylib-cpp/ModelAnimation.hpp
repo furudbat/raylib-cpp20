@@ -62,10 +62,10 @@ class ModelAnimation {
         return *this;
     }
 
-    explicit operator ::ModelAnimation() const {
+    explicit operator ::ModelAnimation() const noexcept {
         return m_data;
     }
-    [[nodiscard]] ::ModelAnimation c_raylib() const & {
+    [[nodiscard]] ::ModelAnimation c_raylib() const & noexcept {
         return m_data;
     }
 
@@ -96,33 +96,24 @@ class ModelAnimation {
     /**
      * Unload animation data
      */
-    void Unload() {
+    void Unload() noexcept {
         ::UnloadModelAnimation(m_data);
-    }
-
-    /**
-     * Update model animation pose
-     */
-    ModelAnimation& Update(const ::Model& model, int frame) {
-        ::UpdateModelAnimation(model, m_data, frame);
-        return *this;
-    }
-    ModelAnimation& Update(const raylib::Model& model, int frame) {
-        return Update(model.c_raylib(), frame);
     }
 
     /**
      * Check model animation skeleton match
      */
-    [[nodiscard]] bool IsValid(const ::Model& model) const {
+    [[nodiscard]] bool IsValid(const ::Model& model) const noexcept {
         return ::IsModelAnimationValid(model, m_data);
     }
-    [[nodiscard]] bool IsValid(const raylib::Model& model) const {
+    /*
+    [[nodiscard]] bool IsValid(const raylib::Model& model) const noexcept {
         return IsValid(model.c_raylib());
     }
+    */
 
  protected:
-    constexpr void set(const ::ModelAnimation& model) {
+    constexpr void set(const ::ModelAnimation& model) noexcept {
         m_data.boneCount = model.boneCount;
         m_data.frameCount = model.frameCount;
         m_data.bones = model.bones;

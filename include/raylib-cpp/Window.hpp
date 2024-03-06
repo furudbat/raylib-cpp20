@@ -43,7 +43,7 @@ class Window {
     /**
      * Close window and unload OpenGL context
      */
-    ~Window() {
+    ~Window() noexcept {
         Close();
     }
 
@@ -74,21 +74,21 @@ class Window {
     /**
      * Check if KEY_ESCAPE pressed or Close icon pressed
      */
-    static bool ShouldClose() {
+    static bool ShouldClose() noexcept {
         return ::WindowShouldClose();
     }
 
     /**
      * Set a custom key to exit program (default is ESC)
      */
-    static void SetExitKey(int key) {
+    static void SetExitKey(int key) noexcept {
         ::SetExitKey(key);
     }
 
     /**
      * Close window and unload OpenGL context
      */
-    static void Close() {
+    static void Close() noexcept {
         if (::IsWindowReady()) {
             ::CloseWindow();
         }
@@ -97,63 +97,63 @@ class Window {
     /**
      * Check if cursor is on the current screen
      */
-    [[nodiscard]] static bool IsCursorOnScreen() {
+    [[nodiscard]] static bool IsCursorOnScreen() noexcept {
         return ::IsCursorOnScreen();
     }
 
     /**
      * Check if window is currently fullscreen
      */
-    [[nodiscard]] static bool IsFullscreen() {
+    [[nodiscard]] static bool IsFullscreen() noexcept {
         return ::IsWindowFullscreen();
     }
 
     /**
      * Check if window is currently hidden
      */
-    [[nodiscard]] static bool IsHidden() {
+    [[nodiscard]] static bool IsHidden() noexcept {
         return ::IsWindowHidden();
     }
 
     /**
      * Check if window is currently minimized
      */
-    [[nodiscard]] bool IsMinimized() const {
+    [[nodiscard]] bool IsMinimized() const noexcept {
         return ::IsWindowMinimized();
     }
 
     /**
      * Check if window is currently minimized
      */
-    [[nodiscard]] bool IsMaximized() const {
+    [[nodiscard]] bool IsMaximized() const noexcept {
         return ::IsWindowMaximized();
     }
 
     /**
      * Check if window is currently focused
      */
-    [[nodiscard]] bool IsFocused() const {
+    [[nodiscard]] bool IsFocused() const noexcept {
         return ::IsWindowFocused();
     }
 
     /**
      * Check if window has been resized last frame
      */
-    [[nodiscard]] bool IsResized() const {
+    [[nodiscard]] bool IsResized() const noexcept {
         return ::IsWindowResized();
     }
 
     /**
      * Check if one specific window flag is enabled
      */
-    [[nodiscard]] bool IsState(unsigned int flag) const {
+    [[nodiscard]] bool IsState(uint32_t flag) const noexcept {
         return ::IsWindowState(flag);
     }
 
     /**
      * Set window configuration state using flags
      */
-    Window& SetState(unsigned int flag) {
+    Window& SetState(uint32_t flag) noexcept {
         ::SetWindowState(flag);
         return *this;
     }
@@ -161,7 +161,7 @@ class Window {
     /**
      * Clear window configuration state flags
      */
-    Window& ClearState(unsigned int flag) {
+    Window& ClearState(uint32_t flag) noexcept {
         ::ClearWindowState(flag);
         return *this;
     }
@@ -169,7 +169,7 @@ class Window {
     /**
      * Clear window with given color.
      */
-    Window& ClearBackground(const ::Color& color = BLACK) {
+    Window& ClearBackground(const ::Color& color = BLACK) noexcept {
         ::ClearBackground(color);
         return *this;
     }
@@ -177,7 +177,7 @@ class Window {
     /**
      * Toggle window state: fullscreen/windowed
      */
-    Window& ToggleFullscreen() {
+    Window& ToggleFullscreen() noexcept {
         ::ToggleFullscreen();
         return *this;
     }
@@ -185,7 +185,7 @@ class Window {
     /**
      * Set whether or not the application should be fullscreen.
      */
-    Window& SetFullscreen(bool fullscreen) {
+    Window& SetFullscreen(bool fullscreen) noexcept {
         if (fullscreen) {
             if (!IsFullscreen()) {
                 ToggleFullscreen();
@@ -202,7 +202,7 @@ class Window {
     /**
      * Toggle window state: borderless/windowed
     */
-    Window& ToggleBorderless() {
+    Window& ToggleBorderless() noexcept {
         ::ToggleBorderlessWindowed();
         return *this;
     }
@@ -210,7 +210,7 @@ class Window {
     /**
      * Set window state: maximized, if resizable (only PLATFORM_DESKTOP)
      */
-    Window& Maximize() {
+    Window& Maximize() noexcept {
         ::MaximizeWindow();
         return *this;
     }
@@ -218,7 +218,7 @@ class Window {
     /**
      * Set window state: minimized, if resizable (only PLATFORM_DESKTOP)
      */
-    Window& Minimize() {
+    Window& Minimize() noexcept {
         ::MinimizeWindow();
         return *this;
     }
@@ -226,7 +226,7 @@ class Window {
     /**
      * Set window state: not minimized/maximized (only PLATFORM_DESKTOP)
      */
-    Window& Restore() {
+    Window& Restore() noexcept {
         ::RestoreWindow();
         return *this;
     }
@@ -234,7 +234,7 @@ class Window {
     /**
      * Set icon for window
      */
-    Window& SetIcon(const ::Image& image) {
+    Window& SetIcon(const ::Image& image) noexcept {
         ::SetWindowIcon(image);
         return *this;
     }
@@ -243,7 +243,7 @@ class Window {
      * Set icon for window (multiple images, RGBA 32bit, only PLATFORM_DESKTOP)
      */
     [[deprecated("Use SetIcons(span)")]]
-    Window& SetIcons(::Image* images, int count) {
+    Window& SetIcons(::Image* images, int count) noexcept {
         ::SetWindowIcons(images, count);
         return *this;
     }
@@ -263,7 +263,7 @@ class Window {
     /**
      * Set window position on screen
      */
-    Window& SetPosition(int x, int y) {
+    Window& SetPosition(int x, int y) noexcept {
         ::SetWindowPosition(x, y);
         return *this;
     }
@@ -271,14 +271,14 @@ class Window {
     /**
      * Set window position on screen
      */
-    Window& SetPosition(::Vector2 position) {
+    Window& SetPosition(::Vector2 position) noexcept {
         return SetPosition(static_cast<int>(position.x), static_cast<int>(position.y));
     }
 
     /**
      * Set monitor for the current window
      */
-    Window& SetMonitor(int monitor) {
+    Window& SetMonitor(int monitor) noexcept {
         ::SetWindowMonitor(monitor);
         return *this;
     }
@@ -286,7 +286,7 @@ class Window {
     /**
      * Set window minimum dimensions
      */
-    Window& SetMinSize(int width, int height) {
+    Window& SetMinSize(int width, int height) noexcept {
         ::SetWindowMinSize(width, height);
         return *this;
     }
@@ -294,7 +294,7 @@ class Window {
     /**
      * Set window minimum dimensions
      */
-    Window& SetMinSize(::Vector2 size) {
+    Window& SetMinSize(::Vector2 size) noexcept {
         ::SetWindowMinSize(static_cast<int>(size.x), static_cast<int>(size.y));
         return *this;
     }
@@ -302,7 +302,7 @@ class Window {
     /**
      * Set window dimensions
      */
-    Window& SetSize(int width, int height) {
+    Window& SetSize(int width, int height) noexcept {
         ::SetWindowSize(width, height);
         return *this;
     }
@@ -310,7 +310,7 @@ class Window {
     /**
      * Set window opacity [0.0f..1.0f] (only PLATFORM_DESKTOP)
      */
-    Window& SetOpacity(float opacity) {
+    Window& SetOpacity(float opacity) noexcept {
         ::SetWindowOpacity(opacity);
         return *this;
     }
@@ -318,7 +318,7 @@ class Window {
     /**
      * Set window focused (only PLATFORM_DESKTOP)
      */
-    Window& SetFocused() {
+    Window& SetFocused() noexcept {
         ::SetWindowFocused();
         return *this;
     }
@@ -326,28 +326,28 @@ class Window {
     /**
      * Set window dimensions
      */
-    Window& SetSize(::Vector2 size) {
+    Window& SetSize(::Vector2 size) noexcept {
         return SetSize(static_cast<int>(size.x), static_cast<int>(size.y));
     }
 
     /**
      * Get the screen's width and height.
      */
-    [[nodiscard]] raylib::Vector2 GetSize() const {
+    [[nodiscard]] raylib::Vector2 GetSize() const noexcept {
         return raylib::Vector2{{.x = static_cast<float>(GetWidth()), .y = static_cast<float>(GetHeight())}};
     }
 
     /**
      * Get native window handle
      */
-    [[nodiscard]] void* GetHandle() const {
+    [[nodiscard]] void* GetHandle() const noexcept {
         return ::GetWindowHandle();
     }
 
     /**
      * Setup canvas (framebuffer) to start drawing
      */
-    Window& BeginDrawing() {
+    Window& BeginDrawing() noexcept {
         ::BeginDrawing();
         return *this;
     }
@@ -355,7 +355,7 @@ class Window {
     /**
      * End canvas drawing and swap buffers (double buffering)
      */
-    Window& EndDrawing() {
+    Window& EndDrawing() noexcept {
         ::EndDrawing();
         return *this;
     }
@@ -363,42 +363,42 @@ class Window {
     /**
      * Get current screen width
      */
-    [[nodiscard]] int GetWidth() const {
+    [[nodiscard]] int GetWidth() const noexcept {
         return ::GetScreenWidth();
     }
 
     /**
      * Get current screen height
      */
-    [[nodiscard]] int GetHeight() const {
+    [[nodiscard]] int GetHeight() const noexcept {
         return ::GetScreenHeight();
     }
 
     /**
      * Get current render width (it considers HiDPI)
      */
-    [[nodiscard]] int GetRenderWidth() const {
+    [[nodiscard]] int GetRenderWidth() const noexcept {
         return ::GetRenderWidth();
     }
 
     /**
      * Get current render height (it considers HiDPI)
      */
-    [[nodiscard]] int GetRenderHeight() const {
+    [[nodiscard]] int GetRenderHeight() const noexcept {
         return ::GetRenderHeight();
     }
 
     /**
      * Get window position XY on monitor
      */
-    [[nodiscard]] Vector2 GetPosition() const {
+    [[nodiscard]] ::Vector2 GetPosition() const noexcept {
         return ::GetWindowPosition();
     }
 
     /**
      * Get window scale DPI factor
      */
-    [[nodiscard]] Vector2 GetScaleDPI() const {
+    [[nodiscard]] ::Vector2 GetScaleDPI() const noexcept {
         return ::GetWindowScaleDPI();
     }
 
@@ -419,7 +419,7 @@ class Window {
     /**
      * Set target FPS (maximum)
      */
-    Window& SetTargetFPS(int fps) {
+    Window& SetTargetFPS(int fps) noexcept {
         ::SetTargetFPS(fps);
         return *this;
     }
@@ -427,35 +427,37 @@ class Window {
     /**
      * Returns current FPS
      */
-    [[nodiscard]] static int GetFPS() {
+    [[nodiscard]] static int GetFPS() noexcept {
         return ::GetFPS();
     }
 
     /**
      * Draw current FPS
      */
-    void DrawFPS(int posX = 10, int posY = 10) const {
+    inline static constexpr int DefaultDrawFPSPosX = 10;
+    inline static constexpr int DefaultDrawFPSPosY = 10;
+    void DrawFPS(int posX = DefaultDrawFPSPosX, int posY = DefaultDrawFPSPosY) const noexcept {
         ::DrawFPS(posX, posY);
     }
 
     /**
      * Returns time in seconds for last frame drawn
      */
-    [[nodiscard]] float GetFrameTime() const {
+    [[nodiscard]] float GetFrameTime() const noexcept {
         return ::GetFrameTime();
     }
 
     /**
      * Returns elapsed time in seconds since InitWindow()
      */
-    [[nodiscard]] double GetTime() const {
+    [[nodiscard]] double GetTime() const noexcept {
         return ::GetTime();
     }
 
     /**
      * Check if window has been initialized successfully
      */
-    static bool IsReady() {
+    static bool IsReady() noexcept {
         return ::IsWindowReady();
     }
 
@@ -466,7 +468,7 @@ class Window {
      *
      * @see ::SetConfigFlags
      */
-    static void SetConfigFlags(unsigned int flags) {
+    static void SetConfigFlags(uint32_t flags) noexcept {
         ::SetConfigFlags(flags);
     }
 };

@@ -18,10 +18,10 @@ class RenderTexture {
     /**
      * Default constructor to build an empty RenderTexture.
      */
-    constexpr RenderTexture() : m_data({0, {}, {}}) {}
+    constexpr RenderTexture() : m_data({0, NullTexture, NullTexture}) {}
 
     constexpr explicit RenderTexture(const ::RenderTexture& renderTexture) = delete;
-    constexpr explicit RenderTexture(owner<::RenderTexture&&> renderTexture) {
+    constexpr explicit RenderTexture(owner<::RenderTexture&&> renderTexture) noexcept {
         set(renderTexture);
 
         renderTexture.id = 0;
@@ -41,7 +41,7 @@ class RenderTexture {
     }
 
     constexpr RenderTexture(const RenderTexture&) = delete;
-    constexpr RenderTexture(RenderTexture&& other) {
+    constexpr RenderTexture(RenderTexture&& other) noexcept {
         set(other.m_data);
 
         other.m_data.id = 0;
@@ -59,7 +59,7 @@ class RenderTexture {
     }
 
     void SetTexture(owner<const ::Texture&> newTexture) = delete;
-    void SetTexture(owner<::Texture&&> newTexture) {
+    void SetTexture(owner<::Texture&&> newTexture) noexcept {
         m_data.texture = newTexture;
         newTexture = NullTexture;
     }
@@ -70,12 +70,12 @@ class RenderTexture {
     TextureUnmanaged GetDepth() {
         return TextureUnmanaged{m_data.depth};
     }
-    void SetDepth(const ::Texture& newDepth) {
+    void SetDepth(const ::Texture& newDepth) noexcept {
         m_data.depth = newDepth;
     }
 
     RenderTexture& operator=(const ::RenderTexture& texture) = delete;
-    RenderTexture& operator=(::RenderTexture&& texture) {
+    RenderTexture& operator=(::RenderTexture&& texture) noexcept {
         set(texture);
 
         texture.id = 0;
@@ -105,15 +105,15 @@ class RenderTexture {
         Unload();
     }
 
-    explicit operator ::RenderTexture() const {
+    explicit operator ::RenderTexture() const noexcept {
         return m_data;
     }
-    [[nodiscard]] ::RenderTexture c_raylib() const & {
+    [[nodiscard]] ::RenderTexture c_raylib() const & noexcept {
         return m_data;
     }
 
-    void Unload() {
-        UnloadRenderTexture(m_data);
+    void Unload() noexcept {
+        ::UnloadRenderTexture(m_data);
         m_data.id = 0;
         m_data.texture = NullTexture;
     }
@@ -121,7 +121,7 @@ class RenderTexture {
     /**
      * Initializes render texture for drawing
      */
-    RenderTexture& BeginMode() {
+    RenderTexture& BeginMode() noexcept {
         ::BeginTextureMode(m_data);
         return *this;
     }
@@ -129,7 +129,7 @@ class RenderTexture {
     /**
      * Ends drawing to render texture
      */
-    RenderTexture& EndMode() {
+    RenderTexture& EndMode() noexcept {
         ::EndTextureMode();
         return *this;
     }
@@ -144,12 +144,12 @@ class RenderTexture {
     /**
      * Retrieves whether or not the render texture is ready.
      */
-    [[nodiscard]] bool IsReady() const {
+    [[nodiscard]] bool IsReady() const noexcept {
         return ::IsRenderTextureReady(m_data);
     }
 
  protected:
-    constexpr void set(const ::RenderTexture& renderTexture) {
+    constexpr void set(const ::RenderTexture& renderTexture) noexcept {
         m_data.id = renderTexture.id;
         m_data.texture = renderTexture.texture;
         m_data.depth = renderTexture.depth;

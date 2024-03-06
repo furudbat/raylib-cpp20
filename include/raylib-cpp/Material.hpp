@@ -17,7 +17,7 @@ struct RayMaterials {
     size_t size{0};
 
     RayMaterials(owner<::Material*> _data, size_t _size) : data(_data), size(_size) {}
-    ~RayMaterials() {
+    ~RayMaterials() noexcept {
         if (data != nullptr) {
             for (auto &mat: AsSpan()) {
                 if (mat.maps != nullptr) {
@@ -52,42 +52,42 @@ class Material {
     }
 
     explicit constexpr Material(owner<const ::Material&> material) = delete;
-    explicit constexpr Material(owner<::Material&&> material) {
+    explicit constexpr Material(owner<::Material&&> material) noexcept {
         set(material);
 
         material.maps = nullptr;
         material.shader = NullShader;
-        material.params[0] = 0.0F;
-        material.params[1] = 0.0F;
-        material.params[2] = 0.0F;
-        material.params[3] = 0.0F;
+        material.params[0] = 0.0f;
+        material.params[1] = 0.0f;
+        material.params[2] = 0.0f;
+        material.params[3] = 0.0f;
     }
 
     Material(const Material&) = delete;
-    Material(Material&& other) {
+    Material(Material&& other) noexcept {
         set(other.m_data);
 
         other.m_data.maps = nullptr;
         other.m_data.shader = NullShader;
-        other.m_data.params[0] = 0.0F;
-        other.m_data.params[1] = 0.0F;
-        other.m_data.params[2] = 0.0F;
-        other.m_data.params[3] = 0.0F;
+        other.m_data.params[0] = 0.0f;
+        other.m_data.params[1] = 0.0f;
+        other.m_data.params[2] = 0.0f;
+        other.m_data.params[3] = 0.0f;
     }
 
-    ~Material() {
+    ~Material() noexcept {
         Unload();
     }
 
-    explicit operator ::Material() const {
+    explicit operator ::Material() const noexcept {
         return m_data;
     }
-    [[nodiscard]] ::Material c_raylib() const & {
+    [[nodiscard]] ::Material c_raylib() const & noexcept {
         return m_data;
     }
 
-    constexpr Material& operator=(const ::Material& material) = delete;
-    constexpr Material& operator=(::Material&& material) {
+    constexpr Material& operator=(owner<const ::Material&> material) = delete;
+    constexpr Material& operator=(owner<::Material&&> material) noexcept {
         set(material);
 
         material.maps = nullptr;
@@ -148,7 +148,7 @@ class Material {
     /**
      * Unload material from memory
      */
-    void Unload() {
+    void Unload() noexcept {
         if (m_data.maps != nullptr) {
             ::UnloadMaterial(m_data);
             m_data.maps = nullptr;
@@ -159,7 +159,7 @@ class Material {
     /**
      * Set texture for a material map type (MAP_DIFFUSE, MAP_SPECULAR...)
      */
-    Material& SetTexture(int mapType, const ::Texture2D& texture) {
+    Material& SetTexture(int mapType, const ::Texture2D& texture) noexcept {
         ::SetMaterialTexture(&m_data, mapType, texture);
         return *this;
     }
@@ -171,7 +171,7 @@ class Material {
     /**
      * Draw a 3d mesh with material and transform
      */
-    void DrawMesh(const ::Mesh& mesh, ::Matrix transform) const {
+    void DrawMesh(const ::Mesh& mesh, ::Matrix transform) const noexcept {
         ::DrawMesh(mesh, m_data, transform);
     }
     void DrawMesh(const raylib::Mesh& mesh, ::Matrix transform) const {
@@ -181,7 +181,7 @@ class Material {
     /**
      * Draw multiple mesh instances with material and different transforms
      */
-    void DrawMesh(const ::Mesh& mesh, ::Matrix* transforms, int instances) const {
+    void DrawMesh(const ::Mesh& mesh, ::Matrix* transforms, int instances) const noexcept {
         ::DrawMeshInstanced(mesh, m_data, transforms, instances);
     }
     void DrawMesh(const raylib::Mesh& mesh, ::Matrix* transforms, int instances) const {
@@ -191,7 +191,7 @@ class Material {
     /**
      * Check if material is ready
      */
-    [[nodiscard]] bool IsReady() const {
+    [[nodiscard]] bool IsReady() const noexcept {
         return ::IsMaterialReady(m_data);
     }
 

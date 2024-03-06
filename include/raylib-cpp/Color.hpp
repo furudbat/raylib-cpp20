@@ -21,6 +21,9 @@ struct ColorHSV {
  */
 class Color : public ::Color {
  public:
+    inline static constexpr float DefaultDrawLineBezierThick = 1.0f;
+    inline static constexpr int DefaultDrawTextFontSize = 10;
+
     /**
      * Black.
      */
@@ -38,10 +41,10 @@ class Color : public ::Color {
      * Returns a Color from HSV values
      */
     //[[deprecated("Use Color(ColorHSV) for better structured name")]]
-    explicit Color(::Vector3 hsv) {
+    explicit Color(const ::Vector3& hsv) noexcept {
         set(::ColorFromHSV(hsv.x, hsv.y, hsv.z));
     }
-    explicit Color(ColorHSV hsv) {
+    explicit Color(ColorHSV hsv) noexcept {
         set(::ColorFromHSV(hsv.hue, hsv.saturation, hsv.value));
     }
 
@@ -49,39 +52,39 @@ class Color : public ::Color {
      * Returns a Color from HSV values
      */
     [[deprecated("Use FromHSV(ColorHSV)")]]
-    static ::Color FromHSV(float hue, float saturation, float value) {
+    static ::Color FromHSV(float hue, float saturation, float value) noexcept {
         return ::ColorFromHSV(hue, saturation, value);
     }
     //[[deprecated("Use FromHSV(ColorHSV) for better structured name")]]
-    static ::Color FromHSV(::Vector3 hsv) {
+    static ::Color FromHSV(const ::Vector3& hsv) noexcept {
         return ::ColorFromHSV(hsv.x, hsv.y, hsv.z);
     }
-    static ::Color FromHSV(ColorHSV hsv) {
+    static ::Color FromHSV(const ColorHSV& hsv) noexcept {
         return ::ColorFromHSV(hsv.hue, hsv.saturation, hsv.value);
     }
 
     /**
      * Get Color structure from hexadecimal value
      */
-    explicit Color(uint32_t hexValue) {
+    explicit Color(uint32_t hexValue) noexcept {
         set(::GetColor(hexValue));
     }
 
-    Color(void *srcPtr, int format) {
+    Color(void *srcPtr, int format) noexcept {
         set(::GetPixelColor(srcPtr, format));
     }
 
     /**
      * Returns hexadecimal value for a Color
      */
-    [[nodiscard]] int ToInt() const {
+    [[nodiscard]] int ToInt() const noexcept {
         return ::ColorToInt(*this);
     }
 
     /**
      * Returns hexadecimal value for a Color
      */
-    explicit operator int() const {
+    explicit operator int() const noexcept {
         return ::ColorToInt(*this);
     }
 
@@ -102,21 +105,21 @@ class Color : public ::Color {
     /**
      * Returns color with alpha applied, alpha goes from 0.0f to 1.0f
      */
-    [[nodiscard]] Color Fade(float alpha) const {
+    [[nodiscard]] Color Fade(float alpha) const noexcept {
         return Color{::Fade(*this, alpha)};
     }
 
     /**
      * Returns Color normalized as float [0..1]
      */
-    [[nodiscard]] raylib::Vector4 Normalize() const {
+    [[nodiscard]] raylib::Vector4 Normalize() const noexcept {
         return raylib::Vector4{::ColorNormalize(*this)};
     }
 
     /**
      * Returns Color from normalized values [0..1]
      */
-    explicit Color(::Vector4 normalized) {
+    explicit Color(const ::Vector4& normalized) noexcept {
         set(::ColorFromNormalized(normalized));
     }
 
@@ -124,10 +127,10 @@ class Color : public ::Color {
      * Returns HSV values for a Color
      */
     [[deprecated("Use ToColorHSV() for better named struct")]]
-    [[nodiscard]] raylib::Vector3 ToHSV() const {
+    [[nodiscard]] raylib::Vector3 ToHSV() const noexcept {
         return raylib::Vector3{::ColorToHSV(*this)};
     }
-    [[nodiscard]] ColorHSV ToColorHSV() const {
+    [[nodiscard]] ColorHSV ToColorHSV() const noexcept {
         auto hsv = ::ColorToHSV(*this);
         return {.hue = hsv.x, .saturation = hsv.y, .value = hsv.z};
     }
@@ -137,7 +140,7 @@ class Color : public ::Color {
     GETTERSETTER(uint8_t, B, b)
     GETTERSETTER(uint8_t, A, a)
 
-    Color& operator=(const ::Color& color) {
+    Color& operator=(const ::Color& color) noexcept {
         set(color);
         return *this;
     }
@@ -145,44 +148,44 @@ class Color : public ::Color {
     /**
      * Set background color (framebuffer clear color)
      */
-    Color& ClearBackground() {
+    Color& ClearBackground() noexcept {
         ::ClearBackground(*this);
         return *this;
     }
 
-    void DrawPixel(int x, int y) const {
+    void DrawPixel(int x, int y) const noexcept {
         ::DrawPixel(x, y, *this);
     }
 
     /**
      * Draw a pixel
      */
-    void DrawPixel(::Vector2 pos) const {
+    void DrawPixel(::Vector2 pos) const noexcept {
         ::DrawPixelV(pos, *this);
     }
 
     /**
      * Draw a line
      */
-    void DrawLine(int startPosX, int startPosY, int endPosX, int endPosY) const {
+    void DrawLine(int startPosX, int startPosY, int endPosX, int endPosY) const noexcept {
         ::DrawLine(startPosX, startPosY, endPosX, endPosY, *this);
     }
 
     /**
      * Draw a line using Vector points
      */
-    void DrawLine(::Vector2 startPos, ::Vector2 endPos) const {
+    void DrawLine(::Vector2 startPos, ::Vector2 endPos) const noexcept {
         ::DrawLineV(startPos, endPos, *this);
     }
 
     /**
      * Draw a line using Vector points, with a given thickness
      */
-    void DrawLine(::Vector2 startPos, ::Vector2 endPos, float thick) const {
+    void DrawLine(::Vector2 startPos, ::Vector2 endPos, float thick) const noexcept {
         ::DrawLineEx(startPos, endPos, thick, *this);
     }
 
-    void DrawLineBezier(::Vector2 startPos, ::Vector2 endPos, float thick = 1.0F) const {
+    void DrawLineBezier(::Vector2 startPos, ::Vector2 endPos, float thick = DefaultDrawLineBezierThick) const noexcept {
         ::DrawLineBezier(startPos, endPos, thick, *this);
     }
 
@@ -190,21 +193,21 @@ class Color : public ::Color {
         ::DrawLineStrip(points, numPoints, *this);
     }
 
-    void DrawText(const char* text, int posX = 0, int posY = 0, int fontSize = 10.0F) const {
+    void DrawText(const char* text, int posX = 0, int posY = 0, int fontSize = DefaultDrawTextFontSize) const noexcept {
         ::DrawText(text, posX, posY, fontSize, *this);
     }
 
-    void DrawText(const std::string& text, int posX = 0, int posY = 0, int fontSize = 10.0F) const {
+    void DrawText(const std::string& text, int posX = 0, int posY = 0, int fontSize = DefaultDrawTextFontSize) const noexcept {
         ::DrawText(text.c_str(), posX, posY, fontSize, *this);
     }
 
     void DrawText(const ::Font& font, const char* text, ::Vector2 position,
-            float fontSize, float spacing) const {
+            float fontSize, float spacing) const noexcept {
         ::DrawTextEx(font, text, position, fontSize, spacing, *this);
     }
 
     void DrawText(const ::Font& font, const std::string& text, ::Vector2 position,
-            float fontSize, float spacing) const {
+            float fontSize, float spacing) const noexcept {
         ::DrawTextEx(font, text.c_str(), position, fontSize, spacing, *this);
     }
 
@@ -215,7 +218,7 @@ class Color : public ::Color {
             ::Vector2 origin,
             float rotation,
             float fontSize,
-            float spacing) const {
+            float spacing) const noexcept {
         ::DrawTextPro(font, text, position, origin, rotation, fontSize, spacing, *this);
     }
 
@@ -226,66 +229,66 @@ class Color : public ::Color {
             ::Vector2 origin,
             float rotation,
             float fontSize,
-            float spacing) const {
+            float spacing) const noexcept {
         ::DrawTextPro(font, text.c_str(), position, origin, rotation, fontSize, spacing, *this);
     }
 
-    void DrawRectangle(int posX, int posY, int width, int height) const {
+    void DrawRectangle(int posX, int posY, int width, int height) const noexcept {
         ::DrawRectangle(posX, posY, width, height, *this);
     }
 
-    void DrawRectangle(::Vector2 position, ::Vector2 size) const {
+    void DrawRectangle(::Vector2 position, ::Vector2 size) const noexcept {
         ::DrawRectangleV(position, size, *this);
     }
 
-    void DrawRectangle(::Rectangle rec) const {
+    void DrawRectangle(::Rectangle rec) const noexcept {
         ::DrawRectangleRec(rec, *this);
     }
 
-    void DrawRectangle(::Rectangle rec, ::Vector2 origin, float rotation) const {
+    void DrawRectangle(::Rectangle rec, ::Vector2 origin, float rotation) const noexcept {
         ::DrawRectanglePro(rec, origin, rotation, *this);
     }
 
-    void DrawRectangleLines(int posX, int posY, int width, int height) const {
+    void DrawRectangleLines(int posX, int posY, int width, int height) const noexcept {
         ::DrawRectangleLines(posX, posY, width, height, *this);
     }
 
-    void DrawRectangleLines(::Rectangle rec, float lineThick) const {
+    void DrawRectangleLines(::Rectangle rec, float lineThick) const noexcept {
         ::DrawRectangleLinesEx(rec, lineThick, *this);
     }
 
     /**
      * Get color multiplied with another color
      */
-    [[nodiscard]] Color Tint(::Color tint) {
+    [[nodiscard]] Color Tint(::Color tint) noexcept {
         return Color{::ColorTint(*this, tint)};
     }
 
     /**
      * Get color with brightness correction, brightness factor goes from -1.0f to 1.0f
      */
-    [[nodiscard]] Color Brightness(float factor) {
+    [[nodiscard]] Color Brightness(float factor) noexcept {
         return Color{::ColorBrightness(*this, factor)};
     }
 
     /**
      * Get color with contrast correction, contrast values between -1.0f and 1.0f
      */
-    [[nodiscard]] Color Contrast(float contrast) {
+    [[nodiscard]] Color Contrast(float contrast) noexcept {
         return Color{::ColorContrast(*this, contrast)};
     }
 
     /**
      * Returns color with alpha applied, alpha goes from 0.0f to 1.0f
      */
-    [[nodiscard]] Color Alpha(float alpha) const {
+    [[nodiscard]] Color Alpha(float alpha) const noexcept {
         return Color{::ColorAlpha(*this, alpha)};
     }
 
     /**
      * Returns src alpha-blended into dst color with tint
      */
-    [[nodiscard]] Color AlphaBlend(::Color dst, ::Color tint) const {
+    [[nodiscard]] Color AlphaBlend(::Color dst, ::Color tint) const noexcept {
         return Color{::ColorAlphaBlend(dst, *this, tint)};
     }
 

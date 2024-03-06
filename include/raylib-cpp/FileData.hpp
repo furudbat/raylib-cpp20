@@ -28,7 +28,7 @@ public:
         std::swap(m_bytesRead, other.m_bytesRead);
         return *this;
     }
-    ~FileData() { Unload(); }
+    ~FileData() noexcept { Unload(); }
 
     explicit FileData(const std::filesystem::path& fileName) {
         Load(fileName);
@@ -51,7 +51,7 @@ public:
         return std::as_bytes(std::span<const unsigned char>{m_data, static_cast<size_t>(m_bytesRead)});
     }
 
-    void Load(const std::filesystem::path& fileName) noexcept { Load(fileName.c_str()); }
+    void Load(const std::filesystem::path& fileName) { Load(fileName.c_str()); }
     void Load(const char* fileName) noexcept {
         m_data = ::LoadFileData(fileName, &m_bytesRead);
     }

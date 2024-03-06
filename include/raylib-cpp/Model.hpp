@@ -8,6 +8,7 @@
 #include "./raylib-cpp-utils.hpp"
 
 #include "./Mesh.hpp"
+#include "./ModelAnimation.hpp"
 #ifdef __cpp_exceptions
 #include "./RaylibException.hpp"
 #endif
@@ -22,10 +23,15 @@ class Mesh;
  */
 class Model {
  public:
+    inline static constexpr float DefaultDrawScale = 1.0f;
+    inline static constexpr ::Color DefaultDrawTintColor = WHITE;
+    inline static constexpr float DefaultDrawRotationAngle = 0.0f;
+    inline static constexpr ::Vector3 DefaultDrawScaleVector = {1.0f, 1.0f, 1.0f};
+
     constexpr Model() = default;
 
     explicit constexpr Model(owner<const ::Model&> model) = delete;
-    explicit constexpr Model(owner<::Model&&> model) {
+    explicit constexpr Model(owner<::Model&&> model) noexcept {
         set(model);
 
         model.meshCount = 0;
@@ -61,12 +67,12 @@ class Model {
         Load(std::move(mesh));
     }
 
-    ~Model() {
+    ~Model() noexcept {
         Unload();
     }
 
     constexpr Model(const Model&) = delete;
-    Model(Model&& other) {
+    Model(Model&& other) noexcept {
         set(other.m_data);
 
         other.m_data.meshCount = 0;
@@ -80,7 +86,7 @@ class Model {
     }
 
     constexpr Model& operator=(owner<const ::Model&> model) = delete;
-    constexpr Model& operator=(owner<::Model&&> model) {
+    constexpr Model& operator=(owner<::Model&&> model) noexcept {
         set(model);
 
         model.meshCount = 0;
@@ -116,10 +122,10 @@ class Model {
         return *this;
     }
 
-    explicit operator ::Model() const {
+    explicit operator ::Model() const noexcept {
         return m_data;
     }
-    [[nodiscard]] ::Model c_raylib() const & {
+    [[nodiscard]] ::Model c_raylib() const & noexcept {
         return m_data;
     }
 
@@ -138,7 +144,7 @@ class Model {
     /**
      * Unload model (including meshes) from memory (RAM and/or VRAM)
      */
-    void Unload() {
+    void Unload() noexcept {
         if (m_data.meshes != nullptr || m_data.materials != nullptr) {
             ::UnloadModel(m_data);
             m_data.meshes = nullptr;
@@ -155,26 +161,21 @@ class Model {
     }
 
     /**
-     * Update model animation pose
-     */
-    Model& UpdateAnimation(const ::ModelAnimation& anim, int frame) {
-        ::UpdateModelAnimation(m_data, anim, frame);
-        return *this;
-    }
-
-    /**
      * Check model animation skeleton match
      */
-    [[nodiscard]] bool IsModelAnimationValid(const ::ModelAnimation& anim) const {
+    [[nodiscard]] bool IsModelAnimationValid(const ::ModelAnimation& anim) const noexcept {
         return ::IsModelAnimationValid(m_data, anim);
+    }
+    [[nodiscard]] bool IsModelAnimationValid(const raylib::ModelAnimation& anim) const {
+        return ::IsModelAnimationValid(m_data, anim.c_raylib());
     }
 
     /**
      * Draw a model (with texture if set)
      */
     void Draw(::Vector3 position,
-            float scale = 1.0F,
-            ::Color tint = WHITE) const {
+            float scale = DefaultDrawScale,
+            ::Color tint = DefaultDrawTintColor) const noexcept {
         ::DrawModel(m_data, position, scale, tint);
     }
 
@@ -184,9 +185,9 @@ class Model {
     void Draw(
             ::Vector3 position,
             ::Vector3 rotationAxis,
-            float rotationAngle = 0.0F,
-            ::Vector3 scale = {1.0F, 1.0F, 1.0F},
-            ::Color tint = {255, 255, 255, 255}) const {
+            float rotationAngle = DefaultDrawRotationAngle,
+            ::Vector3 scale = DefaultDrawScaleVector,
+            ::Color tint = DefaultDrawTintColor) const noexcept {
         ::DrawModelEx(m_data, position, rotationAxis, rotationAngle, scale, tint);
     }
 
@@ -194,8 +195,8 @@ class Model {
      * Draw a model wires (with texture if set)
      */
     void DrawWires(::Vector3 position,
-            float scale = 1.0F,
-            ::Color tint = WHITE) const {
+            float scale = DefaultDrawScale,
+            ::Color tint = DefaultDrawTintColor) const noexcept {
         ::DrawModelWires(m_data, position, scale, tint);
     }
 
@@ -205,31 +206,49 @@ class Model {
     void DrawWires(
             ::Vector3 position,
             ::Vector3 rotationAxis,
-            float rotationAngle = 0.0F,
-            ::Vector3 scale = {1.0F, 1.0F, 1.0F},
-            ::Color tint = WHITE) const {
+            float rotationAngle = DefaultDrawRotationAngle,
+            ::Vector3 scale = DefaultDrawScaleVector,
+            ::Color tint = DefaultDrawTintColor) const noexcept {
         ::DrawModelWiresEx(m_data, position, rotationAxis, rotationAngle, scale, tint);
     }
 
     /**
      * Compute model bounding box limits (considers all meshes)
      */
-    [[nodiscard]] raylib::BoundingBox GetBoundingBox() const {
+    [[nodiscard]] raylib::BoundingBox GetBoundingBox() const noexcept {
         return raylib::BoundingBox{::GetModelBoundingBox(m_data)};
     }
 
     /**
      * Compute model bounding box limits (considers all meshes)
      */
-    explicit operator raylib::BoundingBox() const {
+    explicit operator raylib::BoundingBox() const noexcept {
         return raylib::BoundingBox{::GetModelBoundingBox(m_data)};
     }
 
     /**
      * Determines whether or not the Model has data in it.
      */
-    [[nodiscard]] bool IsReady() const {
+    [[nodiscard]] bool IsReady() const noexcept {
         return ::IsModelReady(m_data);
+    }
+
+    [[nodiscard]] bool IsValidAnimation(const ::ModelAnimation& modelAnimation) const noexcept {
+        return ::IsModelAnimationValid(m_data, modelAnimation);
+    }
+    [[nodiscard]] bool IsValidAnimation(const raylib::ModelAnimation& modelAnimation) const noexcept {
+        return IsValidAnimation(modelAnimation.c_raylib());
+    }
+
+    /**
+     * Update model animation pose
+     */
+    Model& UpdateAnimation(const ::ModelAnimation& modelAnimation, int frame) noexcept {
+        ::UpdateModelAnimation(m_data, modelAnimation, frame);
+        return *this;
+    }
+    Model& UpdateAnimation(const raylib::ModelAnimation& modelAnimation, int frame) {
+        return UpdateAnimation(modelAnimation.c_raylib(), frame);
     }
 
     /**

@@ -24,7 +24,7 @@ public:
     FilePathList files;
 
     explicit RayDirectoryFilesFilePathList(const std::filesystem::path& dirPath) : files(::LoadDirectoryFiles(dirPath.c_str())) {}
-    ~RayDirectoryFilesFilePathList() {
+    ~RayDirectoryFilesFilePathList() noexcept {
         ::UnloadDirectoryFiles(files);
     }
 };
@@ -33,7 +33,7 @@ public:
     FilePathList files;
 
     RayDroppedFilesFilePathList() : files(::LoadDroppedFiles()) {}
-    ~RayDroppedFilesFilePathList() {
+    ~RayDroppedFilesFilePathList() noexcept {
         ::UnloadDroppedFiles(files);
     }
 };
@@ -55,7 +55,7 @@ public:
 /**
  * Get the human-readable, UTF-8 encoded name of the primary monitor
  */
-[[maybe_unused]] RLCPPAPI inline std::string GetMonitorName(int monitor = 0) {
+[[maybe_unused]] RLCPPAPI inline std::string GetMonitorName(int monitor = 0) noexcept {
     return ::GetMonitorName(monitor);
 }
 
@@ -83,14 +83,14 @@ public:
 /**
  * Get gamepad internal name id
  */
-    [[maybe_unused]] RLCPPAPI inline std::string GetGamepadName(int gamepad) {
+[[maybe_unused]] RLCPPAPI inline std::string GetGamepadName(int gamepad) {
     return ::GetGamepadName(gamepad);
 }
 
 /**
  * Load text data from file (read)
  */
-    [[maybe_unused]] RLCPPAPI std::string LoadFileText(const std::string& fileName) {
+[[maybe_unused]] RLCPPAPI std::string LoadFileText(const std::filesystem::path& fileName) {
     char* text = ::LoadFileText(fileName.c_str());
     std::string output(text);
     ::UnloadFileText(text);
@@ -323,7 +323,7 @@ struct LoadImageAnimResult { raylib::Image image; int frames; };
 /**
  * Draw text (using default font)
  */
-[[maybe_unused]] RLCPPAPI inline void DrawText(const char* text, int posX, int posY, int fontSize, ::Color color) {
+[[maybe_unused]] RLCPPAPI inline void DrawText(const char* text, int posX, int posY, int fontSize, ::Color color) noexcept {
     ::DrawText(text, posX, posY, fontSize, color);
 }
 
@@ -383,7 +383,7 @@ struct LoadImageAnimResult { raylib::Image image; int frames; };
 /**
  * Measure string width for default font
  */
-[[maybe_unused]] RLCPPAPI inline int MeasureText(const char* text, int fontSize) {
+[[maybe_unused]] RLCPPAPI inline int MeasureText(const char* text, int fontSize) noexcept {
     return ::MeasureText(text, fontSize);
 }
 
@@ -411,7 +411,7 @@ struct LoadImageAnimResult { raylib::Image image; int frames; };
 /**
  * Check if two text string are equal
  */
-[[maybe_unused]] RLCPPAPI inline unsigned int TextLength(const char* text) {
+[[maybe_unused]] RLCPPAPI inline unsigned int TextLength(const char* text) noexcept {
     return ::TextLength(text);
 }
 
@@ -497,7 +497,7 @@ struct LoadImageAnimResult { raylib::Image image; int frames; };
 }
 
 #ifdef RAYLIB_CPP_EXPECTED
-    inline RAYLIB_CPP_EXPECTED_RESULT(AudioDevice) InitAudioDevice() {
+inline RAYLIB_CPP_EXPECTED_RESULT(AudioDevice) InitAudioDevice() {
     AudioDevice ret;
     if (auto result = ret.Init(); !result) [[unlikely]] {
         RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(result.error());
@@ -508,7 +508,7 @@ struct LoadImageAnimResult { raylib::Image image; int frames; };
 
 
 #ifdef RAYLIB_CPP_EXPECTED
-    inline RAYLIB_CPP_EXPECTED_RESULT(AutomationEventList) LoadAutomationEventList(const std::filesystem::path& fileName) {
+inline RAYLIB_CPP_EXPECTED_RESULT(AutomationEventList) LoadAutomationEventList(const std::filesystem::path& fileName) {
     AutomationEventList ret;
     if (auto result = ret.Load(fileName); !result) [[unlikely]] {
         RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(result.error());

@@ -47,7 +47,7 @@ class AudioDevice {
     /**
      * Close the audio device and context.
      */
-    ~AudioDevice() {
+    ~AudioDevice() noexcept {
         if (IsReady()) {
             Close();
         }
@@ -69,14 +69,14 @@ class AudioDevice {
     /**
      * Close the audio device and context.
      */
-    void Close() {
+    void Close() noexcept {
         ::CloseAudioDevice();
     }
 
     /**
      * Check if audio device has been initialized successfully.
      */
-    [[nodiscard]] bool IsReady() const {
+    [[nodiscard]] bool IsReady() const noexcept {
         return ::IsAudioDeviceReady();
     }
 
@@ -85,7 +85,7 @@ class AudioDevice {
      *
      * @param volume The desired volume to set.
      */
-    AudioDevice& SetVolume(float volume) {
+    AudioDevice& SetVolume(float volume) noexcept {
         ::SetMasterVolume(volume);
         return *this;
     }

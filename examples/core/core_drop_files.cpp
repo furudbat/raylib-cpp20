@@ -51,9 +51,9 @@ int main() {
                 // Iterate through all the dropped files.
                 for (size_t i = 0; i < droppedFiles.size(); i++) {
                     if (i % 2 == 0)
-                        DrawRectangle(0, static_cast<int>(85 + 40*i), ScreenWidth, 40, Fade(LIGHTGRAY, 0.5F));
+                        DrawRectangle(0, static_cast<int>(85 + 40*i), ScreenWidth, 40, Fade(LIGHTGRAY, 0.5f));
                     else
-                        DrawRectangle(0, static_cast<int>(85 + 40*i), ScreenWidth, 40, Fade(LIGHTGRAY, 0.3F));
+                        DrawRectangle(0, static_cast<int>(85 + 40*i), ScreenWidth, 40, Fade(LIGHTGRAY, 0.3f));
 
                     // Display the path to the dropped file.
                     raylib::DrawText(droppedFiles[i].c_str(), 120, static_cast<int>(100 + 40 * i), 10, GRAY);

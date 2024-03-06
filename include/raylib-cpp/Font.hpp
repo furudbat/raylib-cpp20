@@ -18,6 +18,8 @@ namespace raylib {
  */
 class Font {
  public:
+    inline static constexpr ::Color DefaultTintColor = WHITE;
+
     constexpr Font(int _baseSize,
             int _glyphCount,
             int _glyphPadding,
@@ -30,12 +32,12 @@ class Font {
     /**
      * Retrieves the default Font.
      */
-    Font() {
+    Font() noexcept {
         set(::GetFontDefault());
     }
 
     explicit constexpr Font(owner<const ::Font&> font) = delete;
-    explicit constexpr Font(owner<::Font&&> font) {
+    explicit constexpr Font(owner<::Font&&> font) noexcept {
         set(font);
 
         font.baseSize = 0;
@@ -106,7 +108,7 @@ class Font {
     }
 
     Font& operator=(owner<const ::Font&> font) = delete;
-    Font& operator=(owner<::Font&&> font) {
+    Font& operator=(owner<::Font&&> font) noexcept {
         Unload();
         set(font);
 
@@ -139,15 +141,15 @@ class Font {
         return *this;
     }
 
-    explicit operator ::Font() const {
+    explicit operator ::Font() const noexcept {
         return m_data;
     }
-    [[nodiscard]] ::Font c_raylib() const & {
+    [[nodiscard]] ::Font c_raylib() const & noexcept {
         return m_data;
     }
 
     constexpr Font(const Font&) = delete;
-    constexpr Font(Font&& other) {
+    constexpr Font(Font&& other) noexcept {
         set(other.m_data);
 
         other.m_data.baseSize = 0;
@@ -157,11 +159,11 @@ class Font {
         other.m_data.recs = nullptr;
         other.m_data.glyphs = nullptr;
     }
-    ~Font() {
+    ~Font() noexcept {
         Unload();
     }
 
-    void Unload() {
+    void Unload() noexcept {
         if (m_data.texture.id != 0 && m_data.texture.id != GetFontDefault().texture.id) {
             ::UnloadFont(m_data);
             m_data.texture.id = 0;
@@ -180,7 +182,7 @@ class Font {
     /**
      * Get the texture atlas containing the glyphs.
      */
-    TextureUnmanaged GetTexture() {
+    TextureUnmanaged GetTexture() noexcept {
         return TextureUnmanaged{m_data.texture};
     }
 
@@ -188,7 +190,7 @@ class Font {
      * Set the texture atlas containing the glyphs.
      */
     constexpr void SetTexture(const ::Texture& newTexture) = delete;
-    constexpr void SetTexture(::Texture&& newTexture) {
+    constexpr void SetTexture(::Texture&& newTexture) noexcept {
         m_data.texture = newTexture;
         newTexture = NullTexture;
     }
@@ -265,7 +267,7 @@ class Font {
     /**
      * Returns if the font is ready to be used.
      */
-    [[nodiscard]] bool IsReady() const {
+    [[nodiscard]] bool IsReady() const noexcept {
         return ::IsFontReady(m_data);
     }
 
@@ -273,7 +275,7 @@ class Font {
      * Draw text using font and additional parameters.
      */
     void DrawText(const char* text, ::Vector2 position, float fontSize,
-                  float spacing, ::Color tint = WHITE) const {
+                  float spacing, ::Color tint = DefaultTintColor) const noexcept {
         ::DrawTextEx(m_data, text, position,  fontSize,  spacing,  tint);
     }
 
@@ -281,11 +283,11 @@ class Font {
      * Draw text using font and additional parameters.
      */
     void DrawText(const std::string& text, ::Vector2 position, float fontSize,
-                  float spacing, ::Color tint = WHITE) const {
+                  float spacing, ::Color tint = DefaultTintColor) const {
         ::DrawTextEx(m_data, text.c_str(), position,  fontSize,  spacing,  tint);
     }
     void DrawTextWithBaseSize(const std::string& text, ::Vector2 position,
-                              float spacing, ::Color tint = WHITE) const {
+                              float spacing, ::Color tint = DefaultTintColor) const {
         DrawText(text, position, static_cast<float>(GetBaseSize()), spacing, tint);
     }
 
@@ -293,7 +295,7 @@ class Font {
      * Draw text using font and additional parameters.
      */
     void DrawText(const char* text, int posX, int posY, float fontSize,
-                  float spacing, ::Color tint = WHITE) const {
+                  float spacing, ::Color tint = DefaultTintColor) const noexcept {
         ::DrawTextEx(m_data, text,
             { .x = static_cast<float>(posX), .y = static_cast<float>(posY) },
             fontSize, spacing, tint);
@@ -303,13 +305,13 @@ class Font {
      * Draw text using font and additional parameters.
      */
     void DrawText(const std::string& text, int posX, int posY, float fontSize,
-                  float spacing, ::Color tint = WHITE) const {
+                  float spacing, ::Color tint = DefaultTintColor) const {
         ::DrawTextEx(m_data, text.c_str(),
             { .x = static_cast<float>(posX), .y = static_cast<float>(posY) },
             fontSize, spacing, tint);
     }
     void DrawTextWithBaseSize(const std::string& text, int posX, int posY,
-                  float spacing, ::Color tint = WHITE) const {
+                  float spacing, ::Color tint = DefaultTintColor) const {
         DrawText(text, posX, posY, static_cast<float>(GetBaseSize()), spacing, tint);
     }
 
@@ -320,7 +322,7 @@ class Font {
             float rotation,
             float fontSize,
             float spacing,
-            ::Color tint = WHITE) const {
+            ::Color tint = DefaultTintColor) const noexcept {
         ::DrawTextPro(m_data, text,
             position, origin,
             rotation, fontSize,
@@ -334,7 +336,7 @@ class Font {
             float rotation,
             float fontSize,
             float spacing,
-            ::Color tint = WHITE) const {
+            ::Color tint = DefaultTintColor) const {
         ::DrawTextPro(m_data, text.c_str(),
             position, origin,
             rotation, fontSize,
@@ -347,7 +349,7 @@ class Font {
     void DrawText(int codepoint,
             ::Vector2 position,
             float fontSize,
-            ::Color tint = WHITE) const {
+            ::Color tint = DefaultTintColor) const noexcept {
         ::DrawTextCodepoint(m_data, codepoint, position, fontSize, tint);
     }
 
@@ -357,7 +359,7 @@ class Font {
     void DrawText(std::span<const int> codepoints,
             ::Vector2 position,
             float fontSize, float spacing,
-            ::Color tint = WHITE) const {
+            ::Color tint = WHITE) const noexcept {
         ::DrawTextCodepoints(m_data,
             codepoints.data(), static_cast<int>(codepoints.size()),
             position, fontSize,
@@ -367,7 +369,7 @@ class Font {
     /**
      * Measure string size for Font
      */
-    Vector2 MeasureText(const char* text, float fontSize, float spacing) const {
+    Vector2 MeasureText(const char* text, float fontSize, float spacing) const noexcept {
         return ::MeasureTextEx(m_data, text, fontSize, spacing);
     }
 
@@ -384,7 +386,7 @@ class Font {
     /**
      * Get index position for a unicode character on font
      */
-    [[nodiscard]] int GetGlyphIndex(int character) const {
+    [[nodiscard]] int GetGlyphIndex(int character) const noexcept {
         return ::GetGlyphIndex(m_data, character);
     }
 

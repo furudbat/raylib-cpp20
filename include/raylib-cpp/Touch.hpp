@@ -11,35 +11,35 @@ namespace Touch {
     /**
      * Get touch position X for touch point 0 (relative to screen size)
      */
-    [[maybe_unused]] RLCPPAPI inline int GetX() {
+    [[maybe_unused]] RLCPPAPI inline int GetX() noexcept {
         return ::GetTouchX();
     }
 
     /**
      * Get touch position Y for touch point 0 (relative to screen size)
      */
-    [[maybe_unused]] RLCPPAPI inline int GetY() {
+    [[maybe_unused]] RLCPPAPI inline int GetY() noexcept {
         return ::GetTouchY();
     }
 
     /**
      * Get touch position XY for a touch point index (relative to screen size)
      */
-    [[maybe_unused]] RLCPPAPI inline Vector2 GetPosition(int index) {
+    [[maybe_unused]] RLCPPAPI inline Vector2 GetPosition(int index) noexcept {
         return ::GetTouchPosition(index);
     }
 
     /**
      * Get touch point identifier for given index
      */
-    [[maybe_unused]] RLCPPAPI inline int GetPointId(int index) {
+    [[maybe_unused]] RLCPPAPI inline int GetPointId(int index) noexcept {
         return ::GetTouchPointId(index);
     }
 
     /**
      * Get number of touch points
      */
-    [[maybe_unused]] RLCPPAPI inline int GetPointCount() {
+    [[maybe_unused]] RLCPPAPI inline int GetPointCount() noexcept {
         return ::GetTouchPointCount();
     }
 };

@@ -52,10 +52,10 @@ class Text {
      */
     explicit Text(
             const std::string& pText = "",
-            float pFontSize = 10.0F,
+            float pFontSize = 10.0f,
             ::Color pColor = WHITE,
             const ::Font& pFont = ::GetFontDefault(),
-            float pSpacing = 0.0F) :
+            float pSpacing = 0.0f) :
             text(pText),
             fontSize(pFontSize),
             color(pColor),
@@ -76,7 +76,7 @@ class Text {
     explicit Text(
             const ::Font& pFont,
             const std::string& pText = "",
-            float pFontSize = 10.0F,
+            float pFontSize = 10.0f,
             float pSpacing = 0,
             ::Color pColor = WHITE) :
             text(pText),
@@ -89,7 +89,7 @@ class Text {
     explicit Text(
             const raylib::Font& pFont,
             const std::string& pText = "",
-            float pFontSize = 10.0F,
+            float pFontSize = 10.0f,
             float pSpacing = 0,
             ::Color pColor = WHITE) :
             text(pText),

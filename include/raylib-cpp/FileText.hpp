@@ -28,7 +28,7 @@ public:
         std::swap(m_length, other.m_length);
         return *this;
     }
-    ~FileText() { Unload(); }
+    ~FileText() noexcept { Unload(); }
 
     explicit FileText(const std::filesystem::path& fileName) {
         Load(fileName);
@@ -40,16 +40,16 @@ public:
     [[nodiscard]] const char* c_str() const noexcept { return m_data; }
 
     [[nodiscard]] std::string_view ToStringView() const noexcept { return std::string_view(m_data, m_length); }
-    explicit operator std::string_view() const {
+    explicit operator std::string_view() const noexcept {
         return std::string_view(m_data, m_length);
     }
 
-    [[nodiscard]] std::string ToString() const noexcept { return m_data; }
+    [[nodiscard]] std::string ToString() const { return m_data; }
     explicit operator std::string() const {
         return m_data;
     }
 
-    void Load(const std::filesystem::path& fileName) noexcept { Load(fileName.c_str()); }
+    void Load(const std::filesystem::path& fileName) { Load(fileName.c_str()); }
     void Load(const char* fileName) noexcept {
         m_data = ::LoadFileText(fileName);
         m_length = ::TextLength(m_data);

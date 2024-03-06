@@ -12,6 +12,8 @@ namespace raylib {
  */
 class Camera3D : public ::Camera3D {
  public:
+    inline static float constexpr DefaultUpdateZoom = 1.0f;
+
     explicit constexpr Camera3D(const ::Camera3D& camera) {
         set(camera);
     }
@@ -26,9 +28,9 @@ class Camera3D : public ::Camera3D {
      * @param projection Camera projection: CAMERA_PERSPECTIVE or CAMERA_ORTHOGRAPHIC
      */
     explicit constexpr Camera3D(const ::Vector3& _position,
-            const ::Vector3& _target = ::Vector3{0.0F, 0.0F, 0.0F},
-            const ::Vector3& _up = ::Vector3{0.0F, 1.0F, 0.0F},
-            float _fovy = 0.0F,
+            const ::Vector3& _target = ::Vector3{0.0f, 0.0f, 0.0f},
+            const ::Vector3& _up = ::Vector3{0.0f, 1.0f, 0.0f},
+            float _fovy = 0.0f,
             int _projection = CAMERA_PERSPECTIVE) : ::Camera3D{_position, _target, _up, _fovy, _projection} {}
 
     Camera3D() = default;
@@ -39,7 +41,7 @@ class Camera3D : public ::Camera3D {
     }
     */
 
-    constexpr Camera3D& operator=(const ::Camera3D& camera) {
+    constexpr Camera3D& operator=(const ::Camera3D& camera) noexcept {
         set(camera);
         return *this;
     }
@@ -53,7 +55,7 @@ class Camera3D : public ::Camera3D {
     /**
      * Initializes 3D mode with custom camera (3D)
      */
-    Camera3D& BeginMode() {
+    Camera3D& BeginMode() noexcept {
         ::BeginMode3D(*this);
         return *this;
     }
@@ -69,14 +71,14 @@ class Camera3D : public ::Camera3D {
     /**
      * Get camera transform matrix (view matrix)
      */
-    [[nodiscard]] Matrix GetMatrix() const {
+    [[nodiscard]] Matrix GetMatrix() const noexcept {
         return ::GetCameraMatrix(*this);
     }
 
     /**
      * Update camera position for selected mode
      */
-    Camera3D& Update(int mode) {
+    Camera3D& Update(int mode) noexcept {
         ::UpdateCamera(this, mode);
         return *this;
     }
@@ -84,7 +86,7 @@ class Camera3D : public ::Camera3D {
     /**
      * Update camera movement/rotation
      */
-    Camera3D& Update(const ::Vector3& movement, const ::Vector3& rotation, float zoom = 1.0F) {
+    Camera3D& Update(const ::Vector3& movement, const ::Vector3& rotation, float zoom = DefaultUpdateZoom) noexcept {
         ::UpdateCameraPro(this, movement, rotation, zoom);
         return *this;
     }
@@ -92,14 +94,14 @@ class Camera3D : public ::Camera3D {
     /**
      * Returns a ray trace from mouse position
      */
-    [[nodiscard]] raylib::Ray GetMouseRay(::Vector2 mousePosition) const {
+    [[nodiscard]] raylib::Ray GetMouseRay(::Vector2 mousePosition) const noexcept {
         return raylib::Ray{::GetMouseRay(mousePosition, *this)};
     }
 
     /**
      * Returns the screen space position for a 3d world space position
      */
-    [[nodiscard]] raylib::Vector2 GetWorldToScreen(const ::Vector3& _position) const {
+    [[nodiscard]] raylib::Vector2 GetWorldToScreen(const ::Vector3& _position) const noexcept {
         return raylib::Vector2{::GetWorldToScreen(_position, *this)};
     }
 
@@ -110,7 +112,7 @@ class Camera3D : public ::Camera3D {
             const ::Texture2D& texture,
             const ::Vector3& center,
             float size,
-            ::Color tint = {255, 255, 255, 255}) const {
+            ::Color tint = {255, 255, 255, 255}) const noexcept {
         ::DrawBillboard(*this, texture, center, size, tint);
     }
 
@@ -122,7 +124,7 @@ class Camera3D : public ::Camera3D {
             ::Rectangle sourceRec,
             ::Vector3 center,
             ::Vector2 size,
-            ::Color tint = {255, 255, 255, 255}) const {
+            ::Color tint = {255, 255, 255, 255}) const noexcept {
         ::DrawBillboardRec(*this, texture, sourceRec, center, size, tint);
     }
 

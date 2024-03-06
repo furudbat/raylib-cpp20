@@ -38,124 +38,126 @@ class Rectangle : public ::Rectangle {
     GETTERSETTER(float, Width, width)
     GETTERSETTER(float, Height, height)
 
-    constexpr Rectangle& operator=(const ::Rectangle& rect) {
+    constexpr Rectangle& operator=(const ::Rectangle& rect) noexcept {
         set(rect);
         return *this;
     }
 
     /*
-    explicit(false) operator ::Rectangle() const {
+    explicit(false) operator ::Rectangle() const noexcept {
         return *this;
     }
     */
 
-    [[nodiscard]] constexpr raylib::Vector4 ToVector4() {
+    [[nodiscard]] constexpr raylib::Vector4 ToVector4() noexcept {
         return raylib::Vector4{{.x = x, .y = y, .z = width, .w = height}};
     }
 
-    explicit constexpr operator raylib::Vector4() const {
+    explicit constexpr operator raylib::Vector4() const noexcept {
         return raylib::Vector4{{.x = x, .y = y, .z = width, .w = height}};
     }
 
     /**
      * Draw a color-filled rectangle
      */
-    void Draw(::Color color) const {
+    void Draw(::Color color) const noexcept {
         ::DrawRectangleRec(*this, color);
     }
 
-    void Draw(::Vector2 origin, float rotation, ::Color color) const {
+    void Draw(::Vector2 origin, float rotation, ::Color color) const noexcept {
         ::DrawRectanglePro(*this, origin, rotation, color);
     }
 
-    void DrawGradientV(::Color color1, ::Color color2) const {
+    void DrawGradientV(::Color color1, ::Color color2) const noexcept {
         ::DrawRectangleGradientV(static_cast<int>(x), static_cast<int>(y), static_cast<int>(width),
             static_cast<int>(height), color1, color2);
     }
 
-    void DrawGradientH(::Color color1, ::Color color2) const {
+    void DrawGradientH(::Color color1, ::Color color2) const noexcept {
         ::DrawRectangleGradientH(static_cast<int>(x), static_cast<int>(y), static_cast<int>(width),
             static_cast<int>(height), color1, color2);
     }
 
-    void DrawGradient(::Color col1, ::Color col2, ::Color col3, ::Color col4) const {
+    void DrawGradient(::Color col1, ::Color col2, ::Color col3, ::Color col4) const noexcept {
         ::DrawRectangleGradientEx(*this, col1, col2, col3, col4);
     }
 
-    void DrawLines(::Color color) const {
+    void DrawLines(::Color color) const noexcept {
         ::DrawRectangleLines(static_cast<int>(x), static_cast<int>(y), static_cast<int>(width),
             static_cast<int>(height), color);
     }
 
-    void DrawLines(::Color color, float lineThick) const {
+    void DrawLines(::Color color, float lineThick) const noexcept {
         ::DrawRectangleLinesEx(*this, lineThick, color);
     }
 
-    void DrawRounded(float roundness, int segments, ::Color color) const {
+    void DrawRounded(float roundness, int segments, ::Color color) const noexcept {
         ::DrawRectangleRounded(*this, roundness, segments, color);
     }
 
     void DrawRoundedLines(float roundness, int segments,
-            float lineThick, ::Color color) const {
+            float lineThick, ::Color color) const noexcept {
         ::DrawRectangleRoundedLines(*this, roundness, segments, lineThick, color);
     }
 
     /**
      * Check collision between two rectangles
      */
-    [[nodiscard]] bool CheckCollision(::Rectangle rec2) const {
+    [[nodiscard]] bool CheckCollision(const ::Rectangle& rec2) const noexcept {
         return ::CheckCollisionRecs(*this, rec2);
     }
 
     /**
      * Get collision rectangle for two rectangles collision
      */
-    [[nodiscard]] Rectangle GetCollision(::Rectangle rec2) const {
+    [[nodiscard]] Rectangle GetCollision(const ::Rectangle& rec2) const noexcept {
         return Rectangle{::GetCollisionRec(*this, rec2)};
     }
 
     /**
      * Check if point is inside rectangle
      */
-    [[nodiscard]] bool CheckCollision(::Vector2 point) const {
+    [[nodiscard]] bool CheckCollision(::Vector2 point) const noexcept {
         return ::CheckCollisionPointRec(point, *this);
     }
 
     /**
      * Check collision between circle and rectangle
      */
-    [[nodiscard]] bool CheckCollision(::Vector2 center, float radius) const {
+    [[nodiscard]] bool CheckCollision(::Vector2 center, float radius) const noexcept {
         return ::CheckCollisionCircleRec(center, radius, *this);
     }
 
-    [[nodiscard]] constexpr raylib::Vector2 GetSize() const {
+    [[nodiscard]] constexpr raylib::Vector2 GetSize() const noexcept {
         return raylib::Vector2{{.x = width, .y = height}};
     }
 
-    constexpr Rectangle& SetSize(float newWidth, float newHeight) {
+    constexpr Rectangle& SetSize(float newWidth, float newHeight) noexcept {
         width = newWidth;
         height = newHeight;
         return *this;
     }
-    constexpr Rectangle& SetSize(const ::Vector2& size) {
+    constexpr Rectangle& SetSize(const ::Vector2& size) noexcept {
         return SetSize(size.x, size.y);
     }
 
-    Rectangle& SetShapesTexture(const ::Texture2D& texture) {
+    /*
+    Rectangle& SetShapesTexture(const ::Texture2D& texture) noexcept {
         ::SetShapesTexture(texture, *this);
         return *this;
     }
+    */
 
-    [[nodiscard]] constexpr raylib::Vector2 GetPosition() const {
+    [[nodiscard]] constexpr raylib::Vector2 GetPosition() const noexcept {
         return raylib::Vector2{{.x = x, .y = y}};
     }
 
-    constexpr Rectangle& SetPosition(float newX, float newY) {
+    constexpr Rectangle& SetPosition(float newX, float newY) noexcept {
         x = newX;
         y = newY;
         return *this;
     }
-    constexpr Rectangle& SetPosition(const ::Vector2& position) {
+    constexpr Rectangle& SetPosition(const ::Vector2& position) noexcept {
         return SetPosition(position.x, position.y);
     }
 
