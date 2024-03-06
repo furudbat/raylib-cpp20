@@ -1,22 +1,31 @@
 ---
-BasedOnStyle: Google
+BasedOnStyle: Microsoft
 IndentWidth: 4
 Language: Cpp
 ColumnLimit: 120
-AccessModifierOffset: -1
-AlignAfterOpenBracket: Align
-AlignConsecutiveAssignments: None
-AlignConsecutiveDeclarations: None
+AccessModifierOffset: -3
+AlignAfterOpenBracket: DontAlign
+#AlignConsecutiveAssignments: true
+#AlignConsecutiveDeclarations: true
+#AlignAfterOpenParen: Align
+#AlwaysBreakAfterDefinitionReturnType: TopLevel
+#AlwaysBreakAfterReturnType: TopLevel
+AlwaysBreakBeforeMultilineStrings: false
 AlignEscapedNewlines: Left
 AlignTrailingComments: true
 AllowShortFunctionsOnASingleLine: Empty
-AllowShortIfStatementsOnASingleLine: Never
-AllowShortLambdasOnASingleLine: Empty
-AllowShortLoopsOnASingleLine: false
-AllowShortBlocksOnASingleLine: Never
+AllowShortIfStatementsOnASingleLine: AllIfsAndElse
+AllowShortLambdasOnASingleLine: Inline
+AllowShortLoopsOnASingleLine: true
+AllowShortBlocksOnASingleLine: Always
 AlwaysBreakTemplateDeclarations: Yes
-BreakBeforeBraces: Attach
+AllowShortCaseLabelsOnASingleLine: true
+BreakBeforeBraces: Allman
+#BreakBeforeInheritanceComma: false
+BreakBeforeTernaryOperators: false
 ConstructorInitializerAllOnOneLineOrOnePerLine: true
+ConstructorInitializerIndentWidth: 4
+ContinuationIndentWidth: 4
 CommentPragmas: '^ IWYU pragma:'
 DerivePointerAlignment: false
 FixNamespaceComments: true
@@ -33,16 +42,56 @@ IncludeCategories:
   Regex: .*
 IncludeIsMainRegex: (Test)?$
 IndentCaseLabels: true
+IncludeBlocks: Preserve
 KeepEmptyLinesAtTheStartOfBlocks: true
+AllowAllParametersOfDeclarationOnNextLine: false
 MaxEmptyLinesToKeep: 2
-PointerAlignment: Left
+NamespaceIndentation: None
+PointerAlignment: Right
 SortIncludes: CaseSensitive
 SortUsingDeclarations: true
 SpaceBeforeAssignmentOperators: true
-SpaceBeforeParens: ControlStatements
+SpaceBeforeParens: ControlStatementsExceptControlMacros
+AlignOperands: true
 Standard: c++20
 TabWidth: 4
+#StatementIndent: 4
 UseTab: Never
+BinPackArguments: true
+BinPackParameters: true
+BraceWrapping:
+  AfterClass: true
+  AfterControlStatement: true
+  AfterEnum: true
+  AfterFunction: true
+  AfterNamespace: true
+  AfterObjCDeclaration: true
+  AfterStruct: true
+  AfterUnion: true
+  BeforeCatch: true
+  BeforeElse: true
+  IndentBraces: false
+  SplitEmptyFunction: false
+  SplitEmptyRecord: true
+  SplitEmptyNamespace: true
+BreakBeforeBinaryOperators: All
+Cpp11BracedListStyle: false
+SpaceAfterCStyleCast: false
+SpaceAfterTemplateKeyword: false
+SpaceBeforeCpp11BracedList: false
+SpaceBeforeCtorInitializerColon: true
+SpaceBeforeInheritanceColon: true
+SpaceBeforeRangeBasedForLoopColon: true
+#SpaceInEmptyParentheses: false
+SpacesBeforeTrailingComments: 1
+SpacesInAngles:  false
+SpacesInContainerLiterals: false
+#SpacesInCStyleCastParentheses: false
+SpacesInParentheses: false
+SpacesInSquareBrackets: false
+#SpacesInFloatingPointLiteral: false
+#SpaceBeforeBraceInitializers: false
+#SpacesInBracedLists: false
 ---
 Language: JavaScript
 IndentWidth: 2
