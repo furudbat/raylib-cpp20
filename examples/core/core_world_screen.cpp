@@ -45,18 +45,16 @@ int main() {
 
         // Draw
         //----------------------------------------------------------------------------------
-        BeginDrawing();
         {
-            window.ClearBackground(RAYWHITE);
+            raylib::DrawingGuard drawingGuard (RAYWHITE);
 
-            camera.BeginMode();
             {
+                raylib::CameraDrawingGuard cameraDrawing (camera);
                 DrawCube(cubePosition, 2.0F, 2.0F, 2.0F, RED);
                 DrawCubeWires(cubePosition, 2.0F, 2.0F, 2.0F, MAROON);
 
                 DrawGrid(10, 1.0F);
             }
-            camera.EndMode();
 
             raylib::DrawText("Enemy: 100 / 100",
                              static_cast<int>(cubeScreenPosition.x -
@@ -67,7 +65,6 @@ int main() {
                 (ScreenWidth - ::MeasureText("Text is always on top of the cube", 20)) / 2,
                 25, 20, GRAY);
         }
-        EndDrawing();
         //----------------------------------------------------------------------------------
     }
 
