@@ -13,14 +13,14 @@
 
 #include "raylib-cpp.hpp"
 
-int main(void) {
+int main() {
     // Initialization
     //--------------------------------------------------------------------------------------
-    const int screenWidth = 800;
-    const int screenHeight = 450;
+    constexpr int ScreenWidth = 800;
+    constexpr int ScreenHeight = 450;
 
-    raylib::Window window(screenWidth, screenHeight, "raylib [textures] example - image drawing");
-    raylib::Color darkGray {DARKGRAY};
+    raylib::Window window(ScreenWidth, ScreenHeight, "raylib [textures] example - image drawing");
+    const raylib::Color darkGray {DARKGRAY};
 
     // NOTE: Textures MUST be loaded after Window initialization (OpenGL context is required)
     raylib::Image cat("resources/cat.png");             // Load image in CPU memory (RAM)
@@ -33,16 +33,16 @@ int main(void) {
     // Draw one image over the other with a scaling of 1.5f
     parrots
         .Draw(cat,
-            raylib::Rectangle({.x = 0, .y = 0, .width = static_cast<float>(cat.GetWidth()), .height = static_cast<float>(cat.GetHeight())}),
-            raylib::Rectangle(30, 40, static_cast<float>(cat.GetWidth()) * 1.5F, static_cast<float>(cat.GetHeight()) * 1.5F));
-    parrots.Crop(raylib::Rectangle(0, 50, static_cast<float>(parrots.GetWidth()),
-                                   static_cast<float>(parrots.GetHeight() - 100)));  // Crop resulting image
+            raylib::Rectangle{{.x = 0, .y = 0, .width = static_cast<float>(cat.GetWidth()), .height = static_cast<float>(cat.GetHeight())}},
+            raylib::Rectangle{{.x = 30, .y = 40, .width = static_cast<float>(cat.GetWidth()) * 1.5F, .height = static_cast<float>(cat.GetHeight()) * 1.5F}});
+    parrots.Crop(raylib::Rectangle{{.x = 0, .y = 50, .width = static_cast<float>(parrots.GetWidth()),
+                                   .height = static_cast<float>(parrots.GetHeight() - 100)}});  // Crop resulting image
 
     // Load custom font for frawing on image
     raylib::Font font("resources/custom_jupiter_crash.png");
 
     // Draw over image using custom font
-    parrots.DrawText(font.c_raylib(), "PARROTS & CAT", raylib::Vector2({.x = 300,.y =  230}), static_cast<float>(font.GetBaseSize()), -2);
+    parrots.DrawText(font.c_raylib(), "PARROTS & CAT", raylib::Vector2{{.x = 300,.y =  230}}, static_cast<float>(font.GetBaseSize()), -2);
 
     raylib::Texture2D texture(parrots);      // Image converted to texture, uploaded to GPU memory (VRAM)
 
@@ -62,10 +62,10 @@ int main(void) {
         {
             window.ClearBackground(RAYWHITE);
 
-            texture.Draw(screenWidth / 2 - texture.GetWidth() / 2,
-                screenHeight / 2 - texture.GetHeight() / 2 - 40);
-            darkGray.DrawRectangleLines(screenWidth / 2 - texture.GetWidth() / 2,
-                screenHeight / 2 - texture.GetHeight() / 2 - 40,
+            texture.Draw(ScreenWidth / 2 - texture.GetWidth() / 2,
+                ScreenHeight / 2 - texture.GetHeight() / 2 - 40);
+            darkGray.DrawRectangleLines(ScreenWidth / 2 - texture.GetWidth() / 2,
+                ScreenHeight / 2 - texture.GetHeight() / 2 - 40,
                 texture.GetWidth(), texture.GetHeight());
 
             darkGray.DrawText("We are drawing only one texture from various images composed!",

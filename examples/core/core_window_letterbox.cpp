@@ -18,19 +18,16 @@
 
 #include "raylib-cpp/raymath.hpp"        // Required for: Vector2Clamp()
 
-#define MAX(a, b) ((a)>(b)? (a) : (b))
-#define MIN(a, b) ((a)<(b)? (a) : (b))
-
 //------------------------------------------------------------------------------------
 // Program main entry point
 //------------------------------------------------------------------------------------
-int main(void)
+int main()
 {
-    const int windowWidth = 800;
-    const int windowHeight = 450;
+    constexpr int WindowWidth = 800;
+    constexpr int WindowHeight = 450;
 
     // Enable config flags for resizable window and vertical synchro
-    raylib::Window window(windowWidth, windowHeight,
+    raylib::Window window(WindowWidth, WindowHeight,
         "raylib [core] example - window scale letterbox",
         FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT);
     window.SetMinSize(320, 240);
@@ -45,7 +42,12 @@ int main(void)
     std::array<raylib::Color, 10> colors;
     //colors.fill(raylib::Color{0});
     for (auto& color : colors) {
-        color = raylib::Color({.r = static_cast<unsigned char>(GetRandomValue(100, 250)), .g = static_cast<unsigned char>(GetRandomValue(50, 150)), .b = static_cast<unsigned char>(GetRandomValue(10, 100)), .a = 255});
+        color = raylib::Color({
+            .r = static_cast<unsigned char>(GetRandomValue(100, 250)),
+            .g = static_cast<unsigned char>(GetRandomValue(50, 150)),
+            .b = static_cast<unsigned char>(GetRandomValue(10, 100)),
+            .a = 255
+        });
     }
 
     window.SetTargetFPS(60);                   // Set our game to run at 60 frames-per-second
@@ -64,16 +66,25 @@ int main(void)
         if (IsKeyPressed(KEY_SPACE))
         {
             // Recalculate random colors for the bars
-            for (int i = 0; i < 10; i++) colors[i] = (Color){ (unsigned char)GetRandomValue(100, 250), (unsigned char)GetRandomValue(50, 150), (unsigned char)GetRandomValue(10, 100), 255 };
+            for (auto& color : colors) color = raylib::Color{{
+                 .r = static_cast<unsigned char>(GetRandomValue(100, 250)),
+                 .g = static_cast<unsigned char>(GetRandomValue(50, 150)),
+                 .b = static_cast<unsigned char>(GetRandomValue(10, 100)),
+                 .a = 255
+            }};
         }
 
         // Update virtual mouse (clamped mouse value behind game screen)
         raylib::Vector2 mouse = raylib::Mouse::GetPosition();
-        raylib::Vector2 virtualMouse(
-            (mouse.GetX() - (GetScreenWidth() - (gameScreenWidth*scale))*0.5f)/scale,
-            (mouse.GetY() - (GetScreenHeight() - (gameScreenHeight*scale))*0.5f)/scale
-        );
-        virtualMouse = virtualMouse.Clamp(raylib::Vector2::Zero(), raylib::Vector2(gameScreenWidth, gameScreenHeight));
+        raylib::Vector2 virtualMouse({{
+                                              .x = (mouse.GetX() - (static_cast<float>(GetScreenWidth()) - (
+                                                      static_cast<float>(gameScreenWidth) * scale)) * 0.5F) /
+                                                   scale,
+                                              .y = (mouse.GetY() - (static_cast<float>(GetScreenHeight()) - (
+                                                      static_cast<float>(gameScreenHeight) * scale)) * 0.5F) /
+                                                   scale
+                                      }});
+        virtualMouse = virtualMouse.Clamp(raylib::Vector2::Zero(), raylib::Vector2({{.x = static_cast<float>(gameScreenWidth), .y = static_cast<float>(gameScreenHeight)}}));
 
         // Apply the same transformation as the virtual mouse to the real mouse (i.e. to work with raygui)
         //SetMouseOffset(-(GetScreenWidth() - (gameScreenWidth*scale))*0.5f, -(GetScreenHeight() - (gameScreenHeight*scale))*0.5f);
@@ -86,24 +97,26 @@ int main(void)
         target.BeginMode();
             ClearBackground(RAYWHITE);  // Clear render texture background color
 
-            for (int i = 0; i < 10; i++) DrawRectangle(0, (gameScreenHeight/10)*i, gameScreenWidth, gameScreenHeight/10, colors[i]);
+            for (size_t i = 0; i < colors.size(); i++) DrawRectangle(0, (static_cast<size_t>(gameScreenHeight / 10)) * i, gameScreenWidth, gameScreenHeight / 10, colors[i]);
 
             DrawText("If executed inside a window,\nyou can resize the window,\nand see the screen scaling!", 10, 25, 20, WHITE);
-            DrawText(TextFormat("Default Mouse: [%i , %i]", (int)mouse.x, (int)mouse.y), 350, 25, 20, GREEN);
-            DrawText(TextFormat("Virtual Mouse: [%i , %i]", (int)virtualMouse.x, (int)virtualMouse.y), 350, 55, 20, YELLOW);
+            DrawText(TextFormat("Default Mouse: [%i , %i]", static_cast<int>(mouse.x), static_cast<int>(mouse.y)), 350, 25, 20, GREEN);
+            DrawText(TextFormat("Virtual Mouse: [%i , %i]", static_cast<int>(virtualMouse.x),
+                                static_cast<int>(virtualMouse.y)), 350, 55, 20, YELLOW);
         target.EndMode();
 
         BeginDrawing();
             ClearBackground(BLACK);     // Clear screen background
 
             // Draw render texture to screen, properly scaled
-            target.GetTexture().Draw(raylib::Rectangle(0.0f, 0.0f, target.GetTexture().GetWidth(), -target.GetTexture().GetHeight()),
-                raylib::Rectangle(
-                    (GetScreenWidth() - (gameScreenWidth*scale))*0.5f,
-                    (GetScreenHeight() - (gameScreenHeight*scale))*0.5f,
-                    gameScreenWidth*scale, gameScreenHeight*scale
-                ),
-                raylib::Vector2::Zero(), 0.0f, WHITE);
+            target.GetTexture().Draw(raylib::Rectangle{{.x = 0.0F, .y = 0.0F, .width = static_cast<float>(target.GetTexture().GetWidth()), .height = static_cast<float>(-target.GetTexture().GetHeight())}},
+                raylib::Rectangle{{
+                                           .x = (GetScreenWidth() - (gameScreenWidth * scale)) * 0.5F,
+                                           .y = (GetScreenHeight() - (gameScreenHeight * scale)) * 0.5F,
+                                           .width = gameScreenWidth * scale,
+                                           .height = gameScreenHeight * scale,
+                                   }},
+                raylib::Vector2::Zero(), 0.0F, WHITE);
         EndDrawing();
         //--------------------------------------------------------------------------------------
     }

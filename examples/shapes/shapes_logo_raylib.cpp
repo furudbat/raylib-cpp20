@@ -14,12 +14,12 @@
 int main() {
     // Initialization
     //--------------------------------------------------------------------------------------
-    const int screenWidth = 800;
-    const int screenHeight = 450;
+    constexpr int ScreenWidth = 800;
+    constexpr int ScreenHeight = 450;
 
-    raylib::Window window(screenWidth, screenHeight, "raylib [shapes] example - raylib logo using shapes");
-    raylib::Color foreground(0, 68, 130);
-    raylib::Color background {RAYWHITE};
+    raylib::Window window(ScreenWidth, ScreenHeight, "raylib [shapes] example - raylib logo using shapes");
+    raylib::Color foreground{{.r = 0, .g = 68, .b = 130, .a = 255}};
+    raylib::Color background{RAYWHITE};
 
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
@@ -37,10 +37,10 @@ int main() {
         {
             window.ClearBackground(background);
 
-            foreground.DrawRectangle(screenWidth/2 - 128, screenHeight/2 - 128, 256, 256);
-            background.DrawRectangle(screenWidth/2 - 112, screenHeight/2 - 112, 224, 224);
-            foreground.DrawText("raylib", screenWidth/2 - 44, screenHeight/2 + 24, 50);
-            foreground.DrawText("cpp", screenWidth/2 - 74, screenHeight/2 + 54, 50);
+            foreground.DrawRectangle(ScreenWidth/2 - 128, ScreenHeight/2 - 128, 256, 256);
+            background.DrawRectangle(ScreenWidth/2 - 112, ScreenHeight/2 - 112, 224, 224);
+            foreground.DrawText("raylib", ScreenWidth/2 - 44, ScreenHeight/2 + 24, 50);
+            foreground.DrawText("cpp", ScreenWidth/2 - 74, ScreenHeight/2 + 54, 50);
 
             DrawText("this is NOT a texture!", 350, 370, 10, GRAY);
         }

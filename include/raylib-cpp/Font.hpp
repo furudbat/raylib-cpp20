@@ -284,6 +284,10 @@ class Font {
                   float spacing, ::Color tint = WHITE) const {
         ::DrawTextEx(m_data, text.c_str(), position,  fontSize,  spacing,  tint);
     }
+    void DrawTextWithBaseSize(const std::string& text, ::Vector2 position,
+                              float spacing, ::Color tint = WHITE) const {
+        DrawText(text, position, static_cast<float>(GetBaseSize()), spacing, tint);
+    }
 
     /**
      * Draw text using font and additional parameters.
@@ -303,6 +307,10 @@ class Font {
         ::DrawTextEx(m_data, text.c_str(),
             { .x = static_cast<float>(posX), .y = static_cast<float>(posY) },
             fontSize, spacing, tint);
+    }
+    void DrawTextWithBaseSize(const std::string& text, int posX, int posY,
+                  float spacing, ::Color tint = WHITE) const {
+        DrawText(text, posX, posY, static_cast<float>(GetBaseSize()), spacing, tint);
     }
 
     void DrawText(
@@ -368,6 +376,9 @@ class Font {
      */
     [[nodiscard]] Vector2 MeasureText(const std::string& text, float fontSize, float spacing) const {
         return ::MeasureTextEx(m_data, text.c_str(), fontSize, spacing);
+    }
+    [[nodiscard]] Vector2 MeasureTextWithBaseSize(const std::string& text, float spacing) const {
+        return ::MeasureTextEx(m_data, text.c_str(), static_cast<float>(GetBaseSize()), spacing);
     }
 
     /**

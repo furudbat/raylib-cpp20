@@ -14,14 +14,14 @@
 int main() {
     // Initialization
     //--------------------------------------------------------------------------------------
-    const int screenWidth = 800;
-    const int screenHeight = 450;
+    constexpr int ScreenWidth = 800;
+    constexpr int ScreenHeight = 450;
 
-    raylib::Window window(screenWidth, screenHeight, "raylib [core] example - mouse input");
+    raylib::Window window(ScreenWidth, ScreenHeight, "raylib [core] example - mouse input");
 
-    raylib::Vector2 ballPosition(-100.0f, -100.0f);
-    raylib::Color ballColor = raylib::Color::DarkBlue();
-    raylib::Color textColor = raylib::Color::DarkGray();
+    raylib::Vector2 ballPosition {{.x = -100.0F ,.y = -100.0F}};
+    auto ballColor = raylib::Color::DarkBlue();
+    auto textColor = raylib::Color::DarkGray();
 
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
     //---------------------------------------------------------------------------------------

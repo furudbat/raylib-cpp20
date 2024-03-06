@@ -13,32 +13,32 @@
 
 #include "raylib-cpp.hpp"
 
-int main(void)
+int main()
 {
     // Initialization
     //--------------------------------------------------------------------------------------
-    const int screenWidth = 800;
-    const int screenHeight = 450;
+    constexpr int screenWidth = 800;
+    constexpr int screenHeight = 450;
 
     raylib::Window window(screenWidth, screenHeight, "raylib [text] example - sprite fonts usage");
 
-    std::string msg1 = "THIS IS A custom SPRITE FONT...";
-    std::string msg2 = "...and this is ANOTHER CUSTOM font...";
-    std::string msg3 = "...and a THIRD one! GREAT! :D";
+    const std::string msg1 = "THIS IS A custom SPRITE FONT...";
+    const std::string msg2 = "...and this is ANOTHER CUSTOM font...";
+    const std::string msg3 = "...and a THIRD one! GREAT! :D";
 
     // NOTE: Textures/Fonts MUST be loaded after Window initialization (OpenGL context is required)
     raylib::Font font1("resources/custom_mecha.png");          // Font loading
     raylib::Font font2("resources/custom_alagard.png");        // Font loading
     raylib::Font font3("resources/custom_jupiter_crash.png");  // Font loading
 
-    raylib::Vector2 fontPosition1(screenWidth/2 - font1.MeasureText(msg1, font1.GetBaseSize(), -3).x/2,
-                              screenHeight/2 - font1.GetBaseSize()/2 - 80);
+    raylib::Vector2 fontPosition1{{.x = screenWidth/2.0F - font1.MeasureTextWithBaseSize(msg1, -3).x/2,
+                              .y = static_cast<float>(screenHeight/2.0F - static_cast<float>(font1.GetBaseSize()) / 2.0F - 80)}};
 
-    raylib::Vector2 fontPosition2(screenWidth/2 - font2.MeasureText(msg2, font2.GetBaseSize(), -2).x/2,
-                              screenHeight/2 - font2.GetBaseSize()/2 - 10);
+    raylib::Vector2 fontPosition2{{.x = screenWidth/2.0F - font2.MeasureTextWithBaseSize(msg2, -2).x/2,
+                              .y = static_cast<float>(screenHeight/2.0F - static_cast<float>(font2.GetBaseSize()) / 2.0F - 10)}};
 
-    raylib::Vector2 fontPosition3(screenWidth/2 - font3.MeasureText(msg3, font3.GetBaseSize(), 2).x/2,
-                              screenHeight/2 - font3.GetBaseSize()/2 + 50);
+    raylib::Vector2 fontPosition3{{.x = screenWidth/2.0F - font3.MeasureTextWithBaseSize(msg3, 2).x/2,
+                              .y = static_cast<float>(screenHeight/2.0F - static_cast<float>(font3.GetBaseSize()) / 2.0F + 50)}};
 
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------

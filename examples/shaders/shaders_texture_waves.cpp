@@ -26,20 +26,20 @@
     #define GLSL_VERSION            100
 #endif
 
-int main(void)
+int main()
 {
     // Initialization
     //--------------------------------------------------------------------------------------
-    const int screenWidth = 800;
-    const int screenHeight = 450;
+    constexpr int ScreenWidth = 800;
+    constexpr int ScreenHeight = 450;
 
-    raylib::Window window(screenWidth, screenHeight, "raylib-cpp [shaders] example - texture waves");
+    raylib::Window window(ScreenWidth, ScreenHeight, "raylib-cpp [shaders] example - texture waves");
 
     // Load texture texture to apply shaders
     raylib::Texture2D texture("resources/space.png");
 
     // Load shader and setup location points and values
-    raylib::Shader shader({ .vsFileName = std::nullopt, .fsFileName = std::filesystem::path{TextFormat("resources/shaders/glsl%i/wave.fs", GLSL_VERSION)}});
+    raylib::Shader shader({ .vsFileName = std::nullopt, .fsFileName = std::filesystem::path{::TextFormat("resources/shaders/glsl%i/wave.fs", GLSL_VERSION)}});
 
     int secondsLoc = shader.GetLocation("secondes");
     int freqXLoc = shader.GetLocation("freqX");
@@ -50,23 +50,23 @@ int main(void)
     int speedYLoc = shader.GetLocation("speedY");
 
     // Shader uniform values that can be updated at any time
-    float freqX = 25.0f;
-    float freqY = 25.0f;
-    float ampX = 5.0f;
-    float ampY = 5.0f;
-    float speedX = 8.0f;
-    float speedY = 8.0f;
+    float freqX = 25.0F;
+    float freqY = 25.0F;
+    float ampX = 5.0F;
+    float ampY = 5.0F;
+    float speedX = 8.0F;
+    float speedY = 8.0F;
 
-    std::array<float, 2> screenSize = { (float)window.GetWidth(), (float)window.GetHeight() };
-    shader.SetValue(shader.GetLocation("size"), &screenSize, SHADER_UNIFORM_VEC2);
-    shader.SetValue(freqXLoc, &freqX, SHADER_UNIFORM_FLOAT);
-    shader.SetValue(freqYLoc, &freqY, SHADER_UNIFORM_FLOAT);
-    shader.SetValue(ampXLoc, &ampX, SHADER_UNIFORM_FLOAT);
-    shader.SetValue(ampYLoc, &ampY, SHADER_UNIFORM_FLOAT);
-    shader.SetValue(speedXLoc, &speedX, SHADER_UNIFORM_FLOAT);
-    shader.SetValue(speedYLoc, &speedY, SHADER_UNIFORM_FLOAT);
+    std::array<float, 2> screenSize = { static_cast<float>(window.GetWidth()), static_cast<float>(window.GetHeight()) };
+    shader.SetValue(shader.GetLocation("size"), screenSize/*, SHADER_UNIFORM_VEC2*/);
+    shader.SetValue(freqXLoc, freqX/*, SHADER_UNIFORM_FLOAT*/);
+    shader.SetValue(freqYLoc, freqY/*, SHADER_UNIFORM_FLOAT*/);
+    shader.SetValue(ampXLoc, ampX/*, SHADER_UNIFORM_FLOAT*/);
+    shader.SetValue(ampYLoc, ampY/*, SHADER_UNIFORM_FLOAT*/);
+    shader.SetValue(speedXLoc, speedX/*, SHADER_UNIFORM_FLOAT*/);
+    shader.SetValue(speedYLoc, speedY/*, SHADER_UNIFORM_FLOAT*/);
 
-    float seconds = 0.0f;
+    float seconds = 0.0F;
 
     window.SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
     // -------------------------------------------------------------------------------------------------------------
@@ -78,7 +78,7 @@ int main(void)
         //----------------------------------------------------------------------------------
         seconds += GetFrameTime();
 
-        shader.SetValue(secondsLoc, &seconds, SHADER_UNIFORM_FLOAT);
+        shader.SetValue(secondsLoc, seconds/*, SHADER_UNIFORM_FLOAT*/);
         //----------------------------------------------------------------------------------
 
         // Draw

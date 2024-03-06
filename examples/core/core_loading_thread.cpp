@@ -22,22 +22,24 @@
 // n.b. A plain built-in type can't be used for inter-thread synchronization
 std::atomic_bool dataLoaded{false};
 static void LoadDataThread();     // Loading data thread function declaration
-static int dataProgress = 0;      // Data progress accumulator
+static int64_t dataProgress{0};      // Data progress accumulator
 
-int main(void)
+enum class State { StateWaiting, StateLoading, StateFinished };
+
+int main()
 {
     // Initialization
     //--------------------------------------------------------------------------
-    const int screenWidth = 800;
-    const int screenHeight = 450;
+    constexpr int ScreenWidth = 800;
+    constexpr int ScreenHeight = 450;
 
-    raylib::Window window(screenWidth, screenHeight,
+    raylib::Window window(ScreenWidth, ScreenHeight,
                           "raylib [core] example - loading thread");
 
     std::thread threadId;         // Loading data thread id
 
-    enum { STATE_WAITING, STATE_LOADING, STATE_FINISHED } state = STATE_WAITING;
-    int framesCounter = 0;
+    State state {State::StateWaiting};
+    int framesCounter {0};
 
     SetTargetFPS(60);             // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------
@@ -48,7 +50,7 @@ int main(void)
         //----------------------------------------------------------------------
         switch (state)
         {
-            case STATE_WAITING:
+            case State::StateWaiting:
                 if (IsKeyPressed(KEY_ENTER))
                 {
                     try {
@@ -59,31 +61,28 @@ int main(void)
                         TraceLog(LOG_ERROR, "Error: %s", e.what());
                     }
 
-                    state = STATE_LOADING;
+                    state = State::StateLoading;
                 }
                 break;
-
-            case STATE_LOADING:
+            case State::StateLoading:
                 framesCounter++;
                 if (dataLoaded.load())
                 {
                     framesCounter = 0;
-                    state = STATE_FINISHED;
+                    state = State::StateFinished;
                 }
                 break;
-
-            case STATE_FINISHED:
+            case State::StateFinished:
                 if (IsKeyPressed(KEY_ENTER))
                 {
                     // Reset everything to launch again
                     dataLoaded = false;
                     dataProgress = 0;
-                    state = STATE_WAITING;
+                    state = State::StateWaiting;
                 }
                 break;
-
             default:
-              break;
+                break;
         }
         //----------------------------------------------------------------------
 
@@ -96,18 +95,16 @@ int main(void)
 
             switch (state)
             {
-                case STATE_WAITING:
+                case State::StateWaiting:
                     raylib::DrawText("PRESS ENTER to START LOADING DATA",
                               150, 170, 20, DARKGRAY);
                     break;
-
-                case STATE_LOADING:
-                    DrawRectangle(150, 200, dataProgress, 60, SKYBLUE);
-                    if ((framesCounter/15)%2)
+                case State::StateLoading:
+                    DrawRectangle(150, 200, static_cast<int>(dataProgress), 60, SKYBLUE);
+                    if ((framesCounter/15) % 2 == 0)
                         raylib::DrawText("LOADING DATA...", 240, 210, 40, DARKBLUE);
                     break;
-
-                case STATE_FINISHED:
+                case State::StateFinished:
                     DrawRectangle(150, 200, 500, 60, LIME);
                     raylib::DrawText("DATA LOADED!", 250, 210, 40, GREEN);
                     break;
@@ -130,7 +127,7 @@ int main(void)
 static void LoadDataThread()
 {
     using namespace std::chrono;
-    int timeCounter = 0;            // Time counted in ms
+    int64_t timeCounter = 0;            // Time counted in ms
 
     auto prevTime = steady_clock::now();
 

@@ -44,19 +44,19 @@ class Bunny {
     Color color;
 };
 
-int main(void)
+int main()
 {
     // Initialization
     //--------------------------------------------------------------------------------------
-    const int screenWidth = 800;
-    const int screenHeight = 450;
+    constexpr int screenWidth = 800;
+    constexpr int screenHeight = 450;
 
     raylib::Window window(screenWidth, screenHeight, "raylib [textures] example - bunnymark");
 
     // Load bunny texture
     raylib::Texture2D texBunny("resources/wabbit_alpha.png");
 
-    std::list<Bunny> bunnies;
+    std::vector<Bunny> bunnies;
 
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
@@ -67,6 +67,7 @@ int main(void)
         //----------------------------------------------------------------------------------
         if (IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
             // Create more bunnies
+            bunnies.reserve(bunnies.size()+100);
             for (int i = 0; i < 100; i++) {
                 bunnies.emplace_back();
             }
@@ -96,8 +97,8 @@ int main(void)
             }
 
             DrawRectangle(0, 0, screenWidth, 40, BLACK);
-            raylib::DrawText(TextFormat("bunnies: %i", bunnies.size()), 120, 10, 20, GREEN);
-            raylib::DrawText(TextFormat("batched draw calls: %i", 1 + bunnies.size()/MAX_BATCH_ELEMENTS), 320, 10, 20, MAROON);
+            raylib::DrawText(::TextFormat("bunnies: %i", bunnies.size()), 120, 10, 20, GREEN);
+            raylib::DrawText(::TextFormat("batched draw calls: %i", 1 + bunnies.size()/MAX_BATCH_ELEMENTS), 320, 10, 20, MAROON);
 
             DrawFPS(10, 10);
         }

@@ -24,10 +24,11 @@
 int main() {
     // Initialization
     //--------------------------------------------------------------------------------------
-    int screenWidth = 800;
-    int screenHeight = 450;
-    raylib::Color textColor = raylib::Color::LightGray();
-    raylib::Window window(screenWidth, screenHeight, "raylib [core] example - basic window");
+    constexpr int ScreenWidth = 800;
+    constexpr int ScreenHeight = 450;
+
+    auto textColor = raylib::Color::LightGray();
+    raylib::Window window(ScreenWidth, ScreenHeight, "raylib [core] example - basic window");
 
     SetTargetFPS(60);
     //--------------------------------------------------------------------------------------

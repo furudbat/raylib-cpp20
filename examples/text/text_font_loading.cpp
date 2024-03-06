@@ -24,14 +24,14 @@
 int main() {
     // Initialization
     //--------------------------------------------------------------------------------------
-    const int screenWidth = 800;
-    const int screenHeight = 450;
+    constexpr int ScreenWidth = 800;
+    constexpr int ScreenHeight = 450;
 
-    raylib::Window window(screenWidth, screenHeight, "raylib [text] example - font loading");
+    raylib::Window window(ScreenWidth, ScreenHeight, "raylib [text] example - font loading");
 
     // Define characters to draw
     // NOTE: raylib supports UTF-8 encoding, following list is actually codified as UTF8 internally
-    std::string msg = "!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHI\nJKLMNOPQRSTUVWXYZ[]^_`abcdefghijklmn\nopqrstuvwxyz{|}~¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓ\nÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷\nøùúûüýþÿ";
+    const std::string msg = "!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHI\nJKLMNOPQRSTUVWXYZ[]^_`abcdefghijklmn\nopqrstuvwxyz{|}~¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓ\nÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷\nøùúûüýþÿ";
 
     // NOTE: Textures/Fonts MUST be loaded after Window initialization (OpenGL context is required)
 
@@ -42,7 +42,7 @@ int main() {
     // NOTE: We define a font base size of 32 pixels tall and up-to 250 characters
     raylib::Font fontTtf("resources/pixantiqua.ttf", 32, nullptr, 250);
 
-    bool useTtf = false;
+    bool useTtf {false};
 
     window.SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
@@ -51,8 +51,7 @@ int main() {
     while (!window.ShouldClose()) {    // Detect window close button or ESC key
         // Update
         //----------------------------------------------------------------------------------
-        if (IsKeyDown(KEY_SPACE)) useTtf = true;
-        else useTtf = false;
+        useTtf = IsKeyDown(KEY_SPACE);
         //----------------------------------------------------------------------------------
 
         // Draw
@@ -66,13 +65,13 @@ int main() {
 
             if (!useTtf)
             {
-                fontBm.DrawText(msg, Vector2{ 20.0f, 100.0f }, fontBm.GetBaseSize(), 2, MAROON);
-                raylib::DrawText("Using BMFont (Angelcode) imported", 20, GetScreenHeight() - 30, 20, GRAY);
+                fontBm.DrawText(msg, ::Vector2{ 20.0F, 100.0F }, static_cast<float>(fontBm.GetBaseSize()), 2, MAROON);
+                raylib::DrawText("Using BMFont (Angelcode) imported", 20, ::GetScreenHeight() - 30, 20, GRAY);
             }
             else
             {
-                fontTtf.DrawText(msg, Vector2{ 20.0f, 100.0f }, fontTtf.GetBaseSize(), 2, LIME);
-                raylib::DrawText("Using TTF font generated", 20, GetScreenHeight() - 30, 20, GRAY);
+                fontTtf.DrawText(msg, ::Vector2{ 20.0F, 100.0F }, static_cast<float>(fontTtf.GetBaseSize()), 2, LIME);
+                raylib::DrawText("Using TTF font generated", 20, ::GetScreenHeight() - 30, 20, GRAY);
             }
         }
         window.EndDrawing();

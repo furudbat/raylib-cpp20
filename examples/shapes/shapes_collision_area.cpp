@@ -13,28 +13,28 @@
 
 #include <cmath> // NOLINT
 
-int main(void)
+int main()
 {
     // Initialization
     //---------------------------------------------------------
-    const int screenWidth = 800;
-    const int screenHeight = 450;
+    constexpr int ScreenWidth = 800;
+    constexpr int ScreenHeight = 450;
 
-    raylib::Window window(screenWidth, screenHeight, "raylib [shapes] example - collision area");
+    raylib::Window window(ScreenWidth, ScreenHeight, "raylib [shapes] example - collision area");
 
     // Box A: Moving box
-    raylib::Rectangle boxA(10, GetScreenHeight()/2 - 50, 200, 100);
+    raylib::Rectangle boxA{{.x = 10, .y = static_cast<float>(::GetScreenHeight())/2.0F - 50.0F, .width = 200, .height = 100}};
     int boxASpeedX = 4;
 
     // Box B: Mouse moved box
-    raylib::Rectangle boxB(GetScreenWidth()/2 - 30, GetScreenHeight()/2 - 30, 60, 60);
+    raylib::Rectangle boxB{{.x = static_cast<float>(::GetScreenWidth()) / 2.0F - 30.0F, .y = static_cast<float>(::GetScreenHeight()) / 2.0F - 30.0F, .width = 60, .height = 60}};
 
-    raylib::Rectangle boxCollision(0); // Collision rectangle
+    raylib::Rectangle boxCollision; // Collision rectangle
 
-    int screenUpperLimit = 40;      // Top menu limits
+    constexpr int ScreenUpperLimit {40};      // Top menu limits
 
-    bool pause = false;             // Movement pause
-    bool collision = false;         // Collision detection
+    bool pause {false};             // Movement pause
+    bool collision {false};         // Collision detection
 
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
     //----------------------------------------------------------
@@ -44,21 +44,21 @@ int main(void)
         // Update
         //-----------------------------------------------------
         // Move box if not paused
-        if (!pause) boxA.x += boxASpeedX;
+        if (!pause) boxA.x += static_cast<float>(boxASpeedX);
 
         // Bounce box on x screen limits
-        if (((boxA.x + boxA.width) >= GetScreenWidth()) || (boxA.x <= 0)) boxASpeedX *= -1;
+        if (((boxA.x + boxA.width) >= static_cast<float>(::GetScreenWidth())) || (boxA.x <= 0)) boxASpeedX *= -1;
 
         // Update player-controlled-box (box02)
-        boxB.x = GetMouseX() - boxB.width/2;
-        boxB.y = GetMouseY() - boxB.height/2;
+        boxB.x = static_cast<float>(::GetMouseX()) - boxB.width / 2;
+        boxB.y = static_cast<float>(::GetMouseY()) - boxB.height / 2;
 
         // Make sure Box B does not go out of move area limits
-        if ((boxB.x + boxB.width) >= GetScreenWidth()) boxB.x = GetScreenWidth() - boxB.width;
+        if ((boxB.x + boxB.width) >= static_cast<float>(::GetScreenWidth())) boxB.x = static_cast<float>(::GetScreenWidth()) - boxB.width;
         else if (boxB.x <= 0) boxB.x = 0;
 
-        if ((boxB.y + boxB.height) >= GetScreenHeight()) boxB.y = GetScreenHeight() - boxB.height;
-        else if (boxB.y <= screenUpperLimit) boxB.y = screenUpperLimit;
+        if ((boxB.y + boxB.height) >= static_cast<float>(::GetScreenHeight())) boxB.y = static_cast<float>(::GetScreenHeight()) - boxB.height;
+        else if (boxB.y <= ScreenUpperLimit) boxB.y = ScreenUpperLimit;
 
         // Check boxes collision
         collision = boxA.CheckCollision(boxB);
@@ -76,7 +76,7 @@ int main(void)
 
             window.ClearBackground(RAYWHITE);
 
-            DrawRectangle(0, 0, screenWidth, screenUpperLimit, collision? RED : BLACK);
+            DrawRectangle(0, 0, ScreenWidth, ScreenUpperLimit, collision ? RED : BLACK);
 
             boxA.Draw(GOLD);
             boxB.Draw(BLUE);
@@ -86,10 +86,11 @@ int main(void)
                 boxCollision.Draw(LIME);
 
                 // Draw collision message
-                raylib::DrawText("COLLISION!", GetScreenWidth()/2 - MeasureText("COLLISION!", 20)/2, screenUpperLimit/2 - 10, 20, BLACK);
+                raylib::DrawText("COLLISION!", ::GetScreenWidth()/2 - ::MeasureText("COLLISION!", 20)/2, ScreenUpperLimit/2 - 10, 20, BLACK);
 
                 // Draw collision area
-                raylib::DrawText(TextFormat("Collision Area: %i", (int)boxCollision.width*(int)boxCollision.height), GetScreenWidth()/2 - 100, screenUpperLimit + 10, 20, BLACK);
+                raylib::DrawText(::TextFormat("Collision Area: %i", static_cast<int>(boxCollision.width * boxCollision.height)),
+                                 ::GetScreenWidth() / 2 - 100, ScreenUpperLimit + 10, 20, BLACK);
             }
 
             DrawFPS(10, 10);

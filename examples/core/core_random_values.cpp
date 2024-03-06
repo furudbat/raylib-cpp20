@@ -14,12 +14,12 @@
 int main() {
     // Initialization
     //--------------------------------------------------------------------------------------
-    const int screenWidth = 800;
-    const int screenHeight = 450;
+    constexpr int ScreenWidth = 800;
+    constexpr int ScreenHeight = 450;
 
-    raylib::Window window(screenWidth, screenHeight, "raylib [core] example - generate random values");
+    raylib::Window window(ScreenWidth, ScreenHeight, "raylib [core] example - generate random values");
 
-    int framesCounter = 0;          // Variable used to count frames
+    int framesCounter {0};          // Variable used to count frames
 
     int randValue = GetRandomValue(-8, 5);   // Get a random integer number between -8 and 5 (both included)
 
