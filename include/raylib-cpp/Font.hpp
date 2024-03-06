@@ -182,7 +182,7 @@ class Font {
     /**
      * Get the texture atlas containing the glyphs.
      */
-    TextureUnmanaged GetTexture() noexcept {
+    [[nodiscard]] TextureUnmanaged GetTexture() const noexcept {
         return TextureUnmanaged{m_data.texture};
     }
 
@@ -195,6 +195,12 @@ class Font {
         newTexture = NullTexture;
     }
 
+    Font& TextureGenMipmaps() noexcept {
+        ::GenTextureMipmaps(&m_data.texture);
+
+        return *this;
+    }
+
     /**
      * Loads a font from a given file.
      *
@@ -204,10 +210,10 @@ class Font {
      *
      * @see ::LoadFont()
      */
-    RAYLIB_CPP_EXPECTED_RESULT(void) Load(const std::string& fileName) RAYLIB_CPP_THROWS {
+    RAYLIB_CPP_EXPECTED_RESULT(void) Load(const std::filesystem::path& fileName) RAYLIB_CPP_THROWS {
         set(::LoadFont(fileName.c_str()));
         if (!IsReady()) {
-            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Font with from file: " + fileName));
+            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Font with from file: " + fileName.string()));
         }
         RAYLIB_CPP_RETURN_EXPECTED();
     }
@@ -222,7 +228,7 @@ class Font {
      *
      * @see ::LoadFontEx()
      */
-    RAYLIB_CPP_EXPECTED_RESULT(void) Load(const std::filesystem::path& fileName, int fontSize, std::span<int> codepoints) RAYLIB_CPP_THROWS {
+    RAYLIB_CPP_EXPECTED_RESULT(void) Load(const std::filesystem::path& fileName, int fontSize, std::span<int> codepoints = {}) RAYLIB_CPP_THROWS {
         set(::LoadFontEx(fileName.c_str(), fontSize, codepoints.data(), static_cast<int>(codepoints.size())));
         if (!IsReady()) {
             RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Font with from file with font size: " + fileName.string()));

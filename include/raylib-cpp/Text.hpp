@@ -16,30 +16,36 @@ namespace raylib {
  */
 class Text {
  public:
+    inline static constexpr float DefaultFontSize = 10.0f;
+    inline static constexpr float DefaultSpacing = 0.0f;
+    inline static constexpr ::Color DefaultColor = WHITE;
+
     /**
      * The internal text.
      */
-    std::string text;
+    std::string text{};
 
     /**
      * The size of the text.
      */
-    float fontSize;
+    float fontSize{DefaultFontSize};
 
     /**
      * The color of the text.
      */
-    raylib::Color color;
+    raylib::Color color{DefaultColor};
 
     /**
      * The internal raylib font to use for the text.
      */
-    ::Font font;
+    ::Font font{::GetFontDefault()};
 
     /**
      * The character spacing for the text.
      */
-    float spacing;
+    float spacing{DefaultSpacing};
+
+    Text() = default;
 
     /**
      * Initializes a new Text object.
@@ -51,11 +57,24 @@ class Text {
      * @param spacing The spacing of the text.
      */
     explicit Text(
-            const std::string& pText = "",
-            float pFontSize = 10.0f,
-            ::Color pColor = WHITE,
+            const std::string& pText,
+            float pFontSize = DefaultFontSize,
+            ::Color pColor = DefaultColor,
             const ::Font& pFont = ::GetFontDefault(),
-            float pSpacing = 0.0f) :
+            float pSpacing = DefaultSpacing) :
+            text(pText),
+            fontSize(pFontSize),
+            color(pColor),
+            font(pFont),
+            spacing(pSpacing) {
+        // Nothing.
+    }
+    explicit Text(
+            const std::string& pText,
+            float pFontSize,
+            ::Color pColor,
+            raylib::Font& pFont,
+            float pSpacing = DefaultSpacing) :
             text(pText),
             fontSize(pFontSize),
             color(pColor),
@@ -76,9 +95,9 @@ class Text {
     explicit Text(
             const ::Font& pFont,
             const std::string& pText = "",
-            float pFontSize = 10.0f,
-            float pSpacing = 0,
-            ::Color pColor = WHITE) :
+            float pFontSize = DefaultFontSize,
+            float pSpacing = DefaultSpacing,
+            ::Color pColor = DefaultColor) :
             text(pText),
             fontSize(pFontSize),
             color(pColor),
@@ -87,11 +106,11 @@ class Text {
         // Nothing.
     }
     explicit Text(
-            const raylib::Font& pFont,
+            raylib::Font& pFont,
             const std::string& pText = "",
-            float pFontSize = 10.0f,
-            float pSpacing = 0,
-            ::Color pColor = WHITE) :
+            float pFontSize = DefaultFontSize,
+            float pSpacing = DefaultSpacing,
+            ::Color pColor = DefaultColor) :
             text(pText),
             fontSize(pFontSize),
             color(pColor),

@@ -2,6 +2,7 @@
 #define RAYLIB_CPP_INCLUDE_WINDOW_HPP_
 
 #include <string>
+#include <chrono>
 
 #include "./raylib.hpp"
 #include "./Vector2.hpp"
@@ -446,12 +447,18 @@ class Window {
     [[nodiscard]] float GetFrameTime() const noexcept {
         return ::GetFrameTime();
     }
+    [[nodiscard]] std::chrono::milliseconds GetFrameTimeMs() const {
+        return std::chrono::milliseconds{static_cast<int64_t>(::GetFrameTime() * 1000)};
+    }
 
     /**
      * Returns elapsed time in seconds since InitWindow()
      */
     [[nodiscard]] double GetTime() const noexcept {
         return ::GetTime();
+    }
+    [[nodiscard]] std::chrono::milliseconds GetTimeMs() const {
+        return std::chrono::milliseconds{static_cast<int64_t>(::GetTime() * 1000)};
     }
 
     /**

@@ -120,14 +120,6 @@ class TextureUnmanaged {
     }
 
     /**
-     * Generate GPU mipmaps for a texture
-     */
-    TextureUnmanaged& GenMipmaps() {
-        ::GenTextureMipmaps(&m_data);
-        return *this;
-    }
-
-    /**
      * Set texture scaling filter mode
      */
     TextureUnmanaged& SetFilter(int filterMode) noexcept {

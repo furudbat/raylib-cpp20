@@ -3,6 +3,7 @@
 
 #include <string>
 #include <filesystem>
+#include <chrono>
 
 #include "./raylib.hpp"
 #include "./raylib-cpp-utils.hpp"
@@ -177,6 +178,10 @@ class Music {
         ::SeekMusicStream(m_data, position);
         return *this;
     }
+    Music& Seek(std::chrono::milliseconds position) {
+        ::SeekMusicStream(m_data, static_cast<float>(position.count()) / 1000.0f);
+        return *this;
+    }
 
     /**
      * Check if music is playing
@@ -215,12 +220,18 @@ class Music {
     [[nodiscard]] float GetTimeLength() const noexcept {
         return ::GetMusicTimeLength(m_data);
     }
+    [[nodiscard]] std::chrono::milliseconds GetTimeLengthMs() const {
+        return std::chrono::milliseconds{static_cast<int64_t>(::GetMusicTimeLength(m_data) * 1000)};
+    }
 
     /**
      * Get current music time played (in seconds)
      */
     [[nodiscard]] float GetTimePlayed() const noexcept {
         return ::GetMusicTimePlayed(m_data);
+    }
+    [[nodiscard]] std::chrono::milliseconds GetTimePlayedMs() const {
+        return std::chrono::milliseconds{static_cast<int64_t>(::GetMusicTimePlayed(m_data) * 1000)};
     }
 
     /**

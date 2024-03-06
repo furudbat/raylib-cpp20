@@ -42,6 +42,8 @@ int main() {
     // NOTE: We define a font base size of 32 pixels tall and up-to 250 characters
     raylib::Font fontTtf("resources/pixantiqua.ttf", 32, nullptr, 250);
 
+    ::SetTextLineSpacing(32);
+
     bool useTtf {false};
 
     window.SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
@@ -65,12 +67,12 @@ int main() {
 
             if (!useTtf)
             {
-                fontBm.DrawText(msg, ::Vector2{ 20.0F, 100.0F }, static_cast<float>(fontBm.GetBaseSize()), 2, MAROON);
+                fontBm.DrawTextWithBaseSize(msg, ::Vector2{ 20.0F, 100.0F }, 2, MAROON);
                 raylib::DrawText("Using BMFont (Angelcode) imported", 20, ::GetScreenHeight() - 30, 20, GRAY);
             }
             else
             {
-                fontTtf.DrawText(msg, ::Vector2{ 20.0F, 100.0F }, static_cast<float>(fontTtf.GetBaseSize()), 2, LIME);
+                fontTtf.DrawTextWithBaseSize(msg, ::Vector2{ 20.0F, 100.0F }, 2, LIME);
                 raylib::DrawText("Using TTF font generated", 20, ::GetScreenHeight() - 30, 20, GRAY);
             }
         }

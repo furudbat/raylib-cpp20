@@ -24,19 +24,19 @@ class Bunny {
         speed.x = static_cast<float>(GetRandomValue(-250, 250)) / 60.0f;
         speed.y = static_cast<float>(GetRandomValue(-250, 250)) / 60.0f;
         color = raylib::Color(
-                GetRandomValue(50, 240),
-                GetRandomValue(80, 240),
-                GetRandomValue(100, 240));
+                static_cast<uint8_t>(GetRandomValue(50, 240)),
+                static_cast<uint8_t>(GetRandomValue(80, 240)),
+                static_cast<uint8_t>(GetRandomValue(100, 240)));
     }
 
     void Update(const raylib::Texture2D& texBunny) {
         position.x += speed.x;
         position.y += speed.y;
 
-        if (((position.x + texBunny.GetWidth()/2) > GetScreenWidth()) ||
-            ((position.x + texBunny.GetWidth()/2) < 0)) speed.x *= -1;
-        if (((position.y + texBunny.GetHeight()/2) > GetScreenHeight()) ||
-            ((position.y + texBunny.GetHeight()/2 - 40) < 0)) speed.y *= -1;
+        if (((position.x + static_cast<float>(texBunny.GetWidth()) / 2.0f) > static_cast<float>(::GetScreenWidth())) ||
+            ((position.x + static_cast<float>(texBunny.GetWidth()) / 2.0f) < 0)) speed.x *= -1;
+        if (((position.y + static_cast<float>(texBunny.GetHeight()) / 2.0f) > static_cast<float>(::GetScreenHeight())) ||
+            ((position.y + static_cast<float>(texBunny.GetHeight()) / 2.0f - 40) < 0)) speed.y *= -1;
     }
 
     Vector2 position;
@@ -67,10 +67,7 @@ int main()
         //----------------------------------------------------------------------------------
         if (IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
             // Create more bunnies
-            bunnies.reserve(bunnies.size()+100);
-            for (int i = 0; i < 100; i++) {
-                bunnies.emplace_back();
-            }
+            bunnies.resize(bunnies.size()+100);
         }
 
         // Update bunnies

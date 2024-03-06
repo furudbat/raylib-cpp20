@@ -58,7 +58,7 @@ int main() {
 
             raylib::DrawText("Enemy: 100 / 100",
                              static_cast<int>(cubeScreenPosition.x -
-                                              static_cast<float>(::MeasureText("Enemy: 100/100", 20) / 2.0F)),
+                                              static_cast<float>(::MeasureText("Enemy: 100/100", 20)) / 2.0F),
                              static_cast<int>(cubeScreenPosition.y), 20,
                              BLACK);
             raylib::DrawText("Text is always on top of the cube",

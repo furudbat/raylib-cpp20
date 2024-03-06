@@ -82,19 +82,6 @@ class MeshUnmanaged {
     /**
      * Upload mesh vertex data to GPU (VRAM)
      */
-    [[deprecated("Use Upload(UploadOption)")]]
-    void Upload(bool dynamic = false) {
-        ::UploadMesh(&m_data, dynamic);
-    }
-
-    enum class UploadOption : bool { Static = false, Dynamic = true};
-    void Upload(UploadOption dynamic = UploadOption::Static) {
-        ::UploadMesh(&m_data, dynamic == UploadOption::Dynamic);
-    }
-
-    /**
-     * Upload mesh vertex data to GPU (VRAM)
-     */
     void UpdateBuffer(int index, void *data, int dataSize, int offset = 0) {
         ::UpdateMeshBuffer(m_data, index, data, dataSize, offset);
     }
@@ -143,14 +130,6 @@ class MeshUnmanaged {
      */
     explicit operator raylib::BoundingBox() const noexcept {
         return BoundingBox();
-    }
-
-    /**
-     * Compute mesh tangents
-     */
-    MeshUnmanaged& GenTangents() {
-        ::GenMeshTangents(&m_data);
-        return *this;
     }
 
 
