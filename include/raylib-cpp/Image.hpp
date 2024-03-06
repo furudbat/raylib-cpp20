@@ -40,6 +40,10 @@ class Font;
  */
 class Image {
  public:
+    inline static constexpr ::Color DefaultColor {255, 255, 255, 255};
+    inline static constexpr ::Color DefaultClearBackgroundColor {0, 0, 0, 255};
+    inline static constexpr int DefaultDrawRectangleLinesThick = 1;
+
     explicit constexpr Image(owner<void*> _data,
             int _width = 0,
             int _height = 0,
@@ -54,7 +58,7 @@ class Image {
             .width = 0,
             .height = 0,
             .mipmaps = 1,
-            .format = PIXELFORMAT_UNCOMPRESSED_R8G8B8A8}) {
+            .format = PIXELFORMAT_UNCOMPRESSED_R8G8B8A8}) noexcept {
         set(image);
 
         image.data = nullptr;
@@ -115,16 +119,16 @@ class Image {
         LoadFromTexture(texture);
     }
 
-    Image(int _width, int _height, ::Color color = {255, 255, 255, 255}) {
+    Image(int _width, int _height, ::Color color = DefaultColor) {
         set(::GenImageColor(_width, _height, color));
     }
 
-    Image(const std::string& text, int fontSize, ::Color color = {255, 255, 255, 255}) {
+    Image(const std::string& text, int fontSize, ::Color color = DefaultColor) {
         set(::ImageText(text.c_str(), fontSize, color));
     }
 
     Image(const ::Font& font, const std::string& text, float fontSize, float spacing,
-            ::Color tint = {255, 255, 255, 255}) {
+            ::Color tint = DefaultColor) {
         set(::ImageTextEx(font, text.c_str(), fontSize, spacing, tint));
     }
 
@@ -201,20 +205,20 @@ class Image {
         return *this;
     }
 
-    explicit operator ::Image() const {
+    explicit operator ::Image() const noexcept {
         return m_data;
     }
-    [[nodiscard]] ::Image c_raylib() const & {
+    [[nodiscard]] ::Image c_raylib() const & noexcept {
         return m_data;
     }
 
     static ::Image Text(const std::string& text, int fontSize,
-            ::Color color = {255, 255, 255, 255}) {
+            ::Color color = DefaultColor) {
         return ::ImageText(text.c_str(), fontSize, color);
     }
 
     static ::Image Text(const ::Font& font, const std::string& text, float fontSize, float spacing,
-            ::Color tint = {255, 255, 255, 255}) {
+            ::Color tint = DefaultColor) {
         return ::ImageTextEx(font, text.c_str(), fontSize, spacing, tint);
     }
 
@@ -228,7 +232,7 @@ class Image {
     /**
      * Generate image: plain color
      */
-    static Image Color(int width, int height, ::Color color = {255, 255, 255, 255}) {
+    static Image Color(int width, int height, ::Color color = DefaultColor) {
         return Image{::GenImageColor(width, height, color)};
     }
 
@@ -349,7 +353,7 @@ class Image {
     /**
      * Unload image from CPU memory (RAM)
      */
-    void Unload() {
+    void Unload() noexcept {
         if (m_data.data != nullptr) {
             ::UnloadImage(m_data);
             m_data.data = nullptr;
@@ -402,7 +406,7 @@ class Image {
     /**
      * Retrieve the width and height of the image.
      */
-    [[nodiscard]] constexpr raylib::Vector2 GetSize() const {
+    [[nodiscard]] constexpr raylib::Vector2 GetSize() const noexcept {
         return raylib::Vector2{{.x = static_cast<float>(m_data.width), .y = static_cast<float>(m_data.height)}};
     }
 
@@ -524,7 +528,7 @@ class Image {
      * Resize canvas and fill with color
      */
     Image& ResizeCanvas(int newWidth, int newHeight, int offsetX = 0, int offsetY = 0,
-            ::Color color = {255, 255, 255, 255}) {
+            ::Color color = DefaultColor) {
         ::ImageResizeCanvas(&m_data, newWidth, newHeight, offsetX, offsetY, color);
         return *this;
     }
@@ -588,7 +592,7 @@ class Image {
     /**
      * Modify image color: tint
      */
-    Image& ColorTint(::Color color = {255, 255, 255, 255}) {
+    Image& ColorTint(::Color color = DefaultColor) {
         ::ImageColorTint(&m_data, color);
         return *this;
     }
@@ -663,7 +667,7 @@ class Image {
     /**
      * Clear image background with given color
      */
-    Image& ClearBackground(::Color color = {0, 0, 0, 255}) {
+    Image& ClearBackground(::Color color = DefaultClearBackgroundColor) {
         ::ImageClearBackground(&m_data, color);
         return *this;
     }
@@ -671,16 +675,16 @@ class Image {
     /**
      * Draw pixel within an image
      */
-    void DrawPixel(int posX, int posY, ::Color color = {255, 255, 255, 255}) {
+    void DrawPixel(int posX, int posY, ::Color color = DefaultColor) {
         ::ImageDrawPixel(&m_data, posX, posY, color);
     }
 
-    void DrawPixel(::Vector2 position, ::Color color = {255, 255, 255, 255}) {
+    void DrawPixel(::Vector2 position, ::Color color = DefaultColor) {
         ::ImageDrawPixelV(&m_data, position, color);
     }
 
     void DrawLine(int startPosX, int startPosY, int endPosX, int endPosY,
-            ::Color color = {255, 255, 255, 255}) {
+            ::Color color = DefaultColor) {
         ::ImageDrawLine(&m_data, startPosX, startPosY, endPosX, endPosY, color);
     }
 
@@ -689,45 +693,45 @@ class Image {
     }
 
     void DrawCircle(int centerX, int centerY, int radius,
-            ::Color color = {255, 255, 255, 255}) {
+            ::Color color = DefaultColor) {
         ::ImageDrawCircle(&m_data, centerX, centerY, radius, color);
     }
 
     void DrawCircle(::Vector2 center, int radius,
-            ::Color color = {255, 255, 255, 255}) {
+            ::Color color = DefaultColor) {
         ::ImageDrawCircleV(&m_data, center, radius, color);
     }
 
     void DrawRectangle(int posX, int posY, int _width, int _height,
-            ::Color color = {255, 255, 255, 255}) {
+            ::Color color = DefaultColor) {
         ::ImageDrawRectangle(&m_data, posX, posY, _width, _height, color);
     }
 
     void DrawRectangle(::Vector2 position, ::Vector2 size,
-            ::Color color = {255, 255, 255, 255}) {
+            ::Color color = DefaultColor) {
         ::ImageDrawRectangleV(&m_data, position, size, color);
     }
 
-    void DrawRectangle(const ::Rectangle& rec, ::Color color = {255, 255, 255, 255}) {
+    void DrawRectangle(const ::Rectangle& rec, ::Color color = DefaultColor) {
         ::ImageDrawRectangleRec(&m_data, rec, color);
     }
 
-    void DrawRectangleLines(const ::Rectangle& rec, int thick = 1,
-            ::Color color = {255, 255, 255, 255}) {
+    void DrawRectangleLines(const ::Rectangle& rec, int thick = DefaultDrawRectangleLinesThick,
+            ::Color color = DefaultColor) {
         ::ImageDrawRectangleLines(&m_data, rec, thick, color);
     }
 
     void Draw(const ::Image& src, const ::Rectangle& srcRec, const ::Rectangle& dstRec,
-            ::Color tint = {255, 255, 255, 255}) {
+            ::Color tint = DefaultColor) {
         ::ImageDraw(&m_data, src, srcRec, dstRec, tint);
     }
     void Draw(const raylib::Image& src, const ::Rectangle& srcRec, const ::Rectangle& dstRec,
-              ::Color tint = {255, 255, 255, 255}) {
+              ::Color tint = DefaultColor) {
         Draw(src.c_raylib(), srcRec, dstRec, tint);
     }
 
     void DrawText(const char* text, ::Vector2 position, int fontSize,
-            ::Color color = {255, 255, 255, 255}) {
+            ::Color color = DefaultColor) {
         ::ImageDrawText(&m_data,
             text,
             static_cast<int>(position.x),
@@ -737,7 +741,7 @@ class Image {
     }
 
     void DrawText(const std::string& text, ::Vector2 position, int fontSize,
-            ::Color color = {255, 255, 255, 255}) {
+            ::Color color = DefaultColor) {
         ::ImageDrawText(&m_data,
             text.c_str(),
             static_cast<int>(position.x),
@@ -747,17 +751,17 @@ class Image {
     }
 
     void DrawText(const std::string& text, int x, int y, int fontSize,
-            ::Color color = {255, 255, 255, 255}) {
+            ::Color color = DefaultColor) {
         ::ImageDrawText(&m_data, text.c_str(), x, y, fontSize, color);
     }
 
     void DrawText(const char* text, int x, int y, int fontSize,
-            ::Color color = {255, 255, 255, 255}) {
+            ::Color color = DefaultColor) {
         ::ImageDrawText(&m_data, text, x, y, fontSize, color);
     }
 
     void DrawText(const ::Font& font, const std::string& text, ::Vector2 position,
-            float fontSize, float spacing, ::Color tint = {255, 255, 255, 255}) {
+            float fontSize, float spacing, ::Color tint = DefaultColor) {
         ::ImageDrawTextEx(&m_data, font, text.c_str(), position, fontSize, spacing, tint);
     }
     /*
@@ -768,12 +772,12 @@ class Image {
     */
 
     void DrawText(const ::Font& font, const char* text, ::Vector2 position,
-            float fontSize, float spacing, ::Color tint = {255, 255, 255, 255}) {
+            float fontSize, float spacing, ::Color tint = DefaultColor) {
         ::ImageDrawTextEx(&m_data, font, text, position, fontSize, spacing, tint);
     }
     /*
     void DrawText(const raylib::Font& font, const char* text, ::Vector2 position,
-                  float fontSize, float spacing, ::Color tint = {255, 255, 255, 255}) {
+                  float fontSize, float spacing, ::Color tint = DefaultColor) {
         DrawText(font.c_raylib(), text, position, fontSize, spacing, tint);
     }
     */
@@ -804,7 +808,7 @@ class Image {
      * Unload color data loaded with LoadImageColors()
      */
     [[deprecated("Use LoadColors() for loading Colors and avoid unload Colors by hand")]]
-    static void UnloadColors(::Color* colors) {
+    static void UnloadColors(::Color* colors) noexcept {
         ::UnloadImageColors(colors);
     }
 
@@ -812,7 +816,7 @@ class Image {
      * Unload colors palette loaded with LoadImagePalette()
      */
     [[deprecated("Use LoadPalette() for loading Colors and avoid unload Palette by hand")]]
-    static void UnloadPalette(::Color* colors) {
+    static void UnloadPalette(::Color* colors) noexcept {
         ::UnloadImagePalette(colors);
     }
 
@@ -841,7 +845,7 @@ class Image {
     /**
      * Get pixel data size in bytes for certain format
      */
-    static int GetPixelDataSize(int width, int height, int format = PIXELFORMAT_UNCOMPRESSED_R32G32B32A32) {
+    static int GetPixelDataSize(int width, int height, int format = PIXELFORMAT_UNCOMPRESSED_R32G32B32A32) noexcept {
         return ::GetPixelDataSize(width, height, format);
     }
 
@@ -850,7 +854,7 @@ class Image {
      *
      * @return The pixel data size of the image.
      */
-    [[nodiscard]] int GetPixelDataSize() const {
+    [[nodiscard]] int GetPixelDataSize() const noexcept {
         return ::GetPixelDataSize(m_data.width, m_data.height, m_data.format);
     }
 
@@ -859,7 +863,7 @@ class Image {
      *
      * @return True or false depending on whether the Image has been loaded.
      */
-    [[nodiscard]] bool IsReady() const {
+    [[nodiscard]] bool IsReady() const noexcept {
         return ::IsImageReady(m_data);
     }
 

@@ -43,7 +43,7 @@ class Texture {
     }
 
     explicit constexpr Texture(owner<const ::Texture&> other) = delete;
-    explicit constexpr Texture(owner<::Texture&&> other) {
+    explicit constexpr Texture(owner<::Texture&&> other) noexcept {
         m_texture.set(other);
 
         other.id = 0;
@@ -56,7 +56,7 @@ class Texture {
     /**
      * Move constructor.
      */
-    Texture(Texture&& other) {
+    Texture(Texture&& other) noexcept {
         m_texture.set(other.m_texture.m_data);
 
         other.m_texture.m_data.id = 0;
@@ -88,14 +88,14 @@ class Texture {
     /**
      * On destruction, unload the Texture.
      */
-    ~Texture() {
+    ~Texture() noexcept {
         Unload();
     }
 
-    explicit operator ::Texture() const {
+    explicit operator ::Texture() const noexcept {
         return m_texture.m_data;
     }
-    [[nodiscard]] ::Texture c_raylib() const & {
+    [[nodiscard]] ::Texture c_raylib() const & noexcept {
         return m_texture.c_raylib();
     }
 
@@ -143,7 +143,7 @@ class Texture {
     /**
      * Unload texture from GPU memory (VRAM)
      */
-    void Unload() {
+    void Unload() noexcept {
         // Protect against calling UnloadTexture() twice.
         if (m_texture.m_data.id != 0) {
             ::UnloadTexture(m_texture.m_data);

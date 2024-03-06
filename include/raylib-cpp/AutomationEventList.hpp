@@ -19,7 +19,7 @@ namespace raylib {
  */
 class AutomationEventList {
  public:
-    inline static constexpr int DefaultCapacity = 16384;
+    inline static constexpr unsigned int DefaultCapacity = 16384;
 
     [[deprecated("Use AutomationEventList(automationEventList)")]]
     explicit constexpr AutomationEventList(uint32_t _capacity,
@@ -56,7 +56,7 @@ class AutomationEventList {
     explicit operator ::AutomationEventList() const {
         return m_data;
     }
-    [[nodiscard]] ::AutomationEventList c_raylib() const & {
+    [[nodiscard]] ::AutomationEventList c_raylib() const & noexcept {
         return m_data;
     }
 

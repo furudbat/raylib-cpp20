@@ -10,7 +10,7 @@ namespace raylib {
  */
 class RayCollision : public ::RayCollision {
  public:
-    explicit constexpr RayCollision(const ::RayCollision& ray) {
+    explicit constexpr RayCollision(const ::RayCollision& ray) noexcept {
         set(ray);
     }
 
@@ -29,45 +29,45 @@ class RayCollision : public ::RayCollision {
     /**
      * Get collision info between ray and bounding box
      */
-    RayCollision(const ::Ray& ray, const ::BoundingBox& box) {
+    RayCollision(const ::Ray& ray, const ::BoundingBox& box) noexcept {
         set(::GetRayCollisionBox(ray, box));
     }
 
     /**
      * Get collision info between ray and mesh
      */
-    RayCollision(const ::Ray& ray, const ::Mesh& mesh, const ::Matrix& transform) {
+    RayCollision(const ::Ray& ray, const ::Mesh& mesh, const ::Matrix& transform) noexcept {
         set(::GetRayCollisionMesh(ray, mesh, transform));
     }
 
     /**
      * Get collision info between ray and quad
      */
-    RayCollision(const ::Ray& ray, const ::Vector3& p1, const ::Vector3& p2, const ::Vector3& p3, const ::Vector3& p4) {
+    RayCollision(const ::Ray& ray, const ::Vector3& p1, const ::Vector3& p2, const ::Vector3& p3, const ::Vector3& p4) noexcept {
         set(::GetRayCollisionQuad(ray, p1, p2, p3, p4));
     }
 
     /**
      * Get collision info between ray and sphere
      */
-    RayCollision(const ::Ray& ray, const ::Vector3& center, float radius) {
+    RayCollision(const ::Ray& ray, const ::Vector3& center, float radius) noexcept {
         set(::GetRayCollisionSphere(ray, center, radius));
     }
 
     /**
      * Get collision info between ray and triangle
      */
-    RayCollision(const ::Ray& ray, const ::Vector3& p1, const ::Vector3& p2, const ::Vector3& p3) {
+    RayCollision(const ::Ray& ray, const ::Vector3& p1, const ::Vector3& p2, const ::Vector3& p3) noexcept {
         set(::GetRayCollisionTriangle(ray, p1, p2, p3));
     }
 
-    constexpr RayCollision& operator=(const ::RayCollision& ray) {
+    constexpr RayCollision& operator=(const ::RayCollision& ray) noexcept {
         set(ray);
         return *this;
     }
 
     /*
-    explicit(false) operator ::RayCollision() const {
+    explicit(false) operator ::RayCollision() const noexcept {
         return *this;
     }
     */
@@ -82,7 +82,7 @@ class RayCollision : public ::RayCollision {
     GETTERSETTER(::Vector3, Normal, normal)
 
  protected:
-    constexpr void set(const ::RayCollision& ray) {
+    constexpr void set(const ::RayCollision& ray) noexcept {
         hit = ray.hit;
         distance = ray.distance;
         point = ray.point;

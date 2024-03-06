@@ -1,6 +1,7 @@
 #ifndef RAYLIB_CPP_INCLUDE_WAVE_HPP_
 #define RAYLIB_CPP_INCLUDE_WAVE_HPP_
 
+#include <cstddef>
 #include <string>
 #include <filesystem>
 #include <span>
@@ -28,6 +29,8 @@ using RayWaveSamples = RayArrayHolder<float, RayWaveSamplesDeleter>;
  */
 class Wave {
  public:
+    inline static constexpr int DefaultFormatChannels = 2;
+
     constexpr explicit Wave(owner<const ::Wave&> wave) = delete;
     constexpr explicit Wave(owner<::Wave&&> wave = {
             .frameCount = 0,
@@ -35,7 +38,7 @@ class Wave {
             .sampleSize = 0,
             .channels = 0,
             .data = nullptr,
-    }) {
+    }) noexcept {
         set(wave);
 
         wave.frameCount = 0;
@@ -83,8 +86,7 @@ class Wave {
         copy.m_data.channels = 0;
         copy.m_data.data = nullptr;
     }
-
-    Wave(Wave&& other) {
+    Wave(Wave&& other) noexcept {
         set(other.m_data);
 
         other.m_data.frameCount = 0;
@@ -97,12 +99,12 @@ class Wave {
     /**
      * Unload wave data
      */
-    ~Wave() {
+    ~Wave() noexcept {
         Unload();
     }
 
     Wave& operator=(const ::Wave& wave) = delete;
-    Wave& operator=(::Wave&& wave) {
+    Wave& operator=(::Wave&& wave) noexcept {
         set(wave);
 
         wave.frameCount = 0;
@@ -148,10 +150,10 @@ class Wave {
         return *this;
     }
 
-    explicit operator ::Wave() const {
+    explicit operator ::Wave() const noexcept {
         return m_data;
     }
-    [[nodiscard]] ::Wave c_raylib() const & {
+    [[nodiscard]] ::Wave c_raylib() const & noexcept {
         return m_data;
     }
 
@@ -164,7 +166,7 @@ class Wave {
     /**
      * Copy a wave to a new wave
      */
-    Wave Copy() const {
+    [[nodiscard]] Wave Copy() const {
         return Wave{::WaveCopy(m_data)};
     }
 
@@ -179,7 +181,7 @@ class Wave {
     /**
      * Convert wave data to desired format
      */
-    Wave& Format(int SampleRate, int SampleSize, int Channels = 2) {
+    Wave& Format(int SampleRate, int SampleSize, int Channels = DefaultFormatChannels) {
         ::WaveFormat(&m_data, SampleRate, SampleSize, Channels);
         return *this;
     }
@@ -189,13 +191,13 @@ class Wave {
      */
     RayWaveSamples LoadSamples() {
         /// @Note: assume allocated size
-        return RayWaveSamples{::LoadWaveSamples(m_data), m_data.frameCount*m_data.channels*sizeof(float)};
+        return RayWaveSamples{::LoadWaveSamples(m_data), static_cast<unsigned long>(m_data.frameCount*m_data.channels)*sizeof(float)};
     }
 
     /**
      * Unload samples data loaded with LoadWaveSamples()
      */
-    static void UnloadSamples(float *samples) {
+    static void UnloadSamples(float *samples) noexcept {
         ::UnloadWaveSamples(samples);
     }
 
@@ -218,7 +220,7 @@ class Wave {
     /**
      * Unload wave data
      */
-    void Unload() {
+    void Unload() noexcept {
         // Protect against calling UnloadWave() twice.
         if (m_data.data != nullptr) {
             ::UnloadWave(m_data);
@@ -273,7 +275,7 @@ class Wave {
      *
      * @return True or false depending on whether the wave data has been loaded.
      */
-    [[nodiscard]] bool IsReady() const {
+    [[nodiscard]] bool IsReady() const noexcept {
         return ::IsWaveReady(m_data);
     }
 

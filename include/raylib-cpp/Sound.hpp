@@ -23,6 +23,8 @@ namespace raylib {
  */
 class Sound {
  public:
+    inline static constexpr float DefaultSetPan = 0.5f; ///< center
+
     constexpr Sound() {
         m_data.stream = { nullptr, nullptr, 0, 0, 0 };
         m_data.frameCount = 0;
@@ -33,7 +35,7 @@ class Sound {
     }
 
     constexpr Sound(owner<const ::Sound&>) = delete;
-    constexpr Sound(owner<::Sound&&> other) {
+    constexpr Sound(owner<::Sound&&> other) noexcept {
         set(other);
 
         other.stream = { nullptr, nullptr, 0, 0, 0 };
@@ -41,7 +43,7 @@ class Sound {
     }
 
     constexpr Sound(const Sound&) = delete;
-    constexpr Sound(Sound&& other) {
+    constexpr Sound(Sound&& other) noexcept {
         set(other.m_data);
 
         other.m_data.stream = { nullptr, nullptr, 0, 0, 0 };
@@ -66,14 +68,14 @@ class Sound {
         LoadFromWave(wave);
     }
 
-    ~Sound() {
+    ~Sound() noexcept {
         Unload();
     }
 
-    explicit operator ::Sound() const {
+    explicit operator ::Sound() const noexcept {
         return m_data;
     }
-    [[nodiscard]] ::Sound c_raylib() const & {
+    [[nodiscard]] ::Sound c_raylib() const & noexcept {
         return m_data;
     }
 
@@ -97,7 +99,9 @@ class Sound {
     /**
      * Update sound buffer with new data
      */
-    Sound& Update(const void *data, int samplesCount) {
+    template<typename T>
+    /// @TODO: make T integral (?) ... short, unsigned char, ... ???
+    Sound& Update(const T *data, int samplesCount) {
         ::UpdateSound(m_data, data, samplesCount);
         return *this;
     }
@@ -105,7 +109,9 @@ class Sound {
     /**
      * Update sound buffer with new data, assuming it's the same sample count.
      */
-    Sound& Update(const void *data) {
+    template<typename T>
+    /// @TODO: make T integral (?) ... short, unsigned char, ... ???
+    Sound& Update(const T *data) {
         ::UpdateSound(m_data, data, static_cast<int>(m_data.frameCount));
         return *this;
     }
@@ -113,7 +119,7 @@ class Sound {
     /**
      * Unload sound
      */
-    void Unload() {
+    void Unload() noexcept {
         if (m_data.stream.buffer != nullptr) {
             ::UnloadSound(m_data);
             m_data.stream.buffer = nullptr;
@@ -123,7 +129,7 @@ class Sound {
     /**
      * Play a sound
      */
-    Sound& Play() {
+    Sound& Play() noexcept {
         ::PlaySound(m_data);
         return *this;
     }
@@ -131,7 +137,7 @@ class Sound {
     /**
      * Stop playing a sound
      */
-    Sound& Stop() {
+    Sound& Stop() noexcept {
         ::StopSound(m_data);
         return *this;
     }
@@ -139,7 +145,7 @@ class Sound {
     /**
      * Pause a sound
      */
-    Sound& Pause() {
+    Sound& Pause() noexcept {
         ::PauseSound(m_data);
         return *this;
     }
@@ -147,7 +153,7 @@ class Sound {
     /**
      * Resume a paused sound
      */
-    Sound& Resume() {
+    Sound& Resume() noexcept {
         ::ResumeSound(m_data);
         return *this;
     }
@@ -155,14 +161,14 @@ class Sound {
     /**
      * Check if a sound is currently playing
      */
-    [[nodiscard]] bool IsPlaying() const {
+    [[nodiscard]] bool IsPlaying() const noexcept {
         return ::IsSoundPlaying(m_data);
     }
 
     /**
      * Set volume for a sound (1.0 is max level)
      */
-    Sound& SetVolume(float volume) {
+    Sound& SetVolume(float volume) noexcept {
         ::SetSoundVolume(m_data, volume);
         return *this;
     }
@@ -170,7 +176,7 @@ class Sound {
     /**
      * Set pitch for a sound (1.0 is base level)
      */
-    Sound& SetPitch(float pitch) {
+    Sound& SetPitch(float pitch) noexcept {
         ::SetSoundPitch(m_data, pitch);
         return *this;
     }
@@ -178,7 +184,7 @@ class Sound {
     /**
      * Set pan for a sound (0.5 is center)
      */
-    Sound& SetPan(float pan = 0.5f) {
+    Sound& SetPan(float pan = DefaultSetPan) noexcept {
         ::SetSoundPan(m_data, pan);
         return *this;
     }
@@ -214,12 +220,12 @@ class Sound {
      *
      * @return True or false depending on whether the Sound buffer is loaded.
      */
-    [[nodiscard]] bool IsReady() const {
+    [[nodiscard]] bool IsReady() const noexcept {
         return ::IsSoundReady(m_data);
     }
 
  protected:
-    constexpr void set(const ::Sound& sound) {
+    constexpr void set(const ::Sound& sound) noexcept {
         m_data.frameCount = sound.frameCount;
         m_data.stream = sound.stream;
     }

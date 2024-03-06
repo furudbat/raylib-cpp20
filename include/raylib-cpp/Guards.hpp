@@ -36,14 +36,14 @@ class RenderTextureDrawingGuard {
   public:
     explicit RenderTextureDrawingGuard(const ::RenderTexture& renderTexture) { ::BeginTextureMode(renderTexture); }
     explicit RenderTextureDrawingGuard(const raylib::RenderTexture& renderTexture) { ::BeginTextureMode(renderTexture.c_raylib()); }
-    ~RenderTextureDrawingGuard() { ::EndTextureMode(); }
+    ~RenderTextureDrawingGuard() noexcept { ::EndTextureMode(); }
 };
 
 class ShaderDrawingGuard {
   public:
     explicit ShaderDrawingGuard(const ::Shader& shader) { ::BeginShaderMode(shader); }
     explicit ShaderDrawingGuard(const raylib::Shader& shader) { ::BeginShaderMode(shader.c_raylib()); }
-    ~ShaderDrawingGuard() { ::EndShaderMode(); }
+    ~ShaderDrawingGuard() noexcept { ::EndShaderMode(); }
 };
 
 }  // namespace raylib

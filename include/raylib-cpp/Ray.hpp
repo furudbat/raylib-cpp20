@@ -15,16 +15,16 @@ class Ray : public ::Ray {
         set(ray);
     }
 
-    explicit constexpr Ray(const ::Vector3& _position = {0.0F, 0.0F, 0.0F}, const ::Vector3& _direction = {0.0F, 0.0F, 0.0F}) :
+    explicit constexpr Ray(const ::Vector3& _position = {0.0f, 0.0f, 0.0f}, const ::Vector3& _direction = {0.0f, 0.0f, 0.0f}) :
             ::Ray{_position, _direction} {
         // Nothing.
     }
 
-    Ray(::Vector2 mousePosition, const ::Camera& camera) {
+    Ray(::Vector2 mousePosition, const ::Camera& camera) noexcept {
         set(::GetMouseRay(mousePosition, camera));
     }
 
-    constexpr Ray& operator=(const ::Ray& ray) {
+    constexpr Ray& operator=(const ::Ray& ray) noexcept {
         set(ray);
         return *this;
     }
@@ -41,61 +41,61 @@ class Ray : public ::Ray {
     /**
      * Draw a ray line
      */
-    void Draw(::Color color) const {
-        DrawRay(*this, color);
+    void Draw(::Color color) const noexcept {
+        ::DrawRay(*this, color);
     }
 
     /**
      * Get collision information between ray and sphere
      */
-    [[nodiscard]] RayCollision GetCollision(::Vector3 center, float radius) const {
+    [[nodiscard]] RayCollision GetCollision(::Vector3 center, float radius) const noexcept {
         return RayCollision{::GetRayCollisionSphere(*this, center, radius)};
     }
 
     /**
      * Detect collision between ray and box
      */
-    [[nodiscard]] RayCollision GetCollision(const ::BoundingBox& box) const {
+    [[nodiscard]] RayCollision GetCollision(const ::BoundingBox& box) const noexcept {
         return RayCollision{::GetRayCollisionBox(*this, box)};
     }
 
     /**
      * Get collision information between ray and mesh
      */
-    [[nodiscard]] RayCollision GetCollision(const ::Mesh& mesh, const ::Matrix& transform) const {
+    [[nodiscard]] RayCollision GetCollision(const ::Mesh& mesh, const ::Matrix& transform) const noexcept {
         return RayCollision{::GetRayCollisionMesh(*this, mesh, transform)};
     }
 
     /**
      * Get collision info between ray and triangle
      */
-    [[nodiscard]] RayCollision GetCollision(::Vector3 p1, ::Vector3 p2, ::Vector3 p3) const {
+    [[nodiscard]] RayCollision GetCollision(const ::Vector3& p1, const ::Vector3& p2, const ::Vector3& p3) const noexcept {
         return RayCollision{::GetRayCollisionTriangle(*this, p1, p2, p3)};
     }
 
     /**
      * Get collision info between ray and quad
      */
-    [[nodiscard]] RayCollision GetCollision(::Vector3 p1, ::Vector3 p2, ::Vector3 p3, ::Vector3 p4) const {
+    [[nodiscard]] RayCollision GetCollision(const ::Vector3& p1, const ::Vector3& p2, const ::Vector3& p3, const ::Vector3& p4) const noexcept {
         return RayCollision{::GetRayCollisionQuad(*this, p1, p2, p3, p4)};
     }
 
     /**
      * Get a ray trace from mouse position
      */
-    static Ray GetMouse(::Vector2 mousePosition, const ::Camera& camera) {
+    static Ray GetMouse(::Vector2 mousePosition, const ::Camera& camera) noexcept {
         return Ray{::GetMouseRay(mousePosition, camera)};
     }
 
     /**
      * Get a ray trace from mouse position
      */
-    static Ray GetMouse(const ::Camera& camera) {
+    static Ray GetMouse(const ::Camera& camera) noexcept {
         return Ray{::GetMouseRay(::GetMousePosition(), camera)};
     }
 
  protected:
-    constexpr void set(const ::Ray& ray) {
+    constexpr void set(const ::Ray& ray) noexcept {
         position = ray.position;
         direction = ray.direction;
     }

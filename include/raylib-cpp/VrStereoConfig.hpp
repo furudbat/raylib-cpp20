@@ -8,10 +8,16 @@ namespace raylib {
 /**
  * VR stereo config functions for VR simulator
  */
-class VrStereoConfig : public ::VrStereoConfig  {
+class VrStereoConfig {
  public:
-    VrStereoConfig(const ::VrDeviceInfo& info) {
+    constexpr VrStereoConfig() = default;
+
+    explicit VrStereoConfig(const ::VrDeviceInfo& info) {
         Load(info);
+    }
+    explicit VrStereoConfig(::VrDeviceInfo&& info) {
+        Load(info);
+        info = {};
     }
 
     /**
@@ -24,22 +30,22 @@ class VrStereoConfig : public ::VrStereoConfig  {
     /**
      * Unload VR stereo config
      */
-    ~VrStereoConfig() {
+    ~VrStereoConfig() noexcept {
         Unload();
     }
 
     /**
      * Begin stereo rendering
      */
-    VrStereoConfig& BeginMode() {
-        ::BeginVrStereoMode(*this);
+    VrStereoConfig& BeginMode() noexcept {
+        ::BeginVrStereoMode(m_data);
         return *this;
     }
 
     /**
      * End stereo rendering
      */
-    VrStereoConfig& EndMode() {
+    VrStereoConfig& EndMode() noexcept {
         ::EndVrStereoMode();
         return *this;
     }
@@ -47,29 +53,31 @@ class VrStereoConfig : public ::VrStereoConfig  {
     /**
      * Unload VR stereo config
      */
-    void Unload() {
-        ::UnloadVrStereoConfig(*this);
+    void Unload() noexcept {
+        ::UnloadVrStereoConfig(m_data);
     }
 
  protected:
     constexpr void set(const ::VrStereoConfig& config) noexcept {
-        projection[0] = config.projection[0];
-        projection[1] = config.projection[1];
-        viewOffset[0] = config.viewOffset[0];
-        viewOffset[1] = config.viewOffset[1];
-        leftLensCenter[0] = config.leftLensCenter[0];
-        leftLensCenter[1] = config.leftLensCenter[1];
-        rightLensCenter[0] = config.rightLensCenter[0];
-        rightLensCenter[1] = config.rightLensCenter[1];
-        leftScreenCenter[0] = config.leftScreenCenter[0];
-        leftScreenCenter[1] = config.leftScreenCenter[1];
-        rightScreenCenter[0] = config.rightScreenCenter[0];
-        rightScreenCenter[1] = config.rightScreenCenter[1];
-        scale[0] = config.scale[0];
-        scale[1] = config.scale[1];
-        scaleIn[0] = config.scaleIn[0];
-        scaleIn[1] = config.scaleIn[1];
+        m_data.projection[0] = config.projection[0];
+        m_data.projection[1] = config.projection[1];
+        m_data.viewOffset[0] = config.viewOffset[0];
+        m_data.viewOffset[1] = config.viewOffset[1];
+        m_data.leftLensCenter[0] = config.leftLensCenter[0];
+        m_data.leftLensCenter[1] = config.leftLensCenter[1];
+        m_data.rightLensCenter[0] = config.rightLensCenter[0];
+        m_data.rightLensCenter[1] = config.rightLensCenter[1];
+        m_data.leftScreenCenter[0] = config.leftScreenCenter[0];
+        m_data.leftScreenCenter[1] = config.leftScreenCenter[1];
+        m_data.rightScreenCenter[0] = config.rightScreenCenter[0];
+        m_data.rightScreenCenter[1] = config.rightScreenCenter[1];
+        m_data.scale[0] = config.scale[0];
+        m_data.scale[1] = config.scale[1];
+        m_data.scaleIn[0] = config.scaleIn[0];
+        m_data.scaleIn[1] = config.scaleIn[1];
     }
+
+    ::VrStereoConfig m_data;
 };
 }  // namespace raylib
 

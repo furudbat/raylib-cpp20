@@ -56,10 +56,10 @@ class MeshUnmanaged {
         return *this;
     }
 
-    explicit operator ::Mesh() const {
+    explicit operator ::Mesh() const noexcept {
         return m_data;
     }
-    [[nodiscard]] ::Mesh c_raylib() const & {
+    [[nodiscard]] ::Mesh c_raylib() const & noexcept {
         return m_data;
     }
 
@@ -134,14 +134,14 @@ class MeshUnmanaged {
     /**
      * Compute mesh bounding box limits
      */
-    [[nodiscard]] raylib::BoundingBox BoundingBox() const {
+    [[nodiscard]] raylib::BoundingBox BoundingBox() const noexcept {
         return raylib::BoundingBox{::GetMeshBoundingBox(m_data)};
     }
 
     /**
      * Compute mesh bounding box limits
      */
-    explicit operator raylib::BoundingBox() const {
+    explicit operator raylib::BoundingBox() const noexcept {
         return BoundingBox();
     }
 
@@ -173,7 +173,7 @@ class MeshUnmanaged {
     */
 
  protected:
-    constexpr void set(const ::Mesh& mesh) {
+    constexpr void set(const ::Mesh& mesh) noexcept {
         m_data.vertexCount = mesh.vertexCount;
         m_data.triangleCount = mesh.triangleCount;
         m_data.vertices = mesh.vertices;

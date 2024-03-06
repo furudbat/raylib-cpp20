@@ -26,6 +26,14 @@ class Texture;
  */
 class TextureUnmanaged {
  public:
+    inline static constexpr int DefaultDrawPosX = 0;
+    inline static constexpr int DefaultDrawPosY = 0;
+    inline static constexpr ::Color DefaultDrawTintColor = WHITE;
+    inline static constexpr float DefaultDrawScale = 1.0f;
+    inline static constexpr ::Vector2 DefaultDrawPosition = {.x = DefaultDrawPosX, .y = DefaultDrawPosY};
+    inline static constexpr ::Vector2 DefaultDrawOrigin = {.x = 0, .y = 0};
+    inline static constexpr float DefaultDrawRotation = 0;
+
     /**
      * Default texture constructor.
      */
@@ -52,15 +60,15 @@ class TextureUnmanaged {
         // Nothing.
     }
 
-    constexpr TextureUnmanaged& operator=(const ::Texture& texture) {
+    constexpr TextureUnmanaged& operator=(const ::Texture& texture) noexcept {
         set(texture);
         return *this;
     }
 
-    explicit operator ::Texture() const {
+    explicit operator ::Texture() const noexcept {
         return m_data;
     }
-    [[nodiscard]] ::Texture c_raylib() const & {
+    [[nodiscard]] ::Texture c_raylib() const & noexcept {
         return m_data;
     }
 
@@ -73,14 +81,16 @@ class TextureUnmanaged {
     /**
      * Retrieve the width and height of the texture.
      */
-    [[nodiscard]] constexpr raylib::Vector2 GetSize() const {
+    [[nodiscard]] constexpr raylib::Vector2 GetSize() const noexcept {
         return raylib::Vector2{{.x = static_cast<float>(m_data.width), .y = static_cast<float>(m_data.height)}};
     }
 
     /**
      * Update GPU texture with new data
      */
-    TextureUnmanaged& Update(const void *pixels) {
+    template<typename T>
+    /// @TODO: make T integral (?) ... short, unsigned char, ... ???
+    TextureUnmanaged& Update(const T *pixels) {
         ::UpdateTexture(m_data, pixels);
         return *this;
     }
@@ -88,7 +98,9 @@ class TextureUnmanaged {
     /**
      * Update GPU texture rectangle with new data
      */
-    TextureUnmanaged& Update(::Rectangle rec, const void *pixels) {
+    template<typename T>
+    /// @TODO: make T integral (?) ... short, unsigned char, ... ???
+    TextureUnmanaged& Update(::Rectangle rec, const T *pixels) {
         UpdateTextureRec(m_data, rec, pixels);
         return *this;
     }
@@ -118,7 +130,7 @@ class TextureUnmanaged {
     /**
      * Set texture scaling filter mode
      */
-    TextureUnmanaged& SetFilter(int filterMode) {
+    TextureUnmanaged& SetFilter(int filterMode) noexcept {
         ::SetTextureFilter(m_data, filterMode);
         return *this;
     }
@@ -126,7 +138,7 @@ class TextureUnmanaged {
     /**
      * Set texture wrapping mode
      */
-    TextureUnmanaged& SetWrap(int wrapMode) {
+    TextureUnmanaged& SetWrap(int wrapMode) noexcept {
         ::SetTextureWrap(m_data, wrapMode);
         return *this;
     }
@@ -136,7 +148,7 @@ class TextureUnmanaged {
      *
      * @see ::DrawTexture()
      */
-    void Draw(int posX = 0, int posY = 0, ::Color tint = {255, 255, 255, 255}) const {
+    void Draw(int posX = DefaultDrawPosX, int posY = DefaultDrawPosY, ::Color tint = DefaultDrawTintColor) const noexcept {
         ::DrawTexture(m_data, posX, posY, tint);
     }
 
@@ -145,7 +157,7 @@ class TextureUnmanaged {
      *
      * @see ::DrawTextureV()
      */
-    void Draw(::Vector2 position, ::Color tint = {255, 255, 255, 255}) const {
+    void Draw(::Vector2 position, ::Color tint = DefaultDrawTintColor) const noexcept {
         ::DrawTextureV(m_data, position, tint);
     }
 
@@ -154,8 +166,8 @@ class TextureUnmanaged {
      *
      * @see ::DrawTextureEx()
      */
-    void Draw(::Vector2 position, float rotation, float scale = 1.0F,
-            ::Color tint = {255, 255, 255, 255}) const {
+    void Draw(::Vector2 position, float rotation, float scale = DefaultDrawScale,
+            ::Color tint = DefaultDrawTintColor) const noexcept {
         ::DrawTextureEx(m_data, position, rotation, scale, tint);
     }
 
@@ -164,8 +176,8 @@ class TextureUnmanaged {
      *
      * @see ::DrawTextureRec()
      */
-    void Draw(::Rectangle sourceRec, ::Vector2 position = {0, 0},
-            ::Color tint = {255, 255, 255, 255}) const {
+    void Draw(::Rectangle sourceRec, ::Vector2 position = DefaultDrawPosition,
+            ::Color tint = DefaultDrawTintColor) const noexcept {
         ::DrawTextureRec(m_data, sourceRec, position, tint);
     }
 
@@ -174,8 +186,8 @@ class TextureUnmanaged {
      *
      * @see ::DrawTexturePro()
      */
-    void Draw(::Rectangle sourceRec, ::Rectangle destRec, ::Vector2 origin = {0, 0},
-            float rotation = 0, ::Color tint = {255, 255, 255, 255}) const {
+    void Draw(::Rectangle sourceRec, ::Rectangle destRec, ::Vector2 origin = DefaultDrawOrigin,
+            float rotation = DefaultDrawRotation, ::Color tint = DefaultDrawTintColor) const noexcept {
         ::DrawTexturePro(m_data, sourceRec, destRec, origin, rotation, tint);
     }
 
@@ -184,8 +196,8 @@ class TextureUnmanaged {
      *
      * @see ::DrawTextureNPatch()
      */
-    void Draw(::NPatchInfo nPatchInfo, ::Rectangle destRec, ::Vector2 origin = {0, 0},
-            float rotation = 0, ::Color tint = {255, 255, 255, 255}) const {
+    void Draw(::NPatchInfo nPatchInfo, ::Rectangle destRec, ::Vector2 origin = DefaultDrawOrigin,
+            float rotation = DefaultDrawRotation, ::Color tint = DefaultDrawTintColor) const noexcept {
         ::DrawTextureNPatch(m_data, nPatchInfo, destRec, origin, rotation, tint);
     }
 
@@ -196,7 +208,7 @@ class TextureUnmanaged {
      */
     void DrawBillboard(const ::Camera& camera,
             ::Vector3 position, float size,
-            ::Color tint = WHITE) const {
+            ::Color tint = DefaultDrawTintColor) const noexcept {
         ::DrawBillboard(camera, m_data, position, size, tint);
     }
 
@@ -207,7 +219,7 @@ class TextureUnmanaged {
      */
     void DrawBillboard(const ::Camera& camera,
             ::Rectangle source, ::Vector3 position, ::Vector2 size,
-            ::Color tint = WHITE) const {
+            ::Color tint = DefaultDrawTintColor) const noexcept {
         DrawBillboardRec(camera, m_data, source, position, size, tint);
     }
 
@@ -218,8 +230,8 @@ class TextureUnmanaged {
      */
     void DrawBillboard(const ::Camera& camera,
             ::Rectangle source, Vector3 position,
-            ::Vector3 up, Vector2 size, Vector2 origin, float rotation = 0.0F,
-            ::Color tint = WHITE) const {
+            ::Vector3 up, Vector2 size, Vector2 origin, float rotation = DefaultDrawRotation,
+            ::Color tint = DefaultDrawTintColor) const noexcept {
         DrawBillboardPro(camera, m_data, source, position, up, size, origin, rotation, tint);
     }
 
@@ -236,7 +248,7 @@ class TextureUnmanaged {
     /**
      * Set texture and rectangle to be used on shapes drawing.
      */
-    TextureUnmanaged& SetShapes(const ::Rectangle& source) {
+    TextureUnmanaged& SetShapes(const ::Rectangle& source) noexcept {
         ::SetShapesTexture(m_data, source);
         return *this;
     }
@@ -244,7 +256,7 @@ class TextureUnmanaged {
     /**
      * Set shader uniform value for texture (sampler2d)
      */
-    TextureUnmanaged& SetShaderValue(const ::Shader& shader, int locIndex) {
+    TextureUnmanaged& SetShaderValue(const ::Shader& shader, int locIndex) noexcept {
         ::SetShaderValueTexture(shader, locIndex, m_data);
         return *this;
     }
@@ -254,12 +266,12 @@ class TextureUnmanaged {
      *
      * @return True or false depending on whether the Texture has data.
      */
-    [[nodiscard]] bool IsReady() const {
+    [[nodiscard]] bool IsReady() const noexcept {
         return m_data.id != 0;
     }
 
  protected:
-    constexpr void set(const ::Texture& texture) {
+    constexpr void set(const ::Texture& texture) noexcept {
         m_data.id = texture.id;
         m_data.width = texture.width;
         m_data.height = texture.height;

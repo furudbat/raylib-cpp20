@@ -18,8 +18,8 @@ namespace raylib {
 class AudioStream {
  public:
     inline static constexpr uint32_t LoadDefaultChannels = 2;
-    inline static constexpr float SetDefaultVolume = 1.0F;
-    inline static constexpr float SetDefaultPan = 0.5F;
+    inline static constexpr float SetDefaultVolume = 1.0f;
+    inline static constexpr float SetDefaultPan = 0.5f;
 
     explicit constexpr AudioStream(owner<const ::AudioStream&> music) = delete;
     explicit constexpr AudioStream(owner<::AudioStream&&> music = {
@@ -28,7 +28,7 @@ class AudioStream {
         .sampleRate = 0,
         .sampleSize = 0,
         .channels = 0,
-    }) {
+    }) noexcept {
         set(music);
 
         music.buffer = nullptr;
@@ -57,7 +57,7 @@ class AudioStream {
     }
 
     constexpr AudioStream(const AudioStream&) = delete;
-    constexpr AudioStream(AudioStream&& other) {
+    constexpr AudioStream(AudioStream&& other) noexcept {
         set(other.m_data);
 
         other.m_data.buffer = nullptr;
@@ -70,10 +70,10 @@ class AudioStream {
         Unload();
     }
 
-    explicit operator ::AudioStream() const {
+    explicit operator ::AudioStream() const noexcept {
         return m_data;
     }
-    [[nodiscard]] ::AudioStream c_raylib() const & {
+    [[nodiscard]] ::AudioStream c_raylib() const & noexcept {
         return m_data;
     }
 
@@ -116,7 +116,9 @@ class AudioStream {
     /**
      * Update audio stream buffers with data
      */
-    AudioStream& Update(const void *data, int samplesCount) {
+    template<typename T>
+    /// @TODO: require data must be integral (?), short, unsigned char, ... ???
+    AudioStream& Update(const T *data, int samplesCount) {
         ::UpdateAudioStream(m_data, data, samplesCount);
         return *this;
     }
@@ -124,7 +126,7 @@ class AudioStream {
     /**
      * Unload audio stream and free memory
      */
-    void Unload() {
+    void Unload() noexcept {
         if (IsReady()) {
             ::UnloadAudioStream(m_data);
             m_data.buffer = nullptr;
@@ -134,14 +136,14 @@ class AudioStream {
     /**
      * Check if any audio stream buffers requires refill
      */
-    [[nodiscard]] bool IsProcessed() const {
+    [[nodiscard]] bool IsProcessed() const noexcept {
         return ::IsAudioStreamProcessed(m_data);
     }
 
     /**
      * Play audio stream
      */
-    AudioStream& Play() {
+    AudioStream& Play() noexcept {
         ::PlayAudioStream(m_data);
         return *this;
     }
@@ -149,7 +151,7 @@ class AudioStream {
     /**
      * Pause audio stream
      */
-    AudioStream& Pause() {
+    AudioStream& Pause() noexcept {
         ::PauseAudioStream(m_data);
         return *this;
     }
@@ -157,7 +159,7 @@ class AudioStream {
     /**
      * Resume audio stream
      */
-    AudioStream& Resume() {
+    AudioStream& Resume() noexcept {
         ::ResumeAudioStream(m_data);
         return *this;
     }
@@ -165,14 +167,14 @@ class AudioStream {
     /**
      * Check if audio stream is playing
      */
-    [[nodiscard]] bool IsPlaying() const {
+    [[nodiscard]] bool IsPlaying() const noexcept {
         return ::IsAudioStreamPlaying(m_data);
     }
 
     /**
      * Stop audio stream
      */
-    AudioStream& Stop() {
+    AudioStream& Stop() noexcept {
         ::StopAudioStream(m_data);
         return *this;
     }
@@ -180,7 +182,7 @@ class AudioStream {
     /**
      * Set volume for audio stream (1.0 is max level)
      */
-    AudioStream& SetVolume(float volume = SetDefaultVolume) {
+    AudioStream& SetVolume(float volume = SetDefaultVolume) noexcept {
         ::SetAudioStreamVolume(m_data, volume);
         return *this;
     }
@@ -188,7 +190,7 @@ class AudioStream {
     /**
      * Set pitch for audio stream (1.0 is base level)
      */
-    AudioStream& SetPitch(float pitch) {
+    AudioStream& SetPitch(float pitch) noexcept {
         ::SetAudioStreamPitch(m_data, pitch);
         return *this;
     }
@@ -196,7 +198,7 @@ class AudioStream {
     /**
      * Set pan for audio stream (0.5 is centered)
      */
-    AudioStream& SetPan(float pan = SetDefaultPan) {
+    AudioStream& SetPan(float pan = SetDefaultPan) noexcept {
         ::SetAudioStreamPan(m_data, pan);
         return *this;
     }
@@ -204,35 +206,35 @@ class AudioStream {
     /**
      * Default size for new audio streams
      */
-    static void SetBufferSizeDefault(int size) {
+    static void SetBufferSizeDefault(int size) noexcept {
         ::SetAudioStreamBufferSizeDefault(size);
     }
 
     /**
      * Audio thread callback to request new data
      */
-    void SetCallback(::AudioCallback callback) {
+    void SetCallback(::AudioCallback callback) noexcept {
         ::SetAudioStreamCallback(m_data, callback);
     }
 
     /**
      * Attach audio stream processor to stream
      */
-    void AttachProcessor(::AudioCallback pProcessor) {
+    void AttachProcessor(::AudioCallback pProcessor) noexcept {
         ::AttachAudioStreamProcessor(m_data, pProcessor);
     }
 
     /**
      * Detach audio stream processor from stream
      */
-    void DetachProcessor(::AudioCallback pProcessor) {
+    void DetachProcessor(::AudioCallback pProcessor) noexcept {
         ::DetachAudioStreamProcessor(m_data, pProcessor);
     }
 
     /**
      * Retrieve whether or not the audio stream is ready.
      */
-    [[nodiscard]] bool IsReady() const {
+    [[nodiscard]] bool IsReady() const noexcept {
         return ::IsAudioStreamReady(m_data);
     }
 

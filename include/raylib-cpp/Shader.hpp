@@ -21,7 +21,7 @@ class Shader {
     constexpr Shader() : m_data{NullShader} {}
 
     constexpr explicit Shader(owner<const ::Shader&> shader) = delete;
-    constexpr explicit Shader(owner<::Shader&&> shader) {
+    constexpr explicit Shader(owner<::Shader&&> shader) noexcept {
         set(shader);
 
         shader.id = 0;
@@ -47,7 +47,7 @@ class Shader {
     }
 
     explicit constexpr Shader(const Shader&) = delete;
-    explicit constexpr Shader(Shader&& other) {
+    explicit constexpr Shader(Shader&& other) noexcept {
         set(other.m_data);
 
         other.m_data.id = 0;
@@ -93,7 +93,7 @@ class Shader {
     //SPAN_GETTER(int, Locs, locs, RL_MAX_SHADER_LOCATIONS)
 
     constexpr Shader& operator=(owner<const ::Shader&> shader) = delete;
-    constexpr Shader& operator=(owner<::Shader&&> shader) {
+    constexpr Shader& operator=(owner<::Shader&&> shader) noexcept {
         set(shader);
 
         shader.id = 0;
@@ -124,17 +124,17 @@ class Shader {
         Unload();
     }
 
-    explicit operator ::Shader() const {
+    explicit operator ::Shader() const noexcept {
         return m_data;
     }
-    [[nodiscard]] ::Shader c_raylib() const & {
+    [[nodiscard]] ::Shader c_raylib() const & noexcept {
         return m_data;
     }
 
     /**
      * Unload shader from GPU memory (VRAM)
      */
-    void Unload() {
+    void Unload() noexcept {
         if (m_data.locs != nullptr) {
             ::UnloadShader(m_data);
             m_data.id = 0;
@@ -145,7 +145,7 @@ class Shader {
     /**
      * Begin custom shader drawing.
      */
-    Shader& BeginMode() {
+    Shader& BeginMode() noexcept {
         ::BeginShaderMode(m_data);
         return *this;
     }
@@ -153,7 +153,7 @@ class Shader {
     /**
      * End custom shader drawing (use default shader).
      */
-    Shader& EndMode() {
+    Shader& EndMode() noexcept {
         ::EndShaderMode();
         return *this;
     }
@@ -285,7 +285,7 @@ class Shader {
      *
      * @see SetShaderValueMatrix()
      */
-    Shader& SetValue(int uniformLoc, const ::Matrix& mat) {
+    Shader& SetValue(int uniformLoc, const ::Matrix& mat) noexcept {
         ::SetShaderValueMatrix(m_data, uniformLoc, mat);
         return *this;
     }
@@ -295,7 +295,7 @@ class Shader {
      *
      * @see SetShaderValueTexture()
      */
-    Shader& SetValue(int uniformLoc, const ::Texture2D& texture) {
+    Shader& SetValue(int uniformLoc, const ::Texture2D& texture) noexcept {
         ::SetShaderValueTexture(m_data, uniformLoc, texture);
         return *this;
     }
@@ -307,12 +307,12 @@ class Shader {
     /**
      * Retrieves whether or not the shader is ready.
      */
-    [[nodiscard]] constexpr bool IsReady() const {
+    [[nodiscard]] constexpr bool IsReady() const noexcept {
         return m_data.id != 0 && m_data.locs != nullptr;
     }
 
  protected:
-    constexpr void set(const ::Shader& shader) {
+    constexpr void set(const ::Shader& shader) noexcept {
         m_data.id = shader.id;
         m_data.locs = shader.locs;
     }

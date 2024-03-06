@@ -66,10 +66,10 @@ class Mesh {
         other.m_mesh.m_data.vboId = nullptr;
     }
 
-    explicit operator ::Mesh() const {
+    explicit operator ::Mesh() const noexcept {
         return m_mesh.m_data;
     }
-    [[nodiscard]] ::Mesh c_raylib() const & {
+    [[nodiscard]] ::Mesh c_raylib() const & noexcept {
         return m_mesh.c_raylib();
     }
 
@@ -173,7 +173,7 @@ class Mesh {
     }
 
     constexpr Mesh& operator=(const ::Mesh& mesh) = delete;
-    constexpr Mesh& operator=(::Mesh&& mesh) {
+    constexpr Mesh& operator=(::Mesh&& mesh) noexcept {
         m_mesh.set(mesh);
 
         mesh.vertexCount = 0;
@@ -223,14 +223,14 @@ class Mesh {
         return *this;
     }
 
-    ~Mesh() {
+    ~Mesh() noexcept {
         Unload();
     }
 
     /**
      * Unload mesh from memory (RAM and/or VRAM)
      */
-    void Unload() {
+    void Unload() noexcept {
         if (m_mesh.m_data.vboId != nullptr) {
             ::UnloadMesh(m_mesh.m_data);
             m_mesh.m_data.vboId = nullptr;
