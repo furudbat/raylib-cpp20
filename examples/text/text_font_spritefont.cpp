@@ -31,14 +31,14 @@ int main()
     raylib::Font font2("resources/custom_alagard.png");        // Font loading
     raylib::Font font3("resources/custom_jupiter_crash.png");  // Font loading
 
-    raylib::Vector2 fontPosition1{{.x = screenWidth/2.0F - font1.MeasureTextWithBaseSize(msg1, -3).x/2,
-                              .y = static_cast<float>(screenHeight/2.0F - static_cast<float>(font1.GetBaseSize()) / 2.0F - 80)}};
+    raylib::Vector2 fontPosition1{{.x = screenWidth/2.0f - font1.MeasureTextWithBaseSize(msg1, -3).x/2.0f,
+                              .y = screenHeight/2.0f - static_cast<float>(font1.GetBaseSize()) / 2.0f - 80}};
 
-    raylib::Vector2 fontPosition2{{.x = screenWidth/2.0F - font2.MeasureTextWithBaseSize(msg2, -2).x/2,
-                              .y = static_cast<float>(screenHeight/2.0F - static_cast<float>(font2.GetBaseSize()) / 2.0F - 10)}};
+    raylib::Vector2 fontPosition2{{.x = screenWidth/2.0f - font2.MeasureTextWithBaseSize(msg2, -2).x/2.0f,
+                              .y = screenHeight/2.0f - static_cast<float>(font2.GetBaseSize()) / 2.0f - 10}};
 
-    raylib::Vector2 fontPosition3{{.x = screenWidth/2.0F - font3.MeasureTextWithBaseSize(msg3, 2).x/2,
-                              .y = static_cast<float>(screenHeight/2.0F - static_cast<float>(font3.GetBaseSize()) / 2.0F + 50)}};
+    raylib::Vector2 fontPosition3{{.x = screenWidth/2.0f - font3.MeasureTextWithBaseSize(msg3, 2).x/2.0f,
+                              .y = screenHeight/2.0f - static_cast<float>(font3.GetBaseSize()) / 2.0f + 50}};
 
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
@@ -56,9 +56,9 @@ int main()
         {
             window.ClearBackground(RAYWHITE);
 
-            font1.DrawText(msg1, fontPosition1, font1.GetBaseSize(), -3);
-            font2.DrawText(msg2, fontPosition2, font2.GetBaseSize(), -2);
-            font3.DrawText(msg3, fontPosition3, font3.GetBaseSize(), 2);
+            font1.DrawTextWithBaseSize(msg1, fontPosition1, -3);
+            font2.DrawTextWithBaseSize(msg2, fontPosition2, -2);
+            font3.DrawTextWithBaseSize(msg3, fontPosition3, 2);
         }
         EndDrawing();
         //----------------------------------------------------------------------------------

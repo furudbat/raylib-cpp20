@@ -59,8 +59,8 @@ int main()
         // Update
         //----------------------------------------------------------------------------------
         // Compute required framebuffer scaling
-        float scale = std::min<float>(static_cast<const float>(GetScreenWidth()) / static_cast<float>(gameScreenWidth),
-                                      static_cast<const float>(GetScreenHeight()) /
+        float scale = std::min<float>(static_cast<float>(GetScreenWidth()) / static_cast<float>(gameScreenWidth),
+                                      static_cast<float>(GetScreenHeight()) /
                                       static_cast<float>(gameScreenHeight));
 
         if (IsKeyPressed(KEY_SPACE))
@@ -99,15 +99,15 @@ int main()
             ClearBackground(RAYWHITE);  // Clear render texture background color
 
             for (size_t i = 0; i < colors.size(); i++) {
-                DrawRectangle(0, (static_cast<size_t>(gameScreenHeight / 10)) * i, gameScreenWidth,
+                DrawRectangle(0, static_cast<int>((static_cast<size_t>(gameScreenHeight / 10)) * i), gameScreenWidth,
                               gameScreenHeight / 10, colors[i]);
             }
 
             DrawText("If executed inside a window,\nyou can resize the window,\nand see the screen scaling!", 10, 25,
                      20, WHITE);
-            DrawText(TextFormat("Default Mouse: [%i , %i]", static_cast<int>(mouse.x), static_cast<int>(mouse.y)), 350,
+            DrawText(::TextFormat("Default Mouse: [%i , %i]", static_cast<int>(mouse.x), static_cast<int>(mouse.y)), 350,
                      25, 20, GREEN);
-            DrawText(TextFormat("Virtual Mouse: [%i , %i]", static_cast<int>(virtualMouse.x),
+            DrawText(::TextFormat("Virtual Mouse: [%i , %i]", static_cast<int>(virtualMouse.x),
                                 static_cast<int>(virtualMouse.y)), 350, 55, 20, YELLOW);
         }
 
@@ -115,14 +115,16 @@ int main()
             ClearBackground(BLACK);     // Clear screen background
 
             // Draw render texture to screen, properly scaled
-            target.GetTexture().Draw(raylib::Rectangle{{.x = 0.0F, .y = 0.0F, .width = static_cast<float>(target.GetTexture().GetWidth()), .height = static_cast<float>(-target.GetTexture().GetHeight())}},
+            target.GetTexture().Draw(raylib::Rectangle{{.x = 0.0f, .y = 0.0f, .width = static_cast<float>(target.GetTexture().GetWidth()), .height = static_cast<float>(-target.GetTexture().GetHeight())}},
                 raylib::Rectangle{{
-                                           .x = (GetScreenWidth() - (gameScreenWidth * scale)) * 0.5F,
-                                           .y = (GetScreenHeight() - (gameScreenHeight * scale)) * 0.5F,
-                                           .width = gameScreenWidth * scale,
-                                           .height = gameScreenHeight * scale,
+                                           .x = (static_cast<float>(GetScreenWidth()) - (
+                                                   static_cast<float>(gameScreenWidth) * scale)) * 0.5f,
+                                           .y = (static_cast<float>(GetScreenHeight()) - (
+                                                   static_cast<float>(gameScreenHeight) * scale)) * 0.5f,
+                                           .width = static_cast<float>(gameScreenWidth) * scale,
+                                           .height = static_cast<float>(gameScreenHeight) * scale,
                                    }},
-                raylib::Vector2::Zero(), 0.0F, WHITE);
+                raylib::Vector2::Zero(), 0.0f, WHITE);
         EndDrawing();
         //--------------------------------------------------------------------------------------
     }

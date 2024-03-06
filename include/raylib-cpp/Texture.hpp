@@ -189,6 +189,14 @@ class Texture {
         RAYLIB_CPP_RETURN_EXPECTED();
     }
 
+    /**
+     * Generate GPU mipmaps for a texture
+     */
+    Texture& GenMipmaps() {
+        ::GenTextureMipmaps(&m_texture.m_data);
+        return *this;
+    }
+
     CONST_COMPOSITION_METHODE_CALL(GetSize, m_texture)
 
     COMPOSITION_METHODE_CALL_RETURN_THIS(Update, m_texture)
@@ -201,7 +209,6 @@ class Texture {
         return m_texture.GetData();
     }
 
-    COMPOSITION_METHODE_CALL_RETURN_THIS(GenMipmaps, m_texture)
     COMPOSITION_METHODE_CALL_RETURN_THIS(SetFilter, m_texture)
     COMPOSITION_METHODE_CALL_RETURN_THIS(SetWrap, m_texture)
 

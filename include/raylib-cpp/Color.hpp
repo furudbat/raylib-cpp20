@@ -103,6 +103,20 @@ class Color : public ::Color {
     */
 
     /**
+     * Determine whether or not the color are equal.
+     */
+    constexpr bool operator==(const ::Color& other) const noexcept {
+        return ((r == other.r) && (g == other.g) && (b == other.b) && (a == other.a));
+    }
+
+    /**
+     * Determines if the color are not equal.
+     */
+    constexpr bool operator!=(const ::Color& other) const noexcept {
+        return !(*this == other);
+    }
+
+    /**
      * Returns color with alpha applied, alpha goes from 0.0f to 1.0f
      */
     [[nodiscard]] Color Fade(float alpha) const noexcept {

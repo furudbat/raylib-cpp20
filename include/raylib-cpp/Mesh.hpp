@@ -263,14 +263,32 @@ class Mesh {
     }
     */
 
-    COMPOSITION_METHODE_CALL_RETURN_THIS(Upload, m_mesh)
+    /**
+     * Compute mesh tangents
+     */
+    Mesh& GenTangents() {
+        ::GenMeshTangents(&m_mesh.m_data);
+        return *this;
+    }
+
+    /**
+     * Upload mesh vertex data to GPU (VRAM)
+     */
+    [[deprecated("Use Upload(UploadOption)")]]
+    void Upload(bool dynamic = false) {
+        ::UploadMesh(&m_mesh.m_data, dynamic);
+    }
+
+    enum class UploadOption : bool { Static = false, Dynamic = true};
+    void Upload(UploadOption dynamic = UploadOption::Static) {
+        ::UploadMesh(&m_mesh.m_data, dynamic == UploadOption::Dynamic);
+    }
+
     COMPOSITION_METHODE_CALL_RETURN_THIS(UpdateBuffer, m_mesh)
     COMPOSITION_METHODE_CALL_RETURN_THIS(Draw, m_mesh)
 
     CONST_COMPOSITION_METHODE_CALL(Export, m_mesh)
     CONST_COMPOSITION_METHODE_CALL(BoundingBox, m_mesh)
-
-    COMPOSITION_METHODE_CALL_RETURN_THIS(GenTangents, m_mesh)
 
  protected:
     MeshUnmanaged m_mesh;

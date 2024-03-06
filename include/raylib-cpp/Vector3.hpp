@@ -52,7 +52,7 @@ class Vector3 : public ::Vector3 {
     }
 
     [[nodiscard]] std::string ToString() const {
-        return TextFormat("Vector3(%f, %f, %f)", x, y, z);
+        return ::TextFormat("Vector3(%f, %f, %f)", static_cast<double>(x), static_cast<double>(y), static_cast<double>(z));
     }
 
     explicit operator std::string() const {

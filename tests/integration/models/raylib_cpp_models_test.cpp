@@ -78,9 +78,9 @@ TEST_CASE( "first person maze", "[models]" ) {
         {
             std::span data = mapPixels.AsSpan();
             /// @TODO: check data for size
-            if ((data[y*cubicmap.GetWidth() + x].r == 255) &&       // Collision: white pixel, only check R channel
+            if ((data[static_cast<size_t>(y * cubicmap.GetWidth() + x)].r == 255) &&       // Collision: white pixel, only check R channel
                 (playerPos.CheckCollisionCircle(playerRadius,
-                                                Rectangle{ mapPosition.x - 0.5f + x*1.0f, mapPosition.z - 0.5f + y*1.0f, 1.0f, 1.0f })))
+                                                Rectangle{ mapPosition.x - 0.5f + static_cast<float>(x)*1.0f, mapPosition.z - 0.5f + static_cast<float>(y)*1.0f, 1.0f, 1.0f })))
             {
                 // Collision detected, reset camera position
                 camera.position = oldCamPos;

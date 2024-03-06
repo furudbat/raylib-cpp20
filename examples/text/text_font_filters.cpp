@@ -29,9 +29,9 @@ int main()
 
     // Generate mipmap levels to use trilinear filtering
     // NOTE: On 2D drawing it won't be noticeable, it looks like FILTER_BILINEAR
-    font.GetTexture().GenMipmaps();
+    font.TextureGenMipmaps();
 
-    raylib::Text msg("Loaded Font", static_cast<float>(font.GetBaseSize()), BLACK);
+    raylib::Text msg("Loaded Font", static_cast<float>(font.GetBaseSize()), BLACK, font);
 
     raylib::Vector2 fontPosition {{ .x = 40.0F, .y = ScreenHeight/2.0F - 80.0F }};
     raylib::Vector2 textSize {{ .x = 0.0F, .y = 0.0F }};
@@ -76,7 +76,7 @@ int main()
         // Load a dropped TTF file dynamically (at current fontSize)
         for (const auto& file : raylib::LoadDroppedFiles()) {
             if (raylib::IsFileExtension(file, ".ttf")) {
-                font = raylib::Font(file, font.GetBaseSize());
+                font.Load(file, font.GetBaseSize());
                 msg.font = font.c_raylib();
             }
         }

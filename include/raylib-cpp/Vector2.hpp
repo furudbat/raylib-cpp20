@@ -56,7 +56,7 @@ class Vector2 : public ::Vector2 {
     }
 
     [[nodiscard]] std::string ToString() const {
-        return TextFormat("Vector2(%f, %f)", x, y);
+        return ::TextFormat("Vector2(%f, %f)", static_cast<double>(x), static_cast<double>(y));
     }
 
     explicit operator std::string() const {

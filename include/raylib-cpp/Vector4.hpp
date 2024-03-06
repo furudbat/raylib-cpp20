@@ -72,7 +72,8 @@ class Vector4 : public ::Vector4 {
     */
 
     std::string ToString() const {
-        return TextFormat("Vector4(%f, %f, %f, %f)", x, y, z, w);
+        return ::TextFormat("Vector4(%f, %f, %f, %f)", static_cast<double>(x), static_cast<double>(y),
+                          static_cast<double>(z), static_cast<double>(w));
     }
 
     operator std::string() const {
