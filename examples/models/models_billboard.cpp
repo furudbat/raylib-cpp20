@@ -42,20 +42,18 @@ int main() {
 
         // Draw
         //----------------------------------------------------------------------------------
-        ::BeginDrawing();
         {
-            window.ClearBackground(RAYWHITE);
+            raylib::DrawingGuard drawingGuard (RAYWHITE);
 
-            camera.BeginMode();
             {
+                raylib::CameraDrawingGuard cameraDrawing (camera);
+
                 ::DrawGrid(10, 1.0F);        // Draw a grid
                 bill.DrawBillboard(camera, billPosition, 2.0F);
             }
-            camera.EndMode();
 
             DrawFPS(10, 10);
         }
-        ::EndDrawing();
         //----------------------------------------------------------------------------------
     }
 

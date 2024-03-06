@@ -72,6 +72,7 @@
 #endif
 #include "raylib-cpp/RaylibError.hpp"
 #include "raylib-cpp/Functions.hpp"
+#include "raylib-cpp/Guards.hpp"
 
 /**
  * All raylib-cpp classes and functions appear in the raylib namespace.

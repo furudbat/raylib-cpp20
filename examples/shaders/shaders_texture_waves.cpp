@@ -87,12 +87,13 @@ int main()
 
             ClearBackground(RAYWHITE);
 
-            shader.BeginMode();
+            {
+                raylib::ShaderDrawingGuard shaderDrawing (shader);
 
                 texture.Draw(0, 0, WHITE);
                 texture.Draw(texture.GetWidth(), 0, WHITE);
+            }
 
-            EndShaderMode();
 
         EndDrawing();
         //----------------------------------------------------------------------------------

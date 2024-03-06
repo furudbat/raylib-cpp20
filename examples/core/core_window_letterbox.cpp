@@ -94,16 +94,22 @@ int main()
         // Draw
         //----------------------------------------------------------------------------------
         // Draw everything in the render texture, note this will not be rendered on screen, yet
-        target.BeginMode();
+        {
+            raylib::RenderTextureDrawingGuard textureDrawing (target);
             ClearBackground(RAYWHITE);  // Clear render texture background color
 
-            for (size_t i = 0; i < colors.size(); i++) DrawRectangle(0, (static_cast<size_t>(gameScreenHeight / 10)) * i, gameScreenWidth, gameScreenHeight / 10, colors[i]);
+            for (size_t i = 0; i < colors.size(); i++) {
+                DrawRectangle(0, (static_cast<size_t>(gameScreenHeight / 10)) * i, gameScreenWidth,
+                              gameScreenHeight / 10, colors[i]);
+            }
 
-            DrawText("If executed inside a window,\nyou can resize the window,\nand see the screen scaling!", 10, 25, 20, WHITE);
-            DrawText(TextFormat("Default Mouse: [%i , %i]", static_cast<int>(mouse.x), static_cast<int>(mouse.y)), 350, 25, 20, GREEN);
+            DrawText("If executed inside a window,\nyou can resize the window,\nand see the screen scaling!", 10, 25,
+                     20, WHITE);
+            DrawText(TextFormat("Default Mouse: [%i , %i]", static_cast<int>(mouse.x), static_cast<int>(mouse.y)), 350,
+                     25, 20, GREEN);
             DrawText(TextFormat("Virtual Mouse: [%i , %i]", static_cast<int>(virtualMouse.x),
                                 static_cast<int>(virtualMouse.y)), 350, 55, 20, YELLOW);
-        target.EndMode();
+        }
 
         BeginDrawing();
             ClearBackground(BLACK);     // Clear screen background
