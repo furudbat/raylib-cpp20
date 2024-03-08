@@ -130,11 +130,10 @@ TEST_CASE( "model and texture with variant", "[models][textures]" ) {
     raylib::Camera camera({0.2f, 0.4f, 0.2f}, {0.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, 45.0f);
 
     raylib::Texture texture;
-    raylib::Texture cubicmap;
+    REQUIRE(texture.Load("resources/cubicmap_atlas.png"));    // Load map texture
 
     const auto loadTextureAtlas = [] {
         raylib::Texture atlas_texture;
-        // NOTE: By default each cube is mapped to one part of texture atlas
         REQUIRE(atlas_texture.Load("resources/cubicmap_atlas.png"));    // Load map texture
         return atlas_texture;
     };
@@ -142,12 +141,12 @@ TEST_CASE( "model and texture with variant", "[models][textures]" ) {
     const auto loadModel = [&] {
         raylib::Model model;
         raylib::Image imMap;
+        raylib::Texture cubicmap;
         REQUIRE(imMap.Load("resources/cubicmap.png"));      // Load cubicmap image (RAM)
         REQUIRE(cubicmap.Load(imMap));                    // Convert image to texture to display (VRAM)
         REQUIRE(model.Load(raylib::Mesh::Cubicmap(imMap, Vector3{1.0f, 1.0f, 1.0f})));
 
         // NOTE: By default each cube is mapped to one part of texture atlas
-        REQUIRE(texture.Load("resources/cubicmap_atlas.png"));    // Load map texture
         model.GetMaterials()[0].maps[MATERIAL_MAP_DIFFUSE].texture = texture.c_raylib();     // Set map diffuse texture
 
         return model;
