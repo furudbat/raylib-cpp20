@@ -17,7 +17,8 @@
     "deploy": "gh-pages -d docs",
     "predeploy": "npm run docs",
     "docs": "doxygen projects/Doxygen/Doxyfile",
-    "predocs": "git submodule update --init"
+    "predocs": "git submodule update --init",
+    "lint": "cpplint --recursive include --recursive src --recursive tests"
   },
   "repository": {
     "type": "git",

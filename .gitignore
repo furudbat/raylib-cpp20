@@ -1,8 +1,7 @@
-build
+build/
 /.vscode
 package-lock.json
-node_modules
-cmake-build-debug
-cmake-build-release
-.idea
-docs
+node_modules/
+cmake-build-*/
+.idea/
+docs/
