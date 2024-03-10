@@ -21,7 +21,7 @@ foreach(example_source ${example_sources})
 
     # Setup the example
     add_executable(${example_name} ${example_source})
-    target_link_libraries(${example_name} PRIVATE project_warnings project_options)
+    target_link_libraries(${example_name} PRIVATE raylib_cpp_project_warnings raylib_cpp_project_options)
 
     # Link raylib and raylib-cpp
     target_link_libraries(${example_name} PUBLIC raylib_cpp)
