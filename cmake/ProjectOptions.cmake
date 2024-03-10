@@ -81,6 +81,7 @@ endif()
 # configure time for more flexibility, look into project_options() macro Initialize project_options variable related to this project This
 # overwrites `project_options` and sets `project_warnings` uncomment the options to enable them:
 project_options(
+        PREFIX raylib_cpp
         ${ENABLE_CACHE}
         ${ENABLE_CPPCHECK}
         ${ENABLE_CLANG_TIDY}
