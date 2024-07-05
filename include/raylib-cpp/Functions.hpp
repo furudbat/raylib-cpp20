@@ -517,6 +517,10 @@ inline RAYLIB_CPP_EXPECTED_RESULT(AutomationEventList) LoadAutomationEventList(c
 }
 #endif
 
+std::chrono::milliseconds GetFrameTime() {
+    return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::duration<double>{::GetFrameTime()});
+}
+
 }  // namespace raylib
 
 #endif  // RAYLIB_CPP_INCLUDE_FUNCTIONS_HPP_
