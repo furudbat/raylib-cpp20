@@ -7,8 +7,10 @@
 
 #include "Mesh.hpp"
 #include "Texture.hpp"
+#include "Shader.hpp"
 #include "./raylib.hpp"
 #include "./raylib-cpp-utils.hpp"
+#include <rlgl.h>
 
 namespace raylib {
 
@@ -39,6 +41,13 @@ struct RayMaterials {
     std::span<const ::Material> AsSpan() const { return {data, size}; }
 };
 
+inline ::Shader DefaultMaterialShader() {
+    return ::Shader {
+        .id = rlGetShaderIdDefault(),
+        .locs = rlGetShaderLocsDefault(),
+    };
+};
+
 /**
  * Material type (generic)
  */
@@ -52,7 +61,7 @@ class Material {
     }
 
     explicit constexpr Material(owner<const ::Material&> material) = delete;
-    explicit constexpr Material(owner<::Material&&> material) noexcept {
+    explicit Material(owner<::Material&&> material) noexcept {
         set(material);
 
         material.maps = nullptr;
@@ -87,7 +96,7 @@ class Material {
     }
 
     constexpr Material& operator=(owner<const ::Material&> material) = delete;
-    constexpr Material& operator=(owner<::Material&&> material) noexcept {
+    Material& operator=(owner<::Material&&> material) noexcept {
         set(material);
 
         material.maps = nullptr;
@@ -115,22 +124,35 @@ class Material {
      * Load materials from model file
      */
     static std::vector<Material> Load(const std::string& fileName) {
-        int count = 0;
-        ::Material* materials_data = ::LoadMaterials(fileName.c_str(), &count);
-        RayMaterials materials (materials_data, static_cast<size_t>(count));
+        RayMaterials materials = [&]() {
+            int count = 0;
+            ::Material* materials_data = ::LoadMaterials(fileName.c_str(), &count);
+            return RayMaterials(materials_data, static_cast<size_t>(count));
+        }();
 
         std::vector<Material> ret;
-        ret.reserve(static_cast<size_t>(count));
+        ret.reserve(materials.size);
         for (auto& mat : materials.AsSpan()) {
             ret.emplace_back(std::move(mat));
             mat.maps = nullptr;
         }
-        materials.data = nullptr; ///< data has been moved
+        // data has been moved
+        materials.data = nullptr;
+        materials.size = 0;
 
         return ret;
     }
 
-    GETTERSETTER(::Shader, Shader, m_data.shader)
+    //CONST_GETTER(::Shader, Shader, m_data.shader
+    constexpr const ::Shader& GetShader() const & { return m_data.shader; }
+    Shader GetShader() && { return Shader(std::move(m_data.shader)); }
+    void SetShader(Shader&& value) {
+        m_data.shader = value.c_raylib();
+
+        value.m_shader = NullShader;
+    }
+
+
     CONST_GETTER(::MaterialMap*, Maps, m_data.maps)
     /** Retrieves the params value for the object. @return The params value of the object. */
     constexpr std::array<float, 4> GetParams() const {
