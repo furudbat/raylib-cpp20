@@ -54,6 +54,7 @@
 #include "raylib-cpp/Rectangle.hpp"
 #include "raylib-cpp/RenderTexture.hpp"
 #include "raylib-cpp/Shader.hpp"
+#include "raylib-cpp/ShaderUnmanaged.hpp"
 #include "raylib-cpp/Sound.hpp"
 #include "raylib-cpp/Text.hpp"
 #include "raylib-cpp/Texture.hpp"

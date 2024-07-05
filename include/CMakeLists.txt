@@ -33,6 +33,7 @@ set(RAYLIB_CPP_HEADERS
     raylib-cpp/Rectangle.hpp
     raylib-cpp/RenderTexture.hpp
     raylib-cpp/Shader.hpp
+    raylib-cpp/ShaderUnmanaged.hpp
     raylib-cpp/Sound.hpp
     raylib-cpp/Text.hpp
     raylib-cpp/Texture.hpp
