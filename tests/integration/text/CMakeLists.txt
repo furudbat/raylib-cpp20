@@ -1,7 +1,7 @@
 # Executable
 add_executable(raylib_cpp_text_test raylib_cpp_text_test.cpp)
 target_include_directories(raylib_cpp_text_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(raylib_cpp_text_test PRIVATE project_warnings project_options)
+target_link_libraries(raylib_cpp_text_test PRIVATE raylib_cpp_project_warnings raylib_cpp_project_options)
 target_link_libraries(raylib_cpp_text_test PRIVATE raylib_cpp raylib_cpp_test_helper)
 target_link_system_libraries(raylib_cpp_text_test PRIVATE raylib tl::expected)
 target_link_system_libraries(raylib_cpp_text_test PRIVATE Catch2::Catch2 Catch2::Catch2WithMain)
