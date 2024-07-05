@@ -42,7 +42,7 @@ namespace Touch {
     [[maybe_unused]] RLCPPAPI inline int GetPointCount() noexcept {
         return ::GetTouchPointCount();
     }
-};
+}  // namespace Touch
 }  // namespace raylib
 
 namespace RTouch = raylib::Touch;

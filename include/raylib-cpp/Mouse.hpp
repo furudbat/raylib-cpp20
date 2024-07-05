@@ -149,7 +149,7 @@ namespace Mouse {
     [[maybe_unused]] RLCPPAPI inline raylib::Ray GetRay(const ::Camera& camera) noexcept {
         return raylib::Ray{::GetMouseRay(::GetMousePosition(), camera)};
     }
-}
+}  // namespace Mouse
 }  // namespace raylib
 
 namespace RMouse = raylib::Mouse;

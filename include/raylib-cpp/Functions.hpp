@@ -517,7 +517,7 @@ inline RAYLIB_CPP_EXPECTED_RESULT(AutomationEventList) LoadAutomationEventList(c
 }
 #endif
 
-std::chrono::milliseconds GetFrameTime() {
+[[maybe_unused]] RLCPPAPI inline std::chrono::milliseconds GetFrameTime() {
     return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::duration<double>{::GetFrameTime()});
 }
 

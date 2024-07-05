@@ -33,7 +33,7 @@ endif()
 
 # Project
 project (raylib_cpp
-    VERSION 5.0.1
+    VERSION 5.0.2
     DESCRIPTION "raylib-cpp C++ Object Oriented Wrapper for raylib"
     HOMEPAGE_URL "https://github.com/robloach/raylib-cpp"
     LANGUAGES C CXX

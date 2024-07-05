@@ -113,12 +113,19 @@ class AutomationEventList {
      * Update audio stream buffers with data
      */
     void Unload() {
-        #if RAYLIB_VERSION_MAJOR >= 5
-        #if RAYLIB_VERSION_MINOR == 0
-        ::UnloadAutomationEventList(&m_data);
-        #elif RAYLIB_VERSION_MINOR >= 1
-        ::UnloadAutomationEventList(m_data);
-        #endif
+        if (!IsReady()) {
+            return;
+        }
+
+        // The function signature of UnloadAutomationEventList() changes from raylib 5.0.
+        #if RAYLIB_VERSION_MAJOR == 5
+            #if RAYLIB_VERSION_MINOR == 0
+                ::UnloadAutomationEventList(&m_data);
+            #elif RAYLIB_VERSION_MINOR >= 1
+                ::UnloadAutomationEventList(m_data);
+            #endif
+        #else
+            ::UnloadAutomationEventList(m_data);
         #endif
     }
 

@@ -97,7 +97,11 @@ class Rectangle : public ::Rectangle {
 
     void DrawRoundedLines(float roundness, int segments,
             float lineThick, ::Color color) const noexcept {
-        ::DrawRectangleRoundedLines(*this, roundness, segments, lineThick, color);
+        #if RAYLIB_VERSION_MAJOR == 5 && RAYLIB_VERSION_MINOR == 0
+            ::DrawRectangleRoundedLines(*this, roundness, segments, lineThick, color);
+        #else
+            DrawRectangleRoundedLinesEx(*this, roundness, segments, lineThick, color);
+        #endif
     }
 
     /**
