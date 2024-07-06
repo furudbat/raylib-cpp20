@@ -190,16 +190,14 @@ class Texture {
     }
 
     static RAYLIB_CPP_EXPECTED_RESULT(Texture) LoadFromFile(const std::filesystem::path& fileName) RAYLIB_CPP_THROWS {
-        Texture texture;
-        texture.m_texture.set(::LoadTexture(fileName.c_str()));
+        Texture texture (::LoadTexture(fileName.c_str()));
         if (!texture.m_texture.IsReady()) {
             RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Texture from file: " + fileName.string()));
         }
         RAYLIB_CPP_RETURN_EXPECTED_VALUE(texture);
     }
     static RAYLIB_CPP_EXPECTED_RESULT(Texture) LoadFromImage(const ::Image& image) RAYLIB_CPP_THROWS {
-        Texture texture;
-        texture.m_texture.set(::LoadTextureFromImage(image));
+        Texture texture (::LoadTextureFromImage(image));
         if (!texture.m_texture.IsReady()) {
             RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Texture from Image"));
         }
@@ -209,8 +207,7 @@ class Texture {
         return LoadFromImage(image.c_raylib());
     }
     static RAYLIB_CPP_EXPECTED_RESULT(Texture) LoadCubemapFromImage(const ::Image& image, int format) RAYLIB_CPP_THROWS {
-        Texture texture;
-        texture.m_texture.set(::LoadTextureCubemap(image, format));
+        Texture texture (::LoadTextureCubemap(image, format));
         if (!texture.m_texture.IsReady()) {
             RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Texture from Image"));
         }
