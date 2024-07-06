@@ -129,7 +129,7 @@ class Model {
         return m_data;
     }
 
-    GETTER(::Matrix, Transform, m_data.transform)
+    GETTERSETTER(::Matrix, Transform, m_data.transform)
     GETTER(int, MeshCount, m_data.meshCount)
     GETTER(int, MaterialCount, m_data.materialCount)
     SPAN_GETTER(::Mesh, Meshes, m_data.meshes, m_data.meshCount)
@@ -319,6 +319,21 @@ class Model {
         mesh.m_mesh.m_data.vboId = nullptr;
 
         RAYLIB_CPP_RETURN_EXPECTED();
+    }
+
+    static RAYLIB_CPP_EXPECTED_RESULT(Model) LoadFromFile(const std::filesystem::path& fileName) RAYLIB_CPP_THROWS {
+        Model model (::LoadModel(fileName.c_str()));
+        if (!model.IsReady()) {
+            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Model from " + fileName.string()));
+        }
+        RAYLIB_CPP_RETURN_EXPECTED_VALUE(model);
+    }
+    static RAYLIB_CPP_EXPECTED_RESULT(Model) LoadFromMesh(::Mesh&& mesh) RAYLIB_CPP_THROWS {
+        Model model (::LoadModelFromMesh(mesh));
+        if (!model.IsReady()) {
+            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Model from Mesh"));
+        }
+        RAYLIB_CPP_RETURN_EXPECTED_VALUE(model);
     }
 
  protected:
