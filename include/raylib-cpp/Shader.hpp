@@ -21,6 +21,9 @@ class Material;
  */
 class Shader {
 public:
+    using LoadShaderOptions = ShaderUnmanaged::LoadShaderOptions;
+    using LoadShaderOptionsC = ShaderUnmanaged::LoadShaderOptionsC;
+
     constexpr Shader() = default;
 
     constexpr explicit Shader(owner<const ::Shader&> shader) = delete;
@@ -32,16 +35,14 @@ public:
     }
 
     constexpr Shader(owner<unsigned int> id, owner<int*> locs = nullptr) : m_shader(id, locs) {}
+    explicit Shader(LoadShaderOptions options) : m_shader(std::move(options)) {}
+    explicit Shader(LoadShaderOptionsC options) : m_shader(std::move(options)) {}
 
-    explicit Shader(ShaderUnmanaged::LoadShaderOptions options) : m_shader(std::move(options)) {}
-
-    explicit Shader(ShaderUnmanaged::LoadShaderOptionsC options) : m_shader(options) {}
-
-    explicit constexpr Shader(const Shader&) = delete;
-    explicit constexpr Shader(Shader&& other) noexcept {
+    constexpr Shader(const Shader&) = delete;
+    Shader(Shader&& other) noexcept {
         m_shader.set(other.m_shader.m_data);
 
-        other.m_shader.m_data.id = 0;
+        other.m_shader.m_data.id = rlGetShaderIdDefault();
         other.m_shader.m_data.locs = nullptr;
     }
 
@@ -50,11 +51,11 @@ public:
      *
      * @see ::LoadShader
      */
-    static Shader Load(ShaderUnmanaged::LoadShaderOptions options) {
+    static Shader Load(LoadShaderOptions options) {
         return Shader(std::move(options));
     }
 
-    static Shader Load(ShaderUnmanaged::LoadShaderOptionsC options) {
+    static Shader Load(LoadShaderOptionsC options) {
         return Shader(options);
     }
 
@@ -64,7 +65,7 @@ public:
      * @see ::LoadShaderFromMemory
      */
     static Shader LoadFromMemory(ShaderUnmanaged::LoadFromMemoryOptions options) {
-        return Shader{::LoadShaderFromMemory(options.vsCode.c_str(), options.fsCode.c_str())};
+        return Shader{::LoadShaderFromMemory(options.vsCode.get().c_str(), options.fsCode.get().c_str())};
     }
 
     static Shader LoadFromMemory(ShaderUnmanaged::LoadFromMemoryOptionsC options) {
@@ -75,12 +76,19 @@ public:
     COMPOSITION_METHODE_CALL_RETURN_THIS(SetId, m_shader)
 
     CONST_COMPOSITION_METHODE_CALL(GetLocs, m_shader)
+    CONST_COMPOSITION_METHODE_CALL(GetLocsSpan, m_shader)
+    COMPOSITION_METHODE_CALL(GetLocsSpan, m_shader)
+    CONST_COMPOSITION_METHODE_CALL(GetLoc, m_shader)
+
+    COMPOSITION_METHODE_CALL(SetLocs, m_shader)
+    COMPOSITION_METHODE_CALL(SetLoc, m_shader)
+    COMPOSITION_METHODE_CALL(SetLocFromUniform, m_shader)
 
     constexpr Shader& operator=(owner<const ::Shader&> shader) = delete;
-    constexpr Shader& operator=(owner<::Shader&&> shader) noexcept {
+    Shader& operator=(owner<::Shader&&> shader) noexcept {
         m_shader.set(shader);
 
-        shader.id = 0;
+        shader.id = rlGetShaderIdDefault();
         shader.locs = nullptr;
 
         return *this;
@@ -95,7 +103,7 @@ public:
         Unload();
         m_shader.set(other.m_shader.m_data);
 
-        other.m_shader.m_data.id = 0;
+        other.m_shader.m_data.id = rlGetShaderIdDefault();
         other.m_shader.m_data.locs = nullptr;
 
         return *this;
@@ -120,8 +128,12 @@ public:
      */
     void Unload() noexcept {
         if (m_shader.m_data.locs != nullptr) {
-            ::UnloadShader(m_shader.m_data);
-            m_shader.m_data.id = 0;
+            if(m_shader.m_data.id != rlGetShaderIdDefault()) {
+                ::UnloadShader(m_shader.m_data);
+            } else {
+                RL_FREE(m_shader.m_data.locs);
+            }
+            m_shader.m_data.id = rlGetShaderIdDefault();
             m_shader.m_data.locs = nullptr;
         }
     }
@@ -129,8 +141,8 @@ public:
     COMPOSITION_METHODE_CALL_RETURN_THIS(BeginMode, m_shader)
     COMPOSITION_METHODE_CALL_RETURN_THIS(EndMode, m_shader)
 
-    COMPOSITION_METHODE_CALL(GetLocation, m_shader)
-    COMPOSITION_METHODE_CALL(GetLocationAttrib, m_shader)
+    CONST_COMPOSITION_METHODE_CALL(GetLocation, m_shader)
+    CONST_COMPOSITION_METHODE_CALL(GetLocationAttrib, m_shader)
 
     COMPOSITION_METHODE_CALL_RETURN_THIS(SetValue, m_shader)
 

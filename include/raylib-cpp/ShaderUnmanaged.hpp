@@ -10,6 +10,7 @@
 #include "./raylib.hpp"
 #include "./raylib-cpp-utils.hpp"
 #include "./Texture.hpp"
+#include <rlgl.h>
 
 namespace raylib {
 
@@ -68,24 +69,64 @@ class ShaderUnmanaged {
      * @see ::LoadShaderFromMemory
      */
     struct LoadFromMemoryOptions {
-        const std::string& vsCode;
-        const std::string& fsCode;
+        std::reference_wrapper<const std::string> vsCode;
+        std::reference_wrapper<const std::string> fsCode;
     };
-    static ShaderUnmanaged LoadFromMemory(LoadFromMemoryOptions options) {
-        return ShaderUnmanaged{::LoadShaderFromMemory(options.vsCode.c_str(), options.fsCode.c_str())};
+    static RAYLIB_CPP_EXPECTED_RESULT(ShaderUnmanaged) LoadFromMemory(LoadFromMemoryOptions options) RAYLIB_CPP_THROWS {
+        auto shader = ::LoadShaderFromMemory(options.vsCode.get().c_str(), options.fsCode.get().c_str());
+        if(!::IsShaderReady(shader)) {
+            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Shader from memory: " + options.vsCode.get() + ", " + options.fsCode.get()));
+        }
+        RAYLIB_CPP_RETURN_EXPECTED_VALUE(ShaderUnmanaged(std::move(shader)));
     }
 
     struct LoadFromMemoryOptionsC {
         const char* vsCode;
         const char* fsCode;
     };
-    static ShaderUnmanaged LoadFromMemory(LoadFromMemoryOptionsC options) {
-        return ShaderUnmanaged{::LoadShaderFromMemory(options.vsCode, options.fsCode)};
+    static RAYLIB_CPP_EXPECTED_RESULT(ShaderUnmanaged) LoadFromMemory(LoadFromMemoryOptionsC options) RAYLIB_CPP_THROWS {
+        auto shader = ::LoadShaderFromMemory(options.vsCode, options.fsCode);
+        if(!::IsShaderReady(shader)) {
+            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Shader from memory: " + std::string{options.vsCode} + ", " + std::string{options.fsCode}));
+        }
+        RAYLIB_CPP_RETURN_EXPECTED_VALUE(ShaderUnmanaged(std::move(shader)));
     }
 
     GETTERSETTER(unsigned int, Id, m_data.id)
     CONST_GETTER(int*, Locs, m_data.locs)
-    //SPAN_GETTER(int, Locs, locs, RL_MAX_SHADER_LOCATIONS)
+    //SPAN_GETTER(int, Locs, m_data.locs, RL_MAX_SHADER_LOCATIONS)
+    int GetLoc(size_t index) const {
+        if(m_data.locs != nullptr) {
+            return m_data.locs[index];
+        }
+        return -1;
+    }
+    std::span<const int> GetLocsSpan() const { return { m_data.locs, m_data.locs != nullptr ? static_cast<size_t>(RL_MAX_SHADER_LOCATIONS) : 0}; }
+    std::span<int> GetLocsSpan() { return { m_data.locs, m_data.locs != nullptr ?static_cast<size_t>(RL_MAX_SHADER_LOCATIONS) : 0}; }
+    void SetLocs(std::span<const int> value) {
+        if(m_data.id != 0) {
+            if (m_data.locs == nullptr) {
+                m_data.locs = (int *) RL_CALLOC(RL_MAX_SHADER_LOCATIONS, sizeof(int));
+                // All locations reset to -1 (no location)
+                for (size_t i = 0; i < RL_MAX_SHADER_LOCATIONS; i++) {
+                    m_data.locs[i] = -1;
+                }
+            }
+            for (size_t i = 0; i < value.size() && i < RL_MAX_SHADER_LOCATIONS; i++) {
+                m_data.locs[i] = value[i];
+            }
+        }
+    }
+    void SetLoc(size_t index, int value) {
+        if(m_data.locs != nullptr) {
+            m_data.locs[index] = value;
+        }
+    }
+    void SetLocFromUniform(size_t index, const char *uniformName) {
+        if(m_data.locs != nullptr) {
+            m_data.locs[index] = rlGetLocationUniform(m_data.id, uniformName);
+        }
+    }
 
     constexpr ShaderUnmanaged& operator=(const ::Shader& shader) noexcept {
         set(shader);
@@ -123,6 +164,9 @@ class ShaderUnmanaged {
     [[nodiscard]] int GetLocation(const std::string& uniformName) const {
         return ::GetShaderLocation(m_data, uniformName.c_str());
     }
+    [[nodiscard]] int GetLocation(const char* uniformName) const {
+        return ::GetShaderLocation(m_data, uniformName);
+    }
 
     /**
      * Get shader attribute location
@@ -131,6 +175,9 @@ class ShaderUnmanaged {
      */
     [[nodiscard]] int GetLocationAttrib(const std::string& attribName) const {
         return ::GetShaderLocationAttrib(m_data, attribName.c_str());
+    }
+    [[nodiscard]] int GetLocationAttrib(const char* attribName) const {
+        return ::GetShaderLocationAttrib(m_data, attribName);
     }
 
     /**
@@ -183,6 +230,20 @@ class ShaderUnmanaged {
                ::SetShaderValue(m_data, uniformLoc, &val.id, SHADER_UNIFORM_SAMPLER2D);
        }, value);
        return *this;
+    }
+    ShaderUnmanaged& SetValue(const char* uniformName, std::variant<float,
+            std::array<float, 2>, ///< vec2 (2 float)
+            std::array<float, 3>, ///< vec3 (3 float)
+            std::array<float, 4>, ///< vec4 (4 float)
+            ::Vector2,            ///< vec2 (2 float)
+            ::Vector3,            ///< vec3 (3 float)
+            ::Vector4,            ///< vec4 (4 float)
+            int,
+            std::array<int, 2>,   ///< ivec2 (2 int)
+            std::array<int, 3>,   ///< ivec3 (3 int)
+            std::array<int, 4>,   ///< ivec4 (4 int)
+            ::Texture2D> value) {
+        return SetValue(GetLocation(uniformName), value);
     }
 
     /**

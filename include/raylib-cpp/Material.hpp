@@ -146,10 +146,21 @@ class Material {
     //CONST_GETTER(::Shader, Shader, m_data.shader
     constexpr const ::Shader& GetShader() const & { return m_data.shader; }
     Shader GetShader() && { return Shader(std::move(m_data.shader)); }
+    void SetShader(const Shader& value) = delete;
     void SetShader(Shader&& value) {
         m_data.shader = value.c_raylib();
 
         value.m_shader = NullShader;
+    }
+    template<class... Args>
+    void EmplaceShader(Args&&... args) {
+        SetShader(Shader(std::forward<Args>(args)...));
+    }
+    template<class... Args>
+    void LoadShader(Args&&... args) {
+        Shader shader;
+        Shader::Load(std::forward<Args>(args)...);
+        SetShader(std::move(shader));
     }
 
 
