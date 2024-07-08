@@ -33,8 +33,9 @@ int main() {
 
         // Draw
         //----------------------------------------------------------------------------------
-        BeginDrawing();
         {
+            raylib::DrawingGuard drawingGuard;
+
             window.ClearBackground(background);
 
             foreground.DrawRectangle(ScreenWidth/2 - 128, ScreenHeight/2 - 128, 256, 256);
@@ -44,7 +45,6 @@ int main() {
 
             DrawText("this is NOT a texture!", 350, 370, 10, GRAY);
         }
-        EndDrawing();
         //----------------------------------------------------------------------------------
     }
 

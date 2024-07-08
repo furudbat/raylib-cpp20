@@ -14,6 +14,12 @@
 
 namespace raylib {
 
+
+enum class MaterialShaderOption : uint8_t {
+    UnloadShaderWhenUnloadingMaterial = 0,             ///< Unloads Shader when UnloadingMaterial
+    UnbindShaderWhenUnload = 2,                        ///< Unbind (disconnect) shader from Material, to avoid UnloadMaterial() trying to unload it automatically (NO UnloadShader in UnloadingMaterial)
+};
+
 struct RayMaterials {
     ::Material* data{nullptr};
     size_t size{0};
@@ -144,14 +150,9 @@ class Material {
     }
 
     //CONST_GETTER(::Shader, Shader, m_data.shader
-    constexpr const ::Shader& GetShader() const & { return m_data.shader; }
-    Shader GetShader() && { return Shader(std::move(m_data.shader)); }
-    void SetShader(const Shader& value) = delete;
-    void SetShader(Shader&& value) {
-        m_data.shader = value.c_raylib();
-
-        value.m_shader = NullShader;
-    }
+    [[nodiscard]] constexpr ::Shader& GetShaderC() & { return m_data.shader; }
+    [[nodiscard]] constexpr const ::Shader& GetShaderC() const & { return m_data.shader; }
+    [[nodiscard]] Shader GetShader() && { return Shader(std::move(m_data.shader)); }
     template<class... Args>
     void EmplaceShader(Args&&... args) {
         SetShader(Shader(std::forward<Args>(args)...));
@@ -160,11 +161,122 @@ class Material {
     void LoadShader(Args&&... args) {
         Shader shader;
         Shader::Load(std::forward<Args>(args)...);
+        SetShader(std::move(shader), MaterialShaderOption::UnloadShaderWhenUnloadingMaterial);
+    }
+
+    void SetShader(::Shader shader, MaterialShaderOption option) {
+        m_data.shader = shader;
+        m_trackShaderManagement = option;
+    }
+    void SetShader(const Shader& shader, MaterialShaderOption option) {
+        m_data.shader = shader.c_raylib();
+        m_trackShaderManagement = option;
+    }
+
+    void SetShader(Shader&& shader, MaterialShaderOption option = MaterialShaderOption::UnloadShaderWhenUnloadingMaterial) {
+        m_data.shader = shader.c_raylib();
+        m_trackShaderManagement = option;
+        switch (m_trackShaderManagement) {
+            case MaterialShaderOption::UnloadShaderWhenUnloadingMaterial:
+                shader.m_shader.m_data.id = rlGetShaderIdDefault();
+                shader.m_shader.m_data.locs = nullptr;
+                break;
+            case MaterialShaderOption::UnbindShaderWhenUnload:
+                break;
+        }
+    }
+
+    /// @TODO: concept Func = (Shader&) => void
+    void UpdateShader(auto&& Func) {
+        Shader shader (std::move(m_data.shader));
+        Func(shader);
         SetShader(std::move(shader));
+    }
+
+    Material& SetShaderValue(int uniformLoc, std::variant<float,
+            std::array<float, 2>, ///< vec2 (2 float)
+            std::array<float, 3>, ///< vec3 (3 float)
+            std::array<float, 4>, ///< vec4 (4 float)
+            ::Vector2,            ///< vec2 (2 float)
+            ::Vector3,            ///< vec3 (3 float)
+            ::Vector4,            ///< vec4 (4 float)
+            int,
+            std::array<int, 2>,   ///< ivec2 (2 int)
+            std::array<int, 3>,   ///< ivec3 (3 int)
+            std::array<int, 4>,   ///< ivec4 (4 int)
+            ::Texture2D> value) {
+        std::visit([&](auto&& val) {
+            using T = std::decay_t<decltype(val)>;
+            if constexpr (std::is_same_v<T, float>)
+                ::SetShaderValue(m_data.shader, uniformLoc, &val, SHADER_UNIFORM_FLOAT);
+            else if constexpr (std::is_same_v<T, ::Vector2>)
+                ::SetShaderValue(m_data.shader, uniformLoc, &val, SHADER_UNIFORM_VEC2);
+            else if constexpr (std::is_same_v<T, std::array<float, 2>>)
+                ::SetShaderValue(m_data.shader, uniformLoc, val.data(), SHADER_UNIFORM_VEC2);
+            else if constexpr (std::is_same_v<T, ::Vector3>)
+                ::SetShaderValue(m_data.shader, uniformLoc, &val, SHADER_UNIFORM_VEC3);
+            else if constexpr (std::is_same_v<T, std::array<float, 3>>)
+                ::SetShaderValue(m_data.shader, uniformLoc, val.data(), SHADER_UNIFORM_VEC3);
+            else if constexpr (std::is_same_v<T, ::Vector4>)
+                ::SetShaderValue(m_data.shader, uniformLoc, &val, SHADER_UNIFORM_VEC4);
+            else if constexpr (std::is_same_v<T, std::array<float, 4>>)
+                ::SetShaderValue(m_data.shader, uniformLoc, val.data(), SHADER_UNIFORM_VEC4);
+            else if constexpr (std::is_same_v<T, int>)
+                ::SetShaderValue(m_data.shader, uniformLoc, &val, SHADER_UNIFORM_INT);
+            else if constexpr (std::is_same_v<T, std::array<int, 2>>)
+                ::SetShaderValue(m_data.shader, uniformLoc, val.data(), SHADER_UNIFORM_IVEC2);
+            else if constexpr (std::is_same_v<T, std::array<int, 3>>)
+                ::SetShaderValue(m_data.shader, uniformLoc, val.data(), SHADER_UNIFORM_IVEC3);
+            else if constexpr (std::is_same_v<T, std::array<int, 4>>)
+                ::SetShaderValue(m_data.shader, uniformLoc, val.data(), SHADER_UNIFORM_IVEC4);
+            else if constexpr (std::is_same_v<T, ::Texture2D>)
+                ::SetShaderValue(m_data.shader, uniformLoc, &val.id, SHADER_UNIFORM_SAMPLER2D);
+        }, value);
+        return *this;
+    }
+    Material& SetShaderValue(const char* uniformName, std::variant<float,
+            std::array<float, 2>, ///< vec2 (2 float)
+            std::array<float, 3>, ///< vec3 (3 float)
+            std::array<float, 4>, ///< vec4 (4 float)
+            ::Vector2,            ///< vec2 (2 float)
+            ::Vector3,            ///< vec3 (3 float)
+            ::Vector4,            ///< vec4 (4 float)
+            int,
+            std::array<int, 2>,   ///< ivec2 (2 int)
+            std::array<int, 3>,   ///< ivec3 (3 int)
+            std::array<int, 4>,   ///< ivec4 (4 int)
+            ::Texture2D> value) {
+        return SetShaderValue(::GetShaderLocation(m_data.shader, uniformName), value);
+    }
+    Material& SetShaderValueFromLoc(size_t loc_index, std::variant<float,
+            std::array<float, 2>, ///< vec2 (2 float)
+            std::array<float, 3>, ///< vec3 (3 float)
+            std::array<float, 4>, ///< vec4 (4 float)
+            ::Vector2,            ///< vec2 (2 float)
+            ::Vector3,            ///< vec3 (3 float)
+            ::Vector4,            ///< vec4 (4 float)
+            int,
+            std::array<int, 2>,   ///< ivec2 (2 int)
+            std::array<int, 3>,   ///< ivec3 (3 int)
+            std::array<int, 4>,   ///< ivec4 (4 int)
+            ::Texture2D> value) {
+        const auto GetLoc = [](::Shader shader, size_t index) {
+            if(shader.locs != nullptr) {
+                return shader.locs[index];
+            }
+            return -1;
+        };
+        return SetShaderValue(GetLoc(m_data.shader, loc_index), value);
     }
 
 
     CONST_GETTER(::MaterialMap*, Maps, m_data.maps)
+    const ::MaterialMap& GetMap(size_t index) const {
+        return m_data.maps[index];
+    }
+    ::MaterialMap& GetMap(size_t index) {
+        return m_data.maps[index];
+    }
     /** Retrieves the params value for the object. @return The params value of the object. */
     constexpr std::array<float, 4> GetParams() const {
         return std::array<float, 4>{ m_data.params[0], m_data.params[1], m_data.params[2], m_data.params[3] };
@@ -182,6 +294,14 @@ class Material {
      * Unload material from memory
      */
     void Unload() noexcept {
+        switch (m_trackShaderManagement) {
+            case MaterialShaderOption::UnloadShaderWhenUnloadingMaterial:
+                break;
+            case MaterialShaderOption::UnbindShaderWhenUnload:
+                m_data.shader.id = rlGetShaderIdDefault();
+                m_data.shader.locs = nullptr;
+                break;
+        }
         if (m_data.maps != nullptr) {
             ::UnloadMaterial(m_data);
             m_data.maps = nullptr;
@@ -192,11 +312,11 @@ class Material {
     /**
      * Set texture for a material map type (MAP_DIFFUSE, MAP_SPECULAR...)
      */
-    Material& SetTexture(int mapType, const ::Texture2D& texture) noexcept {
+    Material& SetMaterialTexture(int mapType, const ::Texture2D& texture) noexcept {
         ::SetMaterialTexture(&m_data, mapType, texture);
         return *this;
     }
-    Material& SetTexture(int mapType, const raylib::Texture2D& texture) {
+    Material& SetMaterialTexture(int mapType, const raylib::Texture2D& texture) {
         ::SetMaterialTexture(&m_data, mapType, texture.c_raylib());
         return *this;
     }
@@ -239,6 +359,7 @@ class Material {
     }
 
     ::Material m_data;
+    MaterialShaderOption m_trackShaderManagement{MaterialShaderOption::UnloadShaderWhenUnloadingMaterial};
 };
 }  // namespace raylib
 

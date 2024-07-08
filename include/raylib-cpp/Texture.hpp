@@ -84,6 +84,18 @@ class Texture {
 
         return *this;
     }
+    Texture& operator=(::Texture&& texture) noexcept {
+        Unload();
+        m_texture.set(texture);
+
+        texture.id = 0;
+        texture.width = 0;
+        texture.height = 0;
+        texture.mipmaps = 0;
+        texture.format = 0;
+
+        return *this;
+    }
 
     /**
      * On destruction, unload the Texture.

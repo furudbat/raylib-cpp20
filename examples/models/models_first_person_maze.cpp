@@ -11,7 +11,7 @@
 
 #include "raylib-cpp.hpp"
 
-int main(void)
+int main()
 {
     // Initialization
     //--------------------------------------------------------------------------------------
@@ -25,7 +25,8 @@ int main(void)
 
     raylib::Image imMap("resources/cubicmap.png");      // Load cubicmap image (RAM)
     raylib::Texture cubicmap(imMap);                    // Convert image to texture to display (VRAM)
-    raylib::Model model(raylib::MeshUnmanaged::Cubicmap(imMap, Vector3{ 1.0f, 1.0f, 1.0f }));
+    // Use MeshUnmanaged, Mesh will be handled by Model
+    raylib::Model model(raylib::Mesh::GenCubicmap(imMap, Vector3{ 1.0f, 1.0f, 1.0f }));
 
     // NOTE: By default each cube is mapped to one part of texture atlas
     raylib::Texture texture("resources/cubicmap_atlas.png");    // Load map texture
@@ -52,7 +53,7 @@ int main(void)
 
         // Check player collision (we simplify to 2D collision detection)
         raylib::Vector2 playerPos({.x = camera.position.x,.y = camera.position.z});
-        float playerRadius = 0.1F;  // Collision radius (player is modelled as a cilinder for collision)
+        float playerRadius = 0.1f;  // Collision radius (player is modelled as a cilinder for collision)
 
         int playerCellX = static_cast<int>(playerPos.x - static_cast<float>(std::lround(mapPosition.x + 0.5F)));
         int playerCellY = static_cast<int>(playerPos.y - static_cast<float>(std::lround(mapPosition.z + 0.5F)));

@@ -46,7 +46,7 @@ int main() {
             raylib::DrawingGuard drawingGuard (RAYWHITE);
 
             {
-                raylib::CameraDrawingGuard cameraDrawing (camera);
+                raylib::Camera3DDrawingGuard cameraDrawing (camera);
 
                 ::DrawGrid(10, 1.0F);        // Draw a grid
                 bill.DrawBillboard(camera, billPosition, 2.0F);

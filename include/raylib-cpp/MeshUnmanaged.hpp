@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <filesystem>
+#include <cassert>
 
 #include "./raylib.hpp"
 #include "./raylib-cpp-utils.hpp"
@@ -98,12 +99,21 @@ class MeshUnmanaged {
     void Draw(const ::Material& material, const ::Matrix& transform) const {
         ::DrawMesh(m_data, material, transform);
     }
+    /*
+    void Draw(const raylib::Material& material, const ::Matrix& transform) const {
+        ::DrawMesh(m_data, material.c_raylib(), transform);
+    }
+    */
 
     /**
      * Draw multiple mesh instances with material and different transforms
      */
     void Draw(const ::Material& material, ::Matrix* transforms, int instances) const {
         ::DrawMeshInstanced(m_data, material, transforms, instances);
+    }
+    void Draw(const ::Material& material, std::span<::Matrix> transforms) const {
+        assert(transforms.size() <= std::numeric_limits<int>::max());
+        ::DrawMeshInstanced(m_data, material, transforms.data(), static_cast<int>(transforms.size()));
     }
 
     /**

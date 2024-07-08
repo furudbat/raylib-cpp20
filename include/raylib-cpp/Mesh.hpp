@@ -75,7 +75,7 @@ class Mesh {
 
     GETTER(int, VertexCount, m_mesh.m_data.vertexCount)
     GETTER(int, TriangleCount, m_mesh.m_data.triangleCount)
-    CONST_GETTER(float*, Vertices, m_mesh.m_data.vertices)
+    CONST_GETTER(float *, Vertices, m_mesh.m_data.vertices)
     CONST_GETTER(float *, TexCoords, m_mesh.m_data.texcoords)
     CONST_GETTER(float *, TexCoords2, m_mesh.m_data.texcoords2)
     CONST_GETTER(float *, Normals, m_mesh.m_data.normals)
@@ -88,6 +88,47 @@ class Mesh {
     CONST_GETTER(float *, BoneWeights, m_mesh.m_data.boneWeights)
     GETTER(unsigned int, VaoId, m_mesh.m_data.vaoId)
     CONST_GETTER(unsigned int *, VboId, m_mesh.m_data.vboId)
+
+    void ReallocTexCoords(size_t count) {
+        if (m_mesh.m_data.texcoords != nullptr) {
+            RL_FREE(m_mesh.m_data.texcoords);
+            m_mesh.m_data.texcoords = nullptr;
+        }
+        m_mesh.m_data.texcoords = (float *)RL_MALLOC(count*1*sizeof(float));
+    }
+    void ReallocTexCoords2(size_t count) {
+        if (m_mesh.m_data.texcoords2 != nullptr) {
+            RL_FREE(m_mesh.m_data.texcoords2);
+            m_mesh.m_data.texcoords2 = nullptr;
+        }
+        m_mesh.m_data.texcoords2 = (float *)RL_MALLOC(count*2*sizeof(float));
+    }
+
+    float& GetTexCoord(size_t index) {
+        return m_mesh.m_data.texcoords2[index];
+    }
+    float GetTexCoord(size_t index) const {
+        return m_mesh.m_data.texcoords2[index];
+    }
+    float& GetTexCoord2(size_t index) {
+        return m_mesh.m_data.texcoords2[index];
+    }
+    float GetTexCoord2(size_t index) const {
+        return m_mesh.m_data.texcoords2[index];
+    }
+
+    unsigned int& GetVboId(size_t index) {
+        return m_mesh.m_data.vboId[index];
+    }
+    unsigned int GetVboId(size_t index) const {
+        return m_mesh.m_data.vboId[index];
+    }
+
+    Mesh& SetVboId(size_t index, unsigned int value) {
+        m_mesh.m_data.vboId[index] = value;
+
+        return *this;
+    }
 
     /**
      * Generate polygonal mesh
@@ -155,20 +196,20 @@ class Mesh {
     /**
      * Generate heightmap mesh from image data
      */
-    static raylib::Mesh Heightmap(const ::Image& heightmap, ::Vector3 size) {
+    static raylib::Mesh GenHeightmap(const ::Image& heightmap, ::Vector3 size) {
         return raylib::Mesh{::GenMeshHeightmap(heightmap, size)};
     }
-    static raylib::Mesh Heightmap(const raylib::Image& heightmap, ::Vector3 size) {
+    static raylib::Mesh GenHeightmap(const raylib::Image& heightmap, ::Vector3 size) {
         return raylib::Mesh{::GenMeshHeightmap(heightmap.c_raylib(), size)};
     }
 
     /**
      * Generate cubes-based map mesh from image data
      */
-    static raylib::Mesh Cubicmap(const ::Image& cubicmap, ::Vector3 cubeSize) {
+    static raylib::Mesh GenCubicmap(const ::Image& cubicmap, ::Vector3 cubeSize) {
         return raylib::Mesh{::GenMeshCubicmap(cubicmap, cubeSize)};
     }
-    static raylib::Mesh Cubicmap(const raylib::Image& cubicmap, ::Vector3 cubeSize) {
+    static raylib::Mesh GenCubicmap(const raylib::Image& cubicmap, ::Vector3 cubeSize) {
         return raylib::Mesh{::GenMeshCubicmap(cubicmap.c_raylib(), cubeSize)};
     }
 
