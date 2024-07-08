@@ -26,7 +26,6 @@
 #endif
 
 #include <array>
-#include <stdlib.h>             // Required for: NULL
 
 //#define MAX_LIGHTS  4           // Max dynamic lights supported by shader
 inline constexpr int MaxLights = 4;
@@ -104,28 +103,28 @@ int main()
                 .fsFileName = TextFormat("resources/shaders/glsl%i/pbr.fs", GLSL_VERSION),
         });
 
-        shader.SetLocFromUniform(SHADER_LOC_MAP_ALBEDO, "albedoMap");
+        shader.SetLocFromLocation(SHADER_LOC_MAP_ALBEDO, "albedoMap");
         // WARNING: Metalness, roughness, and ambient occlusion are all packed into a MRA texture
         // They are passed as to the SHADER_LOC_MAP_METALNESS location for convenience,
         // shader already takes care of it accordingly
-        shader.SetLocFromUniform(SHADER_LOC_MAP_METALNESS, "mraMap");
-        shader.SetLocFromUniform(SHADER_LOC_MAP_NORMAL, "normalMap");
+        shader.SetLocFromLocation(SHADER_LOC_MAP_METALNESS, "mraMap");
+        shader.SetLocFromLocation(SHADER_LOC_MAP_NORMAL, "normalMap");
         // WARNING: Similar to the MRA map, the emissive map packs different information
         // into a single texture: it stores height and emission data
         // It is binded to SHADER_LOC_MAP_EMISSION location an properly processed on shader
-        shader.SetLocFromUniform(SHADER_LOC_MAP_EMISSION, "emissiveMap");
-        shader.SetLocFromUniform(SHADER_LOC_COLOR_DIFFUSE, "albedoColor");
+        shader.SetLocFromLocation(SHADER_LOC_MAP_EMISSION, "emissiveMap");
+        shader.SetLocFromLocation(SHADER_LOC_COLOR_DIFFUSE, "albedoColor");
 
         // Setup additional required shader locations, including lights data
-        shader.SetLocFromUniform(SHADER_LOC_VECTOR_VIEW, "viewPos");
+        shader.SetLocFromLocation(SHADER_LOC_VECTOR_VIEW, "viewPos");
         int lightCountLoc = shader.GetLocation("numOfLights");
         int maxLightCount = MaxLights;
         shader.SetValue(lightCountLoc, maxLightCount);
 
         // Setup ambient color and intensity parameters
         float ambientIntensity = 0.02f;
-        Color ambientColor = (Color) {26, 32, 135, 255};
-        Vector3 ambientColorNormalized = (Vector3) {ambientColor.r / 255.0f, ambientColor.g / 255.0f,
+        Color ambientColor {26, 32, 135, 255};
+        Vector3 ambientColorNormalized {ambientColor.r / 255.0f, ambientColor.g / 255.0f,
                                                     ambientColor.b / 255.0f};
         shader.SetValue(shader.GetLocation("ambientColor"), ambientColorNormalized);
         shader.SetValue(shader.GetLocation("ambient"), ambientIntensity);
@@ -147,7 +146,7 @@ int main()
     car.Load("resources/models/old_car_new.glb");
 
     // Assign already setup PBR shader to model.materials[0], used by models.meshes[0]
-    car.GetMaterials()[0].shader = shader.c_raylib();
+    car.SetMaterialShader(0, shader, raylib::ModelMaterialShaderOption::UnbindShaderBeforeUnloadAndUnloadMaterial);
 
     // Setup materials[0].maps default parameters
     car.GetMaterials()[0].maps[MATERIAL_MAP_ALBEDO].color = WHITE;
@@ -179,8 +178,8 @@ int main()
     //GenMeshTangents(&floorMesh);      // TODO: Review tangents generation
     //Model floor = LoadModelFromMesh(floorMesh);
 
-    // Assign material shader for our floor model, same PBR shader 
-    floor.GetMaterials()[0].shader = shader.c_raylib();
+    // Assign material shader for our floor model, same PBR shader
+    floor.SetMaterialShader(0, shader, raylib::ModelMaterialShaderOption::UnbindShaderBeforeUnloadAndUnloadMaterial);
     
     floor.GetMaterials()[0].maps[MATERIAL_MAP_ALBEDO].color = WHITE;
     floor.GetMaterials()[0].maps[MATERIAL_MAP_METALNESS].value = 0.0f;
@@ -188,16 +187,10 @@ int main()
     floor.GetMaterials()[0].maps[MATERIAL_MAP_OCCLUSION].value = 1.0f;
     floor.GetMaterials()[0].maps[MATERIAL_MAP_EMISSION].color = BLACK;
 
-    raylib::Texture road_a;
-    raylib::Texture road_mra;
-    raylib::Texture road_n;
-    road_a.Load("resources/road_a.png");
-    road_mra.Load("resources/road_mra.png");
-    road_n.Load("resources/road_n.png");
-
-    floor.GetMaterials()[0].maps[MATERIAL_MAP_ALBEDO].texture = road_a.c_raylib();
-    floor.GetMaterials()[0].maps[MATERIAL_MAP_METALNESS].texture = road_mra.c_raylib();
-    floor.GetMaterials()[0].maps[MATERIAL_MAP_NORMAL].texture = road_n.c_raylib();
+    // connect road textures
+    floor.SetMaterialMapTexture(0, MATERIAL_MAP_ALBEDO, LoadTexture("resources/road_a.png"));
+    floor.SetMaterialMapTexture(0, MATERIAL_MAP_METALNESS, LoadTexture("resources/road_mra.png"));
+    floor.SetMaterialMapTexture(0, MATERIAL_MAP_NORMAL, LoadTexture("resources/road_n.png"));
 
     // Models texture tiling parameter can be stored in the Material struct if required (CURRENTLY NOT USED)
     // NOTE: Material.params[4] are available for generic parameters storage (float)
@@ -217,10 +210,10 @@ int main()
     // Setup material texture maps usage in shader
     // NOTE: By default, the texture maps are always used
     int usage = 1;
-    shader.SetValue("useTexAlbedo", usage);
-    shader.SetValue("useTexNormal", usage);
-    shader.SetValue("useTexMRA", usage);
-    shader.SetValue("useTexEmissive", usage);
+    shader.SetValueFromLocation("useTexAlbedo", usage);
+    shader.SetValueFromLocation("useTexNormal", usage);
+    shader.SetValueFromLocation("useTexMRA", usage);
+    shader.SetValueFromLocation("useTexEmissive", usage);
     
     SetTargetFPS(60);                   // Set our game to run at 60 frames-per-second
     //---------------------------------------------------------------------------------------
@@ -300,12 +293,12 @@ int main()
     //--------------------------------------------------------------------------------------
     // Unbind (disconnect) shader from car.material[0] 
     // to avoid UnloadMaterial() trying to unload it automatically
-    car.GetMaterials()[0].shader = (Shader){ 0 };
+    //car.GetMaterials()[0].shader = (Shader){ 0 };
     //UnloadMaterial(car.materials[0]);
     //car.GetMaterials()[0].maps = NULL;
     //UnloadModel(car);
     
-    floor.GetMaterials()[0].shader = (Shader){ 0 };
+    //floor.GetMaterials()[0].shader = (Shader){ 0 };
     //UnloadMaterial(floor.materials[0]);
     //floor.GetMaterials()[0].maps = NULL;
     //UnloadModel(floor);

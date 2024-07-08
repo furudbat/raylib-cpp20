@@ -26,10 +26,16 @@ class DrawingGuard {
     ~DrawingGuard() { ::EndDrawing(); }
 };
 
-class CameraDrawingGuard {
+class Camera3DDrawingGuard {
   public:
-    explicit CameraDrawingGuard(const ::Camera3D& camera) { ::BeginMode3D(camera); }
-    ~CameraDrawingGuard() { ::EndMode3D(); }
+    explicit Camera3DDrawingGuard(const ::Camera3D& camera) { ::BeginMode3D(camera); }
+    ~Camera3DDrawingGuard() { ::EndMode3D(); }
+};
+
+class Camera2DDrawingGuard {
+public:
+    explicit Camera2DDrawingGuard(const ::Camera2D& camera) { ::BeginMode2D(camera); }
+    ~Camera2DDrawingGuard() { ::EndMode2D(); }
 };
 
 class RenderTextureDrawingGuard {

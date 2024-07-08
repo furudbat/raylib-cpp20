@@ -15,6 +15,7 @@
 namespace raylib {
 
 class Material;
+class Model;
 
 /**
  * Shader type (generic)
@@ -82,7 +83,7 @@ public:
 
     COMPOSITION_METHODE_CALL(SetLocs, m_shader)
     COMPOSITION_METHODE_CALL(SetLoc, m_shader)
-    COMPOSITION_METHODE_CALL(SetLocFromUniform, m_shader)
+    COMPOSITION_METHODE_CALL(SetLocFromLocation, m_shader)
 
     constexpr Shader& operator=(owner<const ::Shader&> shader) = delete;
     Shader& operator=(owner<::Shader&&> shader) noexcept {
@@ -145,6 +146,8 @@ public:
     CONST_COMPOSITION_METHODE_CALL(GetLocationAttrib, m_shader)
 
     COMPOSITION_METHODE_CALL_RETURN_THIS(SetValue, m_shader)
+    COMPOSITION_METHODE_CALL_RETURN_THIS(SetValueFromLocation, m_shader)
+    COMPOSITION_METHODE_CALL_RETURN_THIS(SetValueFromLoc, m_shader)
 
     CONST_COMPOSITION_METHODE_CALL(IsReady, m_shader)
 
@@ -152,6 +155,7 @@ private:
     ShaderUnmanaged m_shader;
 
     friend class Material;
+    friend class Model;
 };
 
 }  // namespace raylib

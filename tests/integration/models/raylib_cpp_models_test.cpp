@@ -32,11 +32,11 @@ TEST_CASE( "first person maze", "[models]" ) {
         raylib::Image imMap;
         REQUIRE(imMap.Load("resources/cubicmap.png"));      // Load cubicmap image (RAM)
         REQUIRE(cubicmap.Load(imMap));                    // Convert image to texture to display (VRAM)
-        REQUIRE(model.Load(raylib::Mesh::Cubicmap(imMap, Vector3{1.0f, 1.0f, 1.0f})));
+        REQUIRE(model.Load(raylib::Mesh::GenCubicmap(imMap, Vector3{1.0f, 1.0f, 1.0f})));
 
         // NOTE: By default each cube is mapped to one part of texture atlas
         REQUIRE(texture.Load("resources/cubicmap_atlas.png"));    // Load map texture
-        model.GetMaterials()[0].maps[MATERIAL_MAP_DIFFUSE].texture = texture.c_raylib();     // Set map diffuse texture
+        model.SetMaterialMapTexture(0, MATERIAL_MAP_DIFFUSE, texture, raylib::ModelMaterialTextureOption::NoUnload);     // Set map diffuse texture
 
         // Get map image data to be used for collision detection
         mapPixels = imMap.LoadColors();
@@ -144,7 +144,7 @@ TEST_CASE( "model and texture with variant", "[models][textures]" ) {
         raylib::Texture cubicmap;
         REQUIRE(imMap.Load("resources/cubicmap.png"));      // Load cubicmap image (RAM)
         REQUIRE(cubicmap.Load(imMap));                    // Convert image to texture to display (VRAM)
-        REQUIRE(model.Load(raylib::Mesh::Cubicmap(imMap, Vector3{1.0f, 1.0f, 1.0f})));
+        REQUIRE(model.Load(raylib::Mesh::GenCubicmap(imMap, Vector3{1.0f, 1.0f, 1.0f})));
 
         // NOTE: By default each cube is mapped to one part of texture atlas
         model.GetMaterials()[0].maps[MATERIAL_MAP_DIFFUSE].texture = texture.c_raylib();     // Set map diffuse texture

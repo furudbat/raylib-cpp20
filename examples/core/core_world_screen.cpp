@@ -49,7 +49,7 @@ int main() {
             raylib::DrawingGuard drawingGuard (RAYWHITE);
 
             {
-                raylib::CameraDrawingGuard cameraDrawing (camera);
+                raylib::Camera3DDrawingGuard cameraDrawing (camera);
                 DrawCube(cubePosition, 2.0F, 2.0F, 2.0F, RED);
                 DrawCubeWires(cubePosition, 2.0F, 2.0F, 2.0F, MAROON);
 

@@ -58,6 +58,13 @@ class RenderTexture {
         return TextureUnmanaged{m_data.texture};
     }
 
+    ::Texture& GetTextureC() {
+        return m_data.texture;
+    }
+    const ::Texture& GetTextureC() const {
+        return m_data.texture;
+    }
+
     void SetTexture(owner<const ::Texture&> newTexture) = delete;
     void SetTexture(owner<::Texture&&> newTexture) noexcept {
         m_data.texture = newTexture;

@@ -16,6 +16,7 @@ namespace raylib {
 
 class Shader;
 class Material;
+class Model;
 
 /**
  * Shader type (generic)
@@ -102,7 +103,7 @@ class ShaderUnmanaged {
         return -1;
     }
     std::span<const int> GetLocsSpan() const { return { m_data.locs, m_data.locs != nullptr ? static_cast<size_t>(RL_MAX_SHADER_LOCATIONS) : 0}; }
-    std::span<int> GetLocsSpan() { return { m_data.locs, m_data.locs != nullptr ?static_cast<size_t>(RL_MAX_SHADER_LOCATIONS) : 0}; }
+    std::span<int> GetLocsSpan() { return { m_data.locs, m_data.locs != nullptr ? static_cast<size_t>(RL_MAX_SHADER_LOCATIONS) : 0}; }
     void SetLocs(std::span<const int> value) {
         if(m_data.id != 0) {
             if (m_data.locs == nullptr) {
@@ -122,9 +123,9 @@ class ShaderUnmanaged {
             m_data.locs[index] = value;
         }
     }
-    void SetLocFromUniform(size_t index, const char *uniformName) {
+    void SetLocFromLocation(size_t index, const char *uniformName) {
         if(m_data.locs != nullptr) {
-            m_data.locs[index] = rlGetLocationUniform(m_data.id, uniformName);
+            m_data.locs[index] = ::GetShaderLocation(m_data, uniformName);
         }
     }
 
@@ -212,26 +213,32 @@ class ShaderUnmanaged {
            using T = std::decay_t<decltype(val)>;
            if constexpr (std::is_same_v<T, float>)
                ::SetShaderValue(m_data, uniformLoc, &val, SHADER_UNIFORM_FLOAT);
-           else if constexpr (std::is_same_v<T, ::Vector2> || std::is_same_v<T, std::array<float, 2>>)
+           else if constexpr (std::is_same_v<T, ::Vector2>)
                ::SetShaderValue(m_data, uniformLoc, &val, SHADER_UNIFORM_VEC2);
-           else if constexpr (std::is_same_v<T, ::Vector3> || std::is_same_v<T, std::array<float, 3>>)
+           else if constexpr (std::is_same_v<T, std::array<float, 2>>)
+               ::SetShaderValue(m_data, uniformLoc, val.data(), SHADER_UNIFORM_VEC2);
+           else if constexpr (std::is_same_v<T, ::Vector3>)
                ::SetShaderValue(m_data, uniformLoc, &val, SHADER_UNIFORM_VEC3);
-           else if constexpr (std::is_same_v<T, ::Vector4> || std::is_same_v<T, std::array<float, 4>>)
+           else if constexpr (std::is_same_v<T, std::array<float, 3>>)
+               ::SetShaderValue(m_data, uniformLoc, val.data(), SHADER_UNIFORM_VEC3);
+           else if constexpr (std::is_same_v<T, ::Vector4>)
                ::SetShaderValue(m_data, uniformLoc, &val, SHADER_UNIFORM_VEC4);
+           else if constexpr (std::is_same_v<T, std::array<float, 4>>)
+               ::SetShaderValue(m_data, uniformLoc, val.data(), SHADER_UNIFORM_VEC4);
            else if constexpr (std::is_same_v<T, int>)
                ::SetShaderValue(m_data, uniformLoc, &val, SHADER_UNIFORM_INT);
            else if constexpr (std::is_same_v<T, std::array<int, 2>>)
-               ::SetShaderValue(m_data, uniformLoc, &val, SHADER_UNIFORM_IVEC2);
+               ::SetShaderValue(m_data, uniformLoc, val.data(), SHADER_UNIFORM_IVEC2);
            else if constexpr (std::is_same_v<T, std::array<int, 3>>)
-               ::SetShaderValue(m_data, uniformLoc, &val, SHADER_UNIFORM_IVEC3);
+               ::SetShaderValue(m_data, uniformLoc, val.data(), SHADER_UNIFORM_IVEC3);
            else if constexpr (std::is_same_v<T, std::array<int, 4>>)
-               ::SetShaderValue(m_data, uniformLoc, &val, SHADER_UNIFORM_IVEC4);
+               ::SetShaderValue(m_data, uniformLoc, val.data(), SHADER_UNIFORM_IVEC4);
            else if constexpr (std::is_same_v<T, ::Texture2D>)
                ::SetShaderValue(m_data, uniformLoc, &val.id, SHADER_UNIFORM_SAMPLER2D);
        }, value);
        return *this;
     }
-    ShaderUnmanaged& SetValue(const char* uniformName, std::variant<float,
+    ShaderUnmanaged& SetValueFromLocation(const char* uniformName, std::variant<float,
             std::array<float, 2>, ///< vec2 (2 float)
             std::array<float, 3>, ///< vec3 (3 float)
             std::array<float, 4>, ///< vec4 (4 float)
@@ -244,6 +251,20 @@ class ShaderUnmanaged {
             std::array<int, 4>,   ///< ivec4 (4 int)
             ::Texture2D> value) {
         return SetValue(GetLocation(uniformName), value);
+    }
+    ShaderUnmanaged& SetValueFromLoc(size_t loc_index, std::variant<float,
+            std::array<float, 2>, ///< vec2 (2 float)
+            std::array<float, 3>, ///< vec3 (3 float)
+            std::array<float, 4>, ///< vec4 (4 float)
+            ::Vector2,            ///< vec2 (2 float)
+            ::Vector3,            ///< vec3 (3 float)
+            ::Vector4,            ///< vec4 (4 float)
+            int,
+            std::array<int, 2>,   ///< ivec2 (2 int)
+            std::array<int, 3>,   ///< ivec3 (3 int)
+            std::array<int, 4>,   ///< ivec4 (4 int)
+            ::Texture2D> value) {
+        return SetValue(GetLoc(loc_index), value);
     }
 
     /**
@@ -339,6 +360,7 @@ class ShaderUnmanaged {
 
     friend class Shader;
     friend class Material;
+    friend class Model;
 };
 
 }  // namespace raylib

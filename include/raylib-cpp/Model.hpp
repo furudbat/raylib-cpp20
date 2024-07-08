@@ -14,9 +14,31 @@
 #endif
 #include "./RaylibError.hpp"
 
+#include <unordered_map>
+
 namespace raylib {
 
 class Mesh;
+
+enum class ModelMaterialOptions : uint8_t {
+    None = 0,                                          ///< Do Nothing when UnloadingModel, manage materials and shaders on your own
+    UnloadMaterial = 1,                                ///< UnloadMaterial: assume shader ownership is in Model (Material), shader gets unloaded by UnloadMaterial
+    UnbindShader = 2,                                  ///< Unbind (disconnect) shader from Model (Material), to avoid UnloadMaterial() trying to unload it automatically (NO UnloadMaterial)
+    UnbindShaderBeforeUnloadAndUnloadMaterial  = 3,    ///< UnloadMaterial AND Unbind (disconnect) shader from Model (Material), to avoid UnloadMaterial() trying to unload it automatically (manage shader ownership on your own)
+};
+
+enum class ModelMaterialShaderOption : uint8_t {
+    NoUnload = 0,                                      ///< Do Nothing when UnloadingModel, manage materials and shaders on your own
+    UnloadMaterial = 1,                                ///< UnloadMaterial: assume shader ownership is in Model (Material), shader gets unloaded by UnloadMaterial
+    UnbindShader = 2,                                  ///< Unbind (disconnect) shader from Model (Material), to avoid UnloadMaterial() trying to unload it automatically (NO UnloadMaterial)
+    UnbindShaderBeforeUnloadAndUnloadMaterial  = 3,    ///< UnloadMaterial AND Unbind (disconnect) shader from Model (Material), to avoid UnloadMaterial() trying to unload it automatically (manage shader ownership on your own)
+};
+
+enum class ModelMaterialTextureOption : uint8_t {
+    NoUnload = 0,                       ///< Do Nothing when UnloadingModel, manage materials and shaders on your own
+    UnloadMaterial = 1,             ///< UnloadMaterial: assume texture ownership is in Model (Material), texture gets unloaded by UnloadMaterial
+};
+
 
 /**
  * Model type
@@ -28,10 +50,10 @@ class Model {
     inline static constexpr float DefaultDrawRotationAngle = 0.0f;
     inline static constexpr ::Vector3 DefaultDrawScaleVector = {1.0f, 1.0f, 1.0f};
 
-    constexpr Model() = default;
+    Model() = default;
 
-    explicit constexpr Model(owner<const ::Model&> model) = delete;
-    explicit constexpr Model(owner<::Model&&> model) noexcept {
+    explicit Model(owner<const ::Model&> model) = delete;
+    explicit Model(owner<::Model&&> model) noexcept {
         set(model);
 
         model.meshCount = 0;
@@ -71,7 +93,7 @@ class Model {
         Unload();
     }
 
-    constexpr Model(const Model&) = delete;
+    Model(const Model&) = delete;
     Model(Model&& other) noexcept {
         set(other.m_data);
 
@@ -85,9 +107,10 @@ class Model {
         other.m_data.bindPose = nullptr;
     }
 
-    constexpr Model& operator=(owner<const ::Model&> model) = delete;
-    constexpr Model& operator=(owner<::Model&&> model) noexcept {
+    Model& operator=(owner<const ::Model&> model) = delete;
+    Model& operator=(owner<::Model&&> model) noexcept {
         set(model);
+        m_trackMaterialOwnership.clear();
 
         model.meshCount = 0;
         model.materialCount = 0;
@@ -109,6 +132,7 @@ class Model {
 
         Unload();
         set(other.m_data);
+        std::exchange(m_trackMaterialOwnership, other.m_trackMaterialOwnership);
 
         other.m_data.meshCount = 0;
         other.m_data.materialCount = 0;
@@ -134,21 +158,160 @@ class Model {
     GETTER(int, MaterialCount, m_data.materialCount)
     SPAN_GETTER(::Mesh, Meshes, m_data.meshes, m_data.meshCount)
     SPAN_GETTER(::Material, Materials, m_data.materials, m_data.materialCount)
-    CONST_GETTER(int*, MeshMaterial, m_data.meshMaterial)
+    //CONST_GETTER(const int*, MeshMaterial, m_data.meshMaterial)
+    //GETTER(int*, MeshMaterial, m_data.meshMaterial)
+    SPAN_GETTER(int, MeshMaterial, m_data.meshMaterial, m_data.meshCount)
     GETTER(int, BoneCount, m_data.boneCount)
     SPAN_GETTER(::BoneInfo, Bones, m_data.bones, m_data.boneCount)
     CONST_GETTER(::Transform*, BindPose, m_data.bindPose)
 
-    constexpr MeshUnmanaged GetMesh() const { return m_data.meshes != nullptr ? MeshUnmanaged{*m_data.meshes} : MeshUnmanaged{}; }
+    constexpr ::Mesh& GetMesh(size_t index) {
+        assert(index < m_data.meshCount);
+        return m_data.meshes[index];
+    }
+    constexpr const ::Mesh& GetMesh(size_t index) const {
+        assert(index < m_data.meshCount);
+        return m_data.meshes[index];
+    }
+
+    constexpr ::Material& GetMaterial(size_t index) {
+        assert(index < m_data.materialCount);
+        return m_data.materials[index];
+    }
+    constexpr const ::Material& GetMaterial(size_t index) const {
+        assert(index < m_data.materialCount);
+        return m_data.materials[index];
+    }
+
+    constexpr int& GetMeshMaterial(size_t index) {
+        return m_data.meshMaterial[index];
+    }
+    constexpr int GetMeshMaterial(size_t index) const {
+        return m_data.meshMaterial[index];
+    }
+
+    /// Set Shader and Material Management
+    void SetMaterialShader(size_t material_index, ::Shader shader, ModelMaterialShaderOption option = ModelMaterialShaderOption::NoUnload) {
+        assert(material_index < m_data.materialCount);
+        m_data.materials[material_index].shader = shader;
+        trackMaterialOwnership(material_index, option);
+    }
+    void SetMaterialShader(size_t material_index, ::Shader&& shader, ModelMaterialShaderOption option) {
+        assert(material_index < m_data.materialCount);
+        m_data.materials[material_index].shader = shader;
+        trackMaterialOwnership(material_index, option);
+        switch(m_trackMaterialOwnership[material_index]) {
+            case ModelMaterialOptions::None:
+                break;
+            case ModelMaterialOptions::UnloadMaterial:
+                // ownership of shader moved into material
+                shader.id = rlGetShaderIdDefault();
+                shader.locs = nullptr;
+                break;
+            case ModelMaterialOptions::UnbindShader:
+            case ModelMaterialOptions::UnbindShaderBeforeUnloadAndUnloadMaterial:
+                // nothing to move, user should manage shader on its own
+                break;
+        }
+    }
+    void SetMaterialShader(size_t material_index, const raylib::Shader& shader, ModelMaterialShaderOption option = ModelMaterialShaderOption::NoUnload) {
+        assert(material_index < m_data.materialCount);
+        m_data.materials[material_index].shader = shader.c_raylib();
+        trackMaterialOwnership(material_index, option);
+    }
+    // move shader ownership into model/materials (Material also gets automatically unloaded when Unload)
+    void MoveMaterialShader(size_t material_index, raylib::Shader&& shader) {
+        assert(material_index < m_data.materialCount);
+        m_data.materials[material_index].shader = shader.c_raylib();
+        trackMaterialOwnership(material_index, ModelMaterialShaderOption::UnloadMaterial);
+        shader.m_shader.m_data.id = rlGetShaderIdDefault();
+        shader.m_shader.m_data.locs = nullptr;
+    }
+    void SetMaterialShader(size_t material_index, ::Shader&& shader) {
+        assert(material_index < m_data.materialCount);
+        m_data.materials[material_index].shader = shader;
+        trackMaterialOwnership(material_index, ModelMaterialShaderOption::UnloadMaterial);
+        shader.id = rlGetShaderIdDefault();
+        shader.locs = nullptr;
+    }
+
+    template<class... Args>
+    void EmplaceMaterialShader(size_t material_index, Args&&... shader_args) {
+        MoveMaterialShader(material_index, Shader(std::forward<Args>(shader_args)...));
+    }
+
+    /// Set Texture and Material Management
+    void SetMaterialMapTexture(size_t material_index, size_t map_index, ::Texture texture, ModelMaterialTextureOption option = ModelMaterialTextureOption::NoUnload) {
+        assert(material_index < m_data.materialCount);
+        m_data.materials[material_index].maps[map_index].texture = texture;
+        trackMaterialOwnership(material_index, option);
+    }
+    void SetMaterialMapTexture(size_t material_index, size_t map_index, const raylib::Texture& texture, ModelMaterialTextureOption option) {
+        assert(material_index < m_data.materialCount);
+        m_data.materials[material_index].maps[map_index].texture = texture.c_raylib();
+        trackMaterialOwnership(material_index, option);
+    }
+    void SetMaterialMapTexture(size_t material_index, size_t map_index, ::Texture&& texture, ModelMaterialTextureOption option) {
+        assert(material_index < m_data.materialCount);
+        m_data.materials[material_index].maps[map_index].texture = texture;
+        trackMaterialOwnership(material_index, option);
+        switch(m_trackMaterialOwnership[material_index]) {
+            case ModelMaterialOptions::None:
+                break;
+            case ModelMaterialOptions::UnloadMaterial:
+            case ModelMaterialOptions::UnbindShaderBeforeUnloadAndUnloadMaterial:
+                // ownership of texture moved into maps
+                texture.id = 0;
+                texture.format = 0;
+                texture.width = 0;
+                texture.height = 0;
+                texture.mipmaps = 0;
+                break;
+            case ModelMaterialOptions::UnbindShader:
+                // only impact shader, manage texture by user
+                break;
+        }
+    }
+
+
+    void SetMaterialManagement(size_t material_index, ModelMaterialOptions options) {
+        m_trackMaterialOwnership[material_index] = options;
+    }
 
     /**
      * Unload model (including meshes) from memory (RAM and/or VRAM)
      */
     void Unload() noexcept {
         if (m_data.meshes != nullptr || m_data.materials != nullptr) {
+            for(const auto& [material_index , option] : m_trackMaterialOwnership) {
+                switch(option) {
+                    case ModelMaterialOptions::None:
+                        // do nothing
+                        break;
+                    case ModelMaterialOptions::UnloadMaterial:
+                        // UnloadMaterial, should also unload shader
+                        UnloadMaterial(m_data.materials[material_index]);
+                        // maps also geta unloaded in UnloadMaterial
+                        m_data.materials[material_index].maps = nullptr;
+                        break;
+                    case ModelMaterialOptions::UnbindShader:
+                        m_data.materials[material_index].shader.id = rlGetShaderIdDefault();
+                        m_data.materials[material_index].shader.locs = nullptr;
+                        break;
+                    case ModelMaterialOptions::UnbindShaderBeforeUnloadAndUnloadMaterial:
+                        m_data.materials[material_index].shader.id = rlGetShaderIdDefault();
+                        m_data.materials[material_index].shader.locs = nullptr;
+                        // UnloadMaterial, should NOT unload the shader
+                        UnloadMaterial(m_data.materials[material_index]);
+                        // maps also geta unloaded in UnloadMaterial
+                        m_data.materials[material_index].maps = nullptr;
+                        break;
+                }
+            }
             ::UnloadModel(m_data);
             m_data.meshes = nullptr;
             m_data.materials = nullptr;
+            m_trackMaterialOwnership.clear();
         }
     }
 
@@ -351,7 +514,23 @@ class Model {
         m_data.bindPose = model.bindPose;
     }
 
+    void trackMaterialOwnership(size_t material_index, ModelMaterialShaderOption option) {
+        if (m_trackMaterialOwnership.contains(material_index)) {
+            m_trackMaterialOwnership[material_index] = static_cast<ModelMaterialOptions>(static_cast<uint8_t>(m_trackMaterialOwnership[material_index]) | static_cast<uint8_t>(option));
+        }
+
+        m_trackMaterialOwnership[material_index] = static_cast<ModelMaterialOptions>(option);
+    }
+    void trackMaterialOwnership(size_t material_index, ModelMaterialTextureOption option) {
+        if (m_trackMaterialOwnership.contains(material_index)) {
+            m_trackMaterialOwnership[material_index] = static_cast<ModelMaterialOptions>(static_cast<uint8_t>(m_trackMaterialOwnership[material_index]) | static_cast<uint8_t>(option));
+        }
+
+        m_trackMaterialOwnership[material_index] = static_cast<ModelMaterialOptions>(option);
+    }
+
     ::Model m_data;
+    std::unordered_map<size_t, ModelMaterialOptions> m_trackMaterialOwnership;
 };
 
 }  // namespace raylib

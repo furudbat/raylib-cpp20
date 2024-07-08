@@ -19,7 +19,6 @@
 ********************************************************************************************/
 
 #include "raylib-cpp.hpp"
-
 #include <raymath.h>
 
 #define RLIGHTS_IMPLEMENTATION
@@ -66,8 +65,8 @@ int main()
     // Load shader and set up some uniforms
     raylib::Shader shader (LoadShader(TextFormat("resources/shaders/glsl%i/lighting.vs", GLSL_VERSION),
                                       TextFormat("resources/shaders/glsl%i/fog.fs", GLSL_VERSION)));
-    shader.SetLocFromUniform(SHADER_LOC_MATRIX_MODEL, "matModel");
-    shader.SetLocFromUniform(SHADER_LOC_VECTOR_VIEW, "viewPos");
+    shader.SetLocFromLocation(SHADER_LOC_MATRIX_MODEL, "matModel");
+    shader.SetLocFromLocation(SHADER_LOC_VECTOR_VIEW, "viewPos");
 
     // Ambient light level
     int ambientLoc = shader.GetLocation("ambient");
