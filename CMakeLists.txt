@@ -16,7 +16,7 @@ cpmaddpackage(
         project_options
         GITHUB_REPOSITORY
         aminya/project_options
-        VERSION           0.35.0
+        VERSION           0.35.1
         #GIT_TAG
         #main
         DOWNLOAD_ONLY)
@@ -34,7 +34,7 @@ endif()
 # Project
 project (raylib_cpp
     VERSION 5.0.2
-    DESCRIPTION "raylib-cpp C++ Object Oriented Wrapper for raylib"
+    DESCRIPTION "C++ Object Oriented Wrapper for raylib"
     HOMEPAGE_URL "https://github.com/robloach/raylib-cpp"
     LANGUAGES C CXX
 )

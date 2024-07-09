@@ -1,9 +1,10 @@
 {
   "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg/master/scripts/vcpkg.schema.json",
-  "name": "raylib-cpp",
+  "name": "raylib-cpp20",
+  "description": "raylib-cpp20 is a modern C++20 wrapper library for raylib, a simple and easy-to-use library to enjoy videogames programming.",
   "version-string": "5.0.2",
   "dependencies": [
-    "raylib",
-    "ms-gsl"
-  ]
+    "raylib"
+  ],
+  "license": "Zlib"
 }
