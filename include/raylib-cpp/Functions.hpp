@@ -253,7 +253,6 @@ struct LoadImageAnimResult { raylib::Image image; int frames; };
 [[maybe_unused]] RLCPPAPI inline raylib::Image LoadImageAnim(const std::filesystem::path& fileName, int &frames) {
     return raylib::Image{::LoadImageAnim(fileName.c_str(), &frames)};
 }
-struct LoadImageAnimResult { raylib::Image image; int frames; };
 [[maybe_unused]] RLCPPAPI inline LoadImageAnimResult LoadImageAnim(const std::filesystem::path& fileName) {
     int frames{0};
     auto image = raylib::Image{::LoadImageAnim(fileName.c_str(), &frames)};
@@ -516,7 +515,7 @@ inline RAYLIB_CPP_EXPECTED_RESULT(AutomationEventList) LoadAutomationEventList(c
 }
 #endif
 
-std::chrono::milliseconds GetFrameTime() {
+[[maybe_unused]] RLCPPAPI inline std::chrono::milliseconds GetFrameTime() {
     return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::duration<double>{::GetFrameTime()});
 }
 

@@ -27,9 +27,9 @@ int main()
 
     // Define our custom camera to look into our 3d world
     raylib::Camera camera;
-    camera.position = (Vector3){ 18.0f, 21.0f, 18.0f };     // Camera position
-    camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };          // Camera looking at point
-    camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };              // Camera up vector (rotation towards target)
+    camera.position = Vector3{ 18.0f, 21.0f, 18.0f };     // Camera position
+    camera.target = Vector3{ 0.0f, 0.0f, 0.0f };          // Camera looking at point
+    camera.up = Vector3{ 0.0f, 1.0f, 0.0f };              // Camera up vector (rotation towards target)
     camera.fovy = 45.0f;                                    // Camera field-of-view Y
     camera.projection = CAMERA_PERSPECTIVE;                 // Camera projection type
 
@@ -37,7 +37,7 @@ int main()
     raylib::Texture2D texture = raylib::Texture2D::LoadFromImage(image);        // Convert image to texture (VRAM)
 
     // Generate heightmap mesh (RAM and VRAM)
-    raylib::Model model (raylib::Mesh::GenHeightmap(image, (Vector3){ 16, 8, 16 }));                  // Load model from generated mesh
+    raylib::Model model (raylib::Mesh::GenHeightmap(image, Vector3{ 16, 8, 16 }));                  // Load model from generated mesh
 
     model.SetMaterialMapTexture(0, MATERIAL_MAP_DIFFUSE, texture, raylib::ModelMaterialTextureOption::NoUnload); // Set map diffuse texture
     Vector3 mapPosition = { -8.0f, 0.0f, -8.0f };           // Define model position

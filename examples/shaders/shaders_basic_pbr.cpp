@@ -89,9 +89,9 @@ int main()
 
     // Define the camera to look into our 3d world
     raylib::Camera camera ({
-        .position = (Vector3) {2.0f, 2.0f, 6.0f},    // Camera position
-        .target = (Vector3){ 0.0f, 0.5f, 0.0f },     // Camera looking at point
-        .up = (Vector3){ 0.0f, 1.0f, 0.0f },         // Camera up vector (rotation towards target)
+        .position = Vector3{2.0f, 2.0f, 6.0f},    // Camera position
+        .target = Vector3{ 0.0f, 0.5f, 0.0f },     // Camera looking at point
+        .up = Vector3{ 0.0f, 1.0f, 0.0f },         // Camera up vector (rotation towards target)
         .fovy = 45.0f,                               // Camera field-of-view Y
         .projection = CAMERA_PERSPECTIVE,            // Camera projection type
     });
@@ -194,17 +194,15 @@ int main()
 
     // Models texture tiling parameter can be stored in the Material struct if required (CURRENTLY NOT USED)
     // NOTE: Material.params[4] are available for generic parameters storage (float)
-    raylib::Vector2 carTextureTiling {(Vector2){ 0.5f, 0.5f }};
-    raylib::Vector2 floorTextureTiling {(Vector2){ 0.5f, 0.5f }};
+    raylib::Vector2 carTextureTiling {Vector2{ 0.5f, 0.5f }};
+    raylib::Vector2 floorTextureTiling {Vector2{ 0.5f, 0.5f }};
 
     // Create some lights
     std::array<Light, MaxLights> lights {{
-            CreateLight(LightType::Point, (Vector3) {-1.0f, 1.0f, -2.0f},
-                                 (Vector3) {0.0f, 0.0f, 0.0f}, YELLOW, 4.0f,
-                                 shader),
-            CreateLight(LightType::Point, (Vector3){ 2.0f, 1.0f, 1.0f }, (Vector3){ 0.0f, 0.0f, 0.0f }, GREEN, 3.3f, shader),
-            CreateLight(LightType::Point, (Vector3){ -2.0f, 1.0f, 1.0f }, (Vector3){ 0.0f, 0.0f, 0.0f }, RED, 8.3f, shader),
-            CreateLight(LightType::Point, (Vector3){ 1.0f, 1.0f, -2.0f }, (Vector3){ 0.0f, 0.0f, 0.0f }, BLUE, 2.0f, shader),
+            CreateLight(LightType::Point, Vector3{-1.0f, 1.0f, -2.0f}, Vector3{0.0f, 0.0f, 0.0f}, YELLOW, 4.0f, shader),
+            CreateLight(LightType::Point, Vector3{ 2.0f, 1.0f, 1.0f }, Vector3{ 0.0f, 0.0f, 0.0f }, GREEN, 3.3f, shader),
+            CreateLight(LightType::Point, Vector3{ -2.0f, 1.0f, 1.0f }, Vector3{ 0.0f, 0.0f, 0.0f }, RED, 8.3f, shader),
+            CreateLight(LightType::Point, Vector3{ 1.0f, 1.0f, -2.0f }, Vector3{ 0.0f, 0.0f, 0.0f }, BLUE, 2.0f, shader),
     }};
 
     // Setup material texture maps usage in shader
@@ -252,11 +250,11 @@ int main()
                 Vector4 floorEmissiveColor = ColorNormalize(floor.GetMaterials()[0].maps[MATERIAL_MAP_EMISSION].color);
                 shader.SetValue(emissiveColorLoc, floorEmissiveColor);
                 
-                floor.Draw((Vector3){ 0.0f, 0.0f, 0.0f }, 5.0f, WHITE);   // Draw floor model
+                floor.Draw(Vector3{ 0.0f, 0.0f, 0.0f }, 5.0f, WHITE);   // Draw floor model
 
                 // Set old car model texture tiling, emissive color and emissive intensity parameters on shader
                 shader.SetValue(textureTilingLoc, carTextureTiling);
-                Vector4 carEmissiveColor = ColorNormalize(car.GetMaterials()[0].maps[MATERIAL_MAP_EMISSION].color);
+                Vector4 carEmissiveColor = ColorNormalize(car.GetMaterialMap(0, MATERIAL_MAP_EMISSION).color);
                 shader.SetValue(emissiveColorLoc, carEmissiveColor);
                 float emissiveIntensity = 0.01f;
                 shader.SetValue(emissiveIntensityLoc, &emissiveIntensity, SHADER_UNIFORM_FLOAT);

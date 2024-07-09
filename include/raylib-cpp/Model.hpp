@@ -165,21 +165,30 @@ class Model {
     SPAN_GETTER(::BoneInfo, Bones, m_data.bones, m_data.boneCount)
     CONST_GETTER(::Transform*, BindPose, m_data.bindPose)
 
+    ::MaterialMap& GetMaterialMap(size_t material_index, size_t map_index) {
+        assert(std::cmp_less(material_index, m_data.materialCount));
+        return m_data.materials[material_index].maps[map_index];
+    }
+    const ::MaterialMap& GetMaterialMap(size_t material_index, size_t map_index) const {
+        assert(std::cmp_less(material_index, m_data.materialCount));
+        return m_data.materials[material_index].maps[map_index];
+    }
+
     constexpr ::Mesh& GetMesh(size_t index) {
-        assert(index < m_data.meshCount);
+        assert(std::cmp_less(index, m_data.meshCount));
         return m_data.meshes[index];
     }
     constexpr const ::Mesh& GetMesh(size_t index) const {
-        assert(index < m_data.meshCount);
+        assert(std::cmp_less(index, m_data.meshCount));
         return m_data.meshes[index];
     }
 
     constexpr ::Material& GetMaterial(size_t index) {
-        assert(index < m_data.materialCount);
+        assert(std::cmp_less(index, m_data.materialCount));
         return m_data.materials[index];
     }
     constexpr const ::Material& GetMaterial(size_t index) const {
-        assert(index < m_data.materialCount);
+        assert(std::cmp_less(index, m_data.materialCount));
         return m_data.materials[index];
     }
 
@@ -192,12 +201,12 @@ class Model {
 
     /// Set Shader and Material Management
     void SetMaterialShader(size_t material_index, ::Shader shader, ModelMaterialShaderOption option = ModelMaterialShaderOption::NoUnload) {
-        assert(material_index < m_data.materialCount);
+        assert(std::cmp_less(material_index, m_data.materialCount));
         m_data.materials[material_index].shader = shader;
         trackMaterialOwnership(material_index, option);
     }
     void SetMaterialShader(size_t material_index, ::Shader&& shader, ModelMaterialShaderOption option) {
-        assert(material_index < m_data.materialCount);
+        assert(std::cmp_less(material_index, m_data.materialCount));
         m_data.materials[material_index].shader = shader;
         trackMaterialOwnership(material_index, option);
         switch(m_trackMaterialOwnership[material_index]) {
@@ -215,20 +224,20 @@ class Model {
         }
     }
     void SetMaterialShader(size_t material_index, const raylib::Shader& shader, ModelMaterialShaderOption option = ModelMaterialShaderOption::NoUnload) {
-        assert(material_index < m_data.materialCount);
+        assert(std::cmp_less(material_index, m_data.materialCount));
         m_data.materials[material_index].shader = shader.c_raylib();
         trackMaterialOwnership(material_index, option);
     }
     // move shader ownership into model/materials (Material also gets automatically unloaded when Unload)
     void MoveMaterialShader(size_t material_index, raylib::Shader&& shader) {
-        assert(material_index < m_data.materialCount);
+        assert(std::cmp_less(material_index, m_data.materialCount));
         m_data.materials[material_index].shader = shader.c_raylib();
         trackMaterialOwnership(material_index, ModelMaterialShaderOption::UnloadMaterial);
         shader.m_shader.m_data.id = rlGetShaderIdDefault();
         shader.m_shader.m_data.locs = nullptr;
     }
     void SetMaterialShader(size_t material_index, ::Shader&& shader) {
-        assert(material_index < m_data.materialCount);
+        assert(std::cmp_less(material_index, m_data.materialCount));
         m_data.materials[material_index].shader = shader;
         trackMaterialOwnership(material_index, ModelMaterialShaderOption::UnloadMaterial);
         shader.id = rlGetShaderIdDefault();
@@ -242,17 +251,17 @@ class Model {
 
     /// Set Texture and Material Management
     void SetMaterialMapTexture(size_t material_index, size_t map_index, ::Texture texture, ModelMaterialTextureOption option = ModelMaterialTextureOption::NoUnload) {
-        assert(material_index < m_data.materialCount);
+        assert(std::cmp_less(material_index, m_data.materialCount));
         m_data.materials[material_index].maps[map_index].texture = texture;
         trackMaterialOwnership(material_index, option);
     }
     void SetMaterialMapTexture(size_t material_index, size_t map_index, const raylib::Texture& texture, ModelMaterialTextureOption option) {
-        assert(material_index < m_data.materialCount);
+        assert(std::cmp_less(material_index, m_data.materialCount));
         m_data.materials[material_index].maps[map_index].texture = texture.c_raylib();
         trackMaterialOwnership(material_index, option);
     }
     void SetMaterialMapTexture(size_t material_index, size_t map_index, ::Texture&& texture, ModelMaterialTextureOption option) {
-        assert(material_index < m_data.materialCount);
+        assert(std::cmp_less(material_index, m_data.materialCount));
         m_data.materials[material_index].maps[map_index].texture = texture;
         trackMaterialOwnership(material_index, option);
         switch(m_trackMaterialOwnership[material_index]) {

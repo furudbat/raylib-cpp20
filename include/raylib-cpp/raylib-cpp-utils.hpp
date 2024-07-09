@@ -42,6 +42,25 @@
     constexpr type Get##method() const & { return name; }                                       \
     constexpr type Get##method() && { return std::move(name); }
 #endif
+#ifndef CONST_GETTER
+#define CONST_GETTER(type, method, name) \
+    /** Retrieves the name value for the object. @return The name value of the object. */       \
+    constexpr const type Get##method() const { return name; }
+#endif
+#ifndef CONST_GETTERSETTER
+#define CONST_GETTERSETTER(type, method, name) \
+    /** Retrieves the name value for the object. @return The name value of the object. */       \
+    constexpr const type Get##method() const & { return name; }                                 \
+    constexpr type Get##method() && { return std::move(name); }                                 \
+    /** Sets the name value for the object. @param value The value of which to set name to. */  \
+    constexpr void Set##method(type value) { name = value; }
+#endif
+#ifndef SPAN_GETTER
+#define SPAN_GETTER(type, method, name, size) \
+    /** Retrieves the name value for the object. @return The name value of the object. */               \
+    constexpr std::span<const type> Get##method() const { return {name, static_cast<size_t>(size)}; }   \
+    constexpr std::span<type> Get##method() { return {name, static_cast<size_t>(size)}; }
+#endif
 
 #ifndef COMPOSITION_METHODE_CALL
 #define COMPOSITION_METHODE_CALL(method, name) \

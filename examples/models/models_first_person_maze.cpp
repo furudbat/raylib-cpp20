@@ -30,7 +30,7 @@ int main()
 
     // NOTE: By default each cube is mapped to one part of texture atlas
     raylib::Texture texture("resources/cubicmap_atlas.png");    // Load map texture
-    model.GetMaterials()[0].maps[MATERIAL_MAP_DIFFUSE].texture = texture.c_raylib();     // Set map diffuse texture
+    model.SetMaterialMapTexture(0, MATERIAL_MAP_DIFFUSE, texture, raylib::ModelMaterialTextureOption::NoUnload);     // Set map diffuse texture
 
     // Get map image data to be used for collision detection
     auto mapPixels = imMap.LoadColors();

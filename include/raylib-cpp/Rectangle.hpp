@@ -152,7 +152,7 @@ class Rectangle : public ::Rectangle {
     constexpr Rectangle& SetSize(const ::Vector2& size) noexcept {
         return SetSize(size.x, size.y);
     }
-
+    /*
     Rectangle& SetShapesTexture(const ::Texture2D& texture) {
         ::SetShapesTexture(texture, *this);
         return *this;

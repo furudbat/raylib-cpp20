@@ -82,7 +82,7 @@ int main()
     modelC.GetMaterials()[0].shader = shader.c_raylib();
 
     // Using just 1 point lights
-    CreateLight(LIGHT_POINT, (Vector3){ 0, 2, 6 }, Vector3Zero(), WHITE, shader.c_raylib());
+    CreateLight(LIGHT_POINT, Vector3{ 0, 2, 6 }, Vector3Zero(), WHITE, shader.c_raylib());
 
     SetTargetFPS(60);                   // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------

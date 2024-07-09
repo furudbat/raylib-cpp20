@@ -262,8 +262,8 @@ class Vector3 : public ::Vector3 {
         return Vector3{Vector3Reject(*this, vector3)};
     }
 
-    [[nodiscard]] Vector3& OrthoNormalize(::Vector3& vector3) noexcept {
-        ::Vector3OrthoNormalize(this, &vector3);
+    static void OrthoNormalize(::Vector3& v1, ::Vector3& v2) noexcept {
+        ::Vector3OrthoNormalize(&v1, &v2);
     }
 
     [[nodiscard]] Vector3 Transform(const ::Matrix& matrix) const noexcept {

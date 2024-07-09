@@ -140,10 +140,10 @@ int main()
     // Create lights
     //--------------------------------------------------------------------------------------
     std::array<Light, 4> lights {{
-        CreateLight(LIGHT_POINT, (Vector3) {-2, 1, -2}, Vector3Zero(), YELLOW, deferredShader.c_raylib()),
-        CreateLight(LIGHT_POINT, (Vector3){ 2, 1, 2 }, Vector3Zero(), RED, deferredShader.c_raylib()),
-        CreateLight(LIGHT_POINT, (Vector3){ -2, 1, 2 }, Vector3Zero(), GREEN, deferredShader.c_raylib()),
-        CreateLight(LIGHT_POINT, (Vector3){ 2, 1, -2 }, Vector3Zero(), BLUE, deferredShader.c_raylib()),
+        CreateLight(LIGHT_POINT, Vector3 {-2, 1, -2}, Vector3Zero(), YELLOW, deferredShader.c_raylib()),
+        CreateLight(LIGHT_POINT, Vector3{ 2, 1, 2 }, Vector3Zero(), RED, deferredShader.c_raylib()),
+        CreateLight(LIGHT_POINT, Vector3{ -2, 1, 2 }, Vector3Zero(), GREEN, deferredShader.c_raylib()),
+        CreateLight(LIGHT_POINT, Vector3{ 2, 1, -2 }, Vector3Zero(), BLUE, deferredShader.c_raylib()),
     }};
 
     constexpr float CUBE_SCALE = 0.25;
@@ -216,7 +216,7 @@ int main()
         for (size_t i = 0; i < cubePositions.size() && i < cubeRotations.size(); i++)
         {
             Vector3 position = cubePositions[i];
-            cube.Draw(position, (Vector3) { 1, 1, 1 }, cubeRotations[i], (Vector3) { CUBE_SCALE, CUBE_SCALE, CUBE_SCALE }, WHITE);
+            cube.Draw(position, Vector3{ 1, 1, 1 }, cubeRotations[i], Vector3{ CUBE_SCALE, CUBE_SCALE, CUBE_SCALE }, WHITE);
         }
 
         rlDisableShader();
