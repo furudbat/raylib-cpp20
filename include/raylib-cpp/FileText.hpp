@@ -24,8 +24,8 @@ public:
     }
     FileText& operator=(const FileText&) = delete;
     FileText& operator=(FileText&& other) noexcept {
-        std::swap(m_data, other.m_data);
-        std::swap(m_length, other.m_length);
+        std::exchange(m_data, other.m_data);
+        std::exchange(m_length, other.m_length);
         return *this;
     }
     ~FileText() noexcept { Unload(); }
