@@ -30,7 +30,7 @@ class Matrix : public ::Matrix {
 
     [[deprecated("Use Matrix(mat), use named-parameters with struct")]]
     explicit constexpr Matrix(
-            float _m0 = 0, float _m4 = 0, float _m8 = 0, float _m12 = 0,
+            float _m0, float _m4 = 0, float _m8 = 0, float _m12 = 0,
             float _m1 = 0, float _m5 = 0, float _m9 = 0, float _m13 = 0,
             float _m2 = 0, float _m6 = 0, float _m10 = 0, float _m14 = 0,
             float _m3 = 0, float _m7 = 0, float _m11 = 0, float _m15 = 0) :

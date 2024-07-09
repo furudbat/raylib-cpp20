@@ -60,10 +60,10 @@ int main()
     // Translate and rotate cubes randomly
     for (auto& mat : transforms)
     {
-        Matrix translation = MatrixTranslate((float)GetRandomValue(-50, 50), (float)GetRandomValue(-50, 50), (float)GetRandomValue(-50, 50));
-        Vector3 axis = Vector3Normalize((Vector3){ (float)GetRandomValue(0, 360), (float)GetRandomValue(0, 360), (float)GetRandomValue(0, 360) });
-        float angle = (float)GetRandomValue(0, 10)*DEG2RAD;
-        Matrix rotation = MatrixRotate(axis, angle);
+        const raylib::Matrix translation = MatrixTranslate((float)GetRandomValue(-50, 50), (float)GetRandomValue(-50, 50), (float)GetRandomValue(-50, 50));
+        const raylib::Vector3 axis (Vector3Normalize(Vector3{ (float)GetRandomValue(0, 360), (float)GetRandomValue(0, 360), (float)GetRandomValue(0, 360) }));
+        const float angle = (float)GetRandomValue(0, 10)*DEG2RAD;
+        const raylib::Matrix rotation = MatrixRotate(axis, angle);
 
         mat = MatrixMultiply(rotation, translation);
     }

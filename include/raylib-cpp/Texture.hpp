@@ -117,6 +117,9 @@ class Texture {
     GETTER(int, Mipmaps, m_texture.m_data.mipmaps)
     GETTER(int, Format, m_texture.m_data.format)
 
+    constexpr float GetWidthF() const { return static_cast<float>(m_texture.m_data.width); }
+    constexpr float GetHeightF() const { return static_cast<float>(m_texture.m_data.height); }
+
     /**
      * Creates a texture from the given Image.
      *

@@ -163,7 +163,7 @@ class Model {
     SPAN_GETTER(int, MeshMaterial, m_data.meshMaterial, m_data.meshCount)
     GETTER(int, BoneCount, m_data.boneCount)
     SPAN_GETTER(::BoneInfo, Bones, m_data.bones, m_data.boneCount)
-    CONST_GETTER(::Transform*, BindPose, m_data.bindPose)
+    SPAN_GETTER(::Transform, BindPoses, m_data.bindPose, m_data.boneCount)
 
     ::MaterialMap& GetMaterialMap(size_t material_index, size_t map_index) {
         assert(std::cmp_less(material_index, m_data.materialCount));
@@ -197,6 +197,24 @@ class Model {
     }
     constexpr int GetMeshMaterial(size_t index) const {
         return m_data.meshMaterial[index];
+    }
+
+    constexpr ::Transform& GetBindPose(size_t index) {
+        assert(std::cmp_less(index, m_data.boneCount));
+        return m_data.bindPose[index];
+    }
+    constexpr const ::Transform& GetBindPose(size_t index) const {
+        assert(std::cmp_less(index, m_data.boneCount));
+        return m_data.bindPose[index];
+    }
+
+    constexpr ::BoneInfo& GetBone(size_t index) {
+        assert(std::cmp_less(index, m_data.boneCount));
+        return m_data.bones[index];
+    }
+    constexpr const ::BoneInfo& GetBone(size_t index) const {
+        assert(std::cmp_less(index, m_data.boneCount));
+        return m_data.bones[index];
     }
 
     /// Set Shader and Material Management

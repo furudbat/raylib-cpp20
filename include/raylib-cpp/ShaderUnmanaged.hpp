@@ -51,6 +51,11 @@ class ShaderUnmanaged {
         set(::LoadShader(options.vsFileName, options.fsFileName));
     }
 
+    [[deprecated("Use ShaderUnmanaged(LoadShaderOptionsC), named and strong typed parameters")]]
+    ShaderUnmanaged(const char* vsFileName, const char* fsFileName) {
+        set(::LoadShader(vsFileName, fsFileName));
+    }
+
     /**
      * Load shader from files and bind default locations.
      *

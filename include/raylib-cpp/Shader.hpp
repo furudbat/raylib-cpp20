@@ -39,6 +39,10 @@ public:
     explicit Shader(LoadShaderOptions options) : m_shader(std::move(options)) {}
     explicit Shader(LoadShaderOptionsC options) : m_shader(std::move(options)) {}
 
+    [[deprecated("Use Shader(LoadShaderOptionsC), named and strong typed parameters")]]
+    Shader(const char* vsFileName, const char* fsFileName) : m_shader(ShaderUnmanaged::LoadShaderOptionsC{ .vsFileName = vsFileName, .fsFileName = fsFileName }) {}
+
+
     constexpr Shader(const Shader&) = delete;
     Shader(Shader&& other) noexcept {
         m_shader.set(other.m_shader.m_data);

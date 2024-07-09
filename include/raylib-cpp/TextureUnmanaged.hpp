@@ -78,6 +78,10 @@ class TextureUnmanaged {
     GETTER(int, Mipmaps, m_data.mipmaps)
     GETTER(int, Format, m_data.format)
 
+    constexpr float GetWidthF() const { return static_cast<float>(m_data.width); }
+    constexpr float GetHeightF() const { return static_cast<float>(m_data.height); }
+
+
     /**
      * Retrieve the width and height of the texture.
      */

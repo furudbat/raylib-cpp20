@@ -45,7 +45,11 @@ class Vector4 : public ::Vector4 {
     GETTERSETTER(float, Z, z)
     GETTERSETTER(float, W, w)
 
-    constexpr Vector4& operator=(const ::Vector4& vector4) noexcept {
+    constexpr Vector4& operator=(const ::Vector4& vector4) & noexcept {
+        set(vector4);
+        return *this;
+    }
+    constexpr Vector4& operator=(::Vector4&& vector4) && noexcept {
         set(vector4);
         return *this;
     }

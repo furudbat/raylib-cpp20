@@ -9,6 +9,12 @@
 #include "./raylib-cpp-utils.hpp"
 #include "./Mesh.hpp"
 
+#include <version>
+#ifdef __cpp_lib_mdspan
+#include <mdspan>
+#include <bit>
+#endif
+
 namespace raylib {
 /**
  * Model animation
@@ -72,13 +78,60 @@ class ModelAnimation {
     GETTER(int, BoneCount, m_data.boneCount)
     SPAN_GETTER(::BoneInfo, Bones, m_data.bones, m_data.boneCount)
     GETTER(int, FrameCount, m_data.frameCount)
-    GETTER(::Transform**, FramePoses, m_data.framePoses)
-    /// @TODO: make framePoses as mdspan
+    GETTER(::Transform**, FramePosesC, m_data.framePoses)
+#ifdef __cpp_lib_mdspan
+private:
+    using TransformExtents = std::extents<std::size_t, std::dynamic_extent, std::dynamic_extent>;
+    using TransformMdspan = std::mdspan<::Transform, TransformExtents>;
+    using ConstTransformMdspan = std::mdspan<const ::Transform, TransformExtents>;
+public:
+    [[nodiscard]] constexpr TransformMdspan GetFramePose(size_t index) {
+        assert(std::cmp_less(index, m_data.frameCount));
+        assert(m_data.frameCount >= 0);
+        assert(m_data.boneCount >= 0);
+        return {std::bit_cast<Transform*>(m_data.framePoses), static_cast<size_t>(m_data.frameCount), static_cast<size_t>(m_data.boneCount)};
+    }
+    [[nodiscard]] constexpr ConstTransformMdspan GetFramePose(size_t index) const {
+        assert(std::cmp_less(index, m_data.frameCount));
+        assert(m_data.frameCount >= 0);
+        assert(m_data.boneCount >= 0);
+        return {std::bit_cast<const Transform*>(m_data.framePoses), static_cast<size_t>(m_data.frameCount), static_cast<size_t>(m_data.boneCount)};
+    }
+#endif
+
+    [[nodiscard]] constexpr ::BoneInfo& GetBone(size_t index) {
+        assert(std::cmp_less(index, m_data.boneCount));
+        return m_data.bones[index];
+    }
+    [[nodiscard]] constexpr const ::BoneInfo& GetBone(size_t index) const {
+        assert(std::cmp_less(index, m_data.boneCount));
+        return m_data.bones[index];
+    }
+
+    [[nodiscard]] constexpr ::Transform* GetFramePoseC(size_t index) {
+        assert(std::cmp_less(index, m_data.frameCount));
+        return m_data.framePoses[index];
+    }
+    [[nodiscard]] constexpr const ::Transform* GetFramePoseC(size_t index) const {
+        assert(std::cmp_less(index, m_data.frameCount));
+        return m_data.framePoses[index];
+    }
+
+    [[nodiscard]] constexpr std::span<::Transform> GetFramePose(size_t index) {
+        assert(std::cmp_less(index, m_data.frameCount));
+        assert(m_data.boneCount >= 0);
+        return {m_data.framePoses[index], static_cast<size_t>(m_data.boneCount)};
+    }
+    [[nodiscard]] constexpr std::span<const ::Transform> GetFramePose(size_t index) const {
+        assert(std::cmp_less(index, m_data.frameCount));
+        assert(m_data.boneCount >= 0);
+        return {m_data.framePoses[index], static_cast<size_t>(m_data.boneCount)};
+    }
 
     /**
      * Load model animations from file
      */
-    static std::vector<ModelAnimation> Load(const std::filesystem::path& fileName) {
+    [[nodiscard]] static std::vector<ModelAnimation> Load(const std::filesystem::path& fileName) {
         int count = 0;
         auto modelAnimations = RayUniquePtr<::ModelAnimation>(::LoadModelAnimations(fileName.c_str(), &count));
         std::vector<ModelAnimation> ret;

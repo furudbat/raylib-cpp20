@@ -43,8 +43,7 @@ int main() {
         // Draw
         //----------------------------------------------------------------------------------
         {
-            raylib::DrawingGuard drawing;
-            window.ClearBackground(RAYWHITE);
+            raylib::DrawingGuard drawing (RAYWHITE);
 
             textColor.DrawText("Congrats! You created your first window!", 190, 200, 20);
         }

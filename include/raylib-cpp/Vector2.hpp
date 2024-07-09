@@ -35,7 +35,11 @@ class Vector2 : public ::Vector2 {
     /**
      * Set the Vector2 to the same as the given Vector2.
      */
-    constexpr Vector2& operator=(const ::Vector2& vector2) noexcept {
+    constexpr Vector2& operator=(const ::Vector2& vector2) & noexcept {
+        set(vector2);
+        return *this;
+    }
+    constexpr Vector2& operator=(::Vector2&& vector2) && noexcept {
         set(vector2);
         return *this;
     }
