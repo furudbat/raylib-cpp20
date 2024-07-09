@@ -36,7 +36,7 @@ enum class ModelMaterialShaderOption : uint8_t {
 
 enum class ModelMaterialTextureOption : uint8_t {
     NoUnload = 0,                       ///< Do Nothing when UnloadingModel, manage materials and shaders on your own
-    UnloadMaterial = 1,             ///< UnloadMaterial: assume texture ownership is in Model (Material), texture gets unloaded by UnloadMaterial
+    UnloadMaterial = 1,                 ///< UnloadMaterial: assume texture ownership is in Model (Material), texture gets unloaded by UnloadMaterial
 };
 
 
