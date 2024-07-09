@@ -55,8 +55,8 @@ int main(void)
     // NOTE: Defining 0 (NULL) for vertex shader forces usage of internal default vertex shader
     raylib::Shader shader (LoadShader(0, TextFormat("resources/shaders/glsl%i/grayscale.fs", GLSL_VERSION)));
 
-    model.GetMaterials()[0].shader = shader.c_raylib();                     // Set shader effect to 3d model
-    model.GetMaterials()[0].maps[MATERIAL_MAP_DIFFUSE].texture = texture.c_raylib(); // Bind texture to model
+    model.SetMaterialShader(0, shader, raylib::ModelMaterialShaderOption::UnbindShader);                     // Set shader effect to 3d model
+    model.SetMaterialMapTexture(0, MATERIAL_MAP_DIFFUSE, texture, raylib::ModelMaterialTextureOption::NoUnload); // Bind texture to model
 
     raylib::Vector3 position;    // Set model position
 
