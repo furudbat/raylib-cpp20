@@ -61,7 +61,7 @@ class Window {
      *
      * @throws raylib::RaylibException Thrown if the window failed to initiate.
      */
-    static RAYLIB_CPP_EXPECTED_RESULT(void) Init(int width = 800, int height = 450, const std::string& title = "raylib", uint32_t flags = 0) {
+    static RAYLIB_CPP_EXPECTED_RESULT_VOID Init(int width = 800, int height = 450, const std::string& title = "raylib", uint32_t flags = 0) {
         if (flags != 0) {
             ::SetConfigFlags(flags);
         }

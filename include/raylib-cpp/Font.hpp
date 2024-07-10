@@ -210,7 +210,7 @@ class Font {
      *
      * @see ::LoadFont()
      */
-    RAYLIB_CPP_EXPECTED_RESULT(void) Load(const std::filesystem::path& fileName) RAYLIB_CPP_THROWS {
+    RAYLIB_CPP_EXPECTED_RESULT_VOID Load(const std::filesystem::path& fileName) RAYLIB_CPP_THROWS {
         set(::LoadFont(fileName.c_str()));
         if (!IsReady()) {
             RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Font with from file: " + fileName.string()));
@@ -228,14 +228,14 @@ class Font {
      *
      * @see ::LoadFontEx()
      */
-    RAYLIB_CPP_EXPECTED_RESULT(void) Load(const std::filesystem::path& fileName, int fontSize, std::span<int> codepoints = {}) RAYLIB_CPP_THROWS {
+    RAYLIB_CPP_EXPECTED_RESULT_VOID Load(const std::filesystem::path& fileName, int fontSize, std::span<int> codepoints = {}) RAYLIB_CPP_THROWS {
         set(::LoadFontEx(fileName.c_str(), fontSize, codepoints.data(), static_cast<int>(codepoints.size())));
         if (!IsReady()) {
             RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Font with from file with font size: " + fileName.string()));
         }
         RAYLIB_CPP_RETURN_EXPECTED();
     }
-    RAYLIB_CPP_EXPECTED_RESULT(void) Load(const std::filesystem::path& fileName, int fontSize, int* codepoints, int codepointCount) RAYLIB_CPP_THROWS {
+    RAYLIB_CPP_EXPECTED_RESULT_VOID Load(const std::filesystem::path& fileName, int fontSize, int* codepoints, int codepointCount) RAYLIB_CPP_THROWS {
         set(::LoadFontEx(fileName.c_str(), fontSize, codepoints, codepointCount));
         if (!IsReady()) {
             RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Font with from file with font size: " + fileName.string()));
@@ -243,7 +243,7 @@ class Font {
         RAYLIB_CPP_RETURN_EXPECTED();
     }
 
-    RAYLIB_CPP_EXPECTED_RESULT(void) Load(const ::Image& image, ::Color key, int firstChar) RAYLIB_CPP_THROWS {
+    RAYLIB_CPP_EXPECTED_RESULT_VOID Load(const ::Image& image, ::Color key, int firstChar) RAYLIB_CPP_THROWS {
         set(::LoadFontFromImage(image, key, firstChar));
         if (!IsReady()) {
             RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Font with from image"));
@@ -251,8 +251,8 @@ class Font {
         RAYLIB_CPP_RETURN_EXPECTED();
     }
 
-    RAYLIB_CPP_EXPECTED_RESULT(void) Load(const std::string& fileType, std::span<const unsigned char> fileData, int fontSize,
-                                          std::span<int> codepoints) RAYLIB_CPP_THROWS {
+    RAYLIB_CPP_EXPECTED_RESULT_VOID Load(const std::string& fileType, std::span<const unsigned char> fileData, int fontSize,
+                                         std::span<int> codepoints) RAYLIB_CPP_THROWS {
         set(::LoadFontFromMemory(fileType.c_str(), fileData.data(), static_cast<int>(fileData.size()), fontSize, codepoints.data(),
                                  static_cast<int>(codepoints.size())));
         if (!IsReady()) {
@@ -260,8 +260,8 @@ class Font {
         }
         RAYLIB_CPP_RETURN_EXPECTED();
     }
-    RAYLIB_CPP_EXPECTED_RESULT(void) Load(const std::string& fileType, std::span<const unsigned char> fileData, int fontSize,
-                                          int* codepoints, int codepointCount) RAYLIB_CPP_THROWS {
+    RAYLIB_CPP_EXPECTED_RESULT_VOID Load(const std::string& fileType, std::span<const unsigned char> fileData, int fontSize,
+                                         int* codepoints, int codepointCount) RAYLIB_CPP_THROWS {
         set(::LoadFontFromMemory(fileType.c_str(), fileData.data(), static_cast<int>(fileData.size()), fontSize, codepoints,
                                  codepointCount));
         if (!IsReady()) {

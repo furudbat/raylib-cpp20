@@ -446,7 +446,7 @@ class Model {
      *
      * @throws raylib::RaylibException Throws if failed to load the Modal.
      */
-    RAYLIB_CPP_EXPECTED_RESULT(void) Load(const std::filesystem::path& fileName) RAYLIB_CPP_THROWS {
+    RAYLIB_CPP_EXPECTED_RESULT_VOID Load(const std::filesystem::path& fileName) RAYLIB_CPP_THROWS {
         set(::LoadModel(fileName.c_str()));
         if (!IsReady()) {
             RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Model from " + fileName.string()));
@@ -459,8 +459,8 @@ class Model {
      *
      * @throws raylib::RaylibException Throws if failed to load the Modal.
      */
-    RAYLIB_CPP_EXPECTED_RESULT(void) Load(const ::Mesh& mesh) = delete;
-    RAYLIB_CPP_EXPECTED_RESULT(void) Load(::Mesh&& mesh) RAYLIB_CPP_THROWS {
+    RAYLIB_CPP_EXPECTED_RESULT_VOID Load(const ::Mesh& mesh) = delete;
+    RAYLIB_CPP_EXPECTED_RESULT_VOID Load(::Mesh&& mesh) RAYLIB_CPP_THROWS {
         set(::LoadModelFromMesh(mesh));
         if (!IsReady()) {
             RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Model from Mesh"));
@@ -485,8 +485,8 @@ class Model {
         RAYLIB_CPP_RETURN_EXPECTED();
     }
 
-    RAYLIB_CPP_EXPECTED_RESULT(void) Load(const raylib::Mesh& mesh) = delete;
-    RAYLIB_CPP_EXPECTED_RESULT(void) Load(raylib::Mesh&& mesh) RAYLIB_CPP_THROWS {
+    RAYLIB_CPP_EXPECTED_RESULT_VOID Load(const raylib::Mesh& mesh) = delete;
+    RAYLIB_CPP_EXPECTED_RESULT_VOID Load(raylib::Mesh&& mesh) RAYLIB_CPP_THROWS {
         set(::LoadModelFromMesh(mesh.m_mesh.m_data));
         if (!IsReady()) {
             RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Model from Mesh"));
@@ -511,14 +511,14 @@ class Model {
         RAYLIB_CPP_RETURN_EXPECTED();
     }
 
-    static RAYLIB_CPP_EXPECTED_RESULT(Model) LoadFromFile(const std::filesystem::path& fileName) RAYLIB_CPP_THROWS {
+    RAYLIB_CPP_EXPECTED_STATIC_RESULT(Model) LoadFromFile(const std::filesystem::path& fileName) RAYLIB_CPP_THROWS {
         Model model (::LoadModel(fileName.c_str()));
         if (!model.IsReady()) {
             RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Model from " + fileName.string()));
         }
         RAYLIB_CPP_RETURN_EXPECTED_VALUE(model);
     }
-    static RAYLIB_CPP_EXPECTED_RESULT(Model) LoadFromMesh(::Mesh&& mesh) RAYLIB_CPP_THROWS {
+    RAYLIB_CPP_EXPECTED_STATIC_RESULT(Model) LoadFromMesh(::Mesh&& mesh) RAYLIB_CPP_THROWS {
         Model model (::LoadModelFromMesh(mesh));
         if (!model.IsReady()) {
             RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Model from Mesh"));

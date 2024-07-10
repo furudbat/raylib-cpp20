@@ -239,7 +239,7 @@ class Music {
      *
      * @throws raylib::RaylibException Throws if the music failed to load.
      */
-    RAYLIB_CPP_EXPECTED_RESULT(void) Load(const std::filesystem::path& fileName) {
+    RAYLIB_CPP_EXPECTED_RESULT_VOID Load(const std::filesystem::path& fileName) {
         set(::LoadMusicStream(fileName.c_str()));
         if (!IsReady()) {
             RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Music from file: " + fileName.string()));
@@ -252,7 +252,7 @@ class Music {
      *
      * @throws raylib::RaylibException Throws if the music failed to load.
      */
-    RAYLIB_CPP_EXPECTED_RESULT(void) LoadFromMemory(const std::string& fileType, std::span<unsigned char> data) {
+    RAYLIB_CPP_EXPECTED_RESULT_VOID LoadFromMemory(const std::string& fileType, std::span<unsigned char> data) {
         set(::LoadMusicStreamFromMemory(fileType.c_str(), data.data(), static_cast<int>(data.size())));
         if (!IsReady()) {
             RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError(::TextFormat("Failed to load Music from %s file dat", fileType.c_str())));

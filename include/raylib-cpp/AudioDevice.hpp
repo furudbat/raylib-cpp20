@@ -58,7 +58,7 @@ class AudioDevice {
      *
      * @throws raylib::RaylibException Throws if the AudioDevice failed to initialize.
      */
-    RAYLIB_CPP_EXPECTED_RESULT(void) Init() RAYLIB_CPP_THROWS {
+        RAYLIB_CPP_EXPECTED_RESULT_VOID Init() RAYLIB_CPP_THROWS {
         ::InitAudioDevice();
         if (!IsReady()) {
             RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to initialize AudioDevice"));

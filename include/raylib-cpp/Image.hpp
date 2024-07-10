@@ -3,6 +3,13 @@
 
 #include <string>
 #include <filesystem>
+#include <cassert>
+#include <bit>
+#include <span>
+#include <version>
+#ifdef __cpp_lib_mdspan
+#include <mdspan>
+#endif
 
 #include "./raylib.hpp"
 #include "./raylib-cpp-utils.hpp"
@@ -28,6 +35,9 @@ struct RayImageColorsDeleter {
     }
 };
 using RayImageColors = RayArrayHolder<::Color, RayImageColorsDeleter>;
+#ifdef __cpp_lib_mdspan
+using RayImageColors2 = Ray2DArrayHolder<::Color, RayImageColorsDeleter>;
+#endif
 
 class Texture;
 class Texurte2D;
@@ -44,12 +54,24 @@ class Image {
     inline static constexpr ::Color DefaultClearBackgroundColor {0, 0, 0, 255};
     inline static constexpr int DefaultDrawRectangleLinesThick = 1;
 
-    explicit constexpr Image(owner<void*> _data,
-            int _width = 0,
-            int _height = 0,
-            int _mipmaps = 1,
-            int _format = PIXELFORMAT_UNCOMPRESSED_R8G8B8A8) : m_data{_data, _width, _height, _mipmaps, _format} {
+    [[deprecated("Use Image(::Image) or Image(ImageOptions) for strong typed and named parameters (to avoid parameter mismatch)")]]
+    explicit constexpr Image(owner<void*> data,
+            int width = 0,
+            int height = 0,
+            int mipmaps = 1,
+            int format = PIXELFORMAT_UNCOMPRESSED_R8G8B8A8) : m_data{data, width, height, mipmaps, format} {
         // Nothing.
+    }
+
+    struct RawPtrImageOptions {
+        int width{0};
+        int height{0};
+        int mipmaps{1};
+        int format{PIXELFORMAT_UNCOMPRESSED_R8G8B8A8};
+    };
+    template<typename T>
+    constexpr Image(RayUniquePtr<T[]>&& pdata, RawPtrImageOptions options) : m_data{pdata.release(), options.width, options.height, options.mipmaps, options.format} {
+        pdata = nullptr;
     }
 
     explicit constexpr Image(owner<const ::Image&> image) = delete;
@@ -79,6 +101,12 @@ class Image {
         Load(fileName);
     }
 
+    struct LoadImageRawOptions {
+        int width;
+        int height;
+        int format;
+        int headerSize{0};
+    };
     /**
      * Load a raw image from the given file, with the provided width, height, and formats.
      *
@@ -86,8 +114,13 @@ class Image {
      *
      * @see LoadRaw()
      */
+    [[deprecated("use Image(LoadImageRawOptions) to avoid parameter mismatches")]]
     Image(const std::filesystem::path& fileName, int _width, int _height, int _format, int headerSize = 0) RAYLIB_CPP_THROWS {
         LoadRaw(fileName, _width, _height, _format, headerSize);
+    }
+
+    Image(const std::filesystem::path& fileName, LoadImageRawOptions options) RAYLIB_CPP_THROWS {
+        LoadRaw(fileName, options.width, options.height, options.format, options.headerSize);
     }
 
     /**
@@ -108,6 +141,9 @@ class Image {
      */
     Image(const std::string& fileType, std::span<const unsigned char> fileData) RAYLIB_CPP_THROWS {
         LoadFromMemory(fileType, fileData);
+    }
+    Image(const std::string& fileType, std::span<const std::byte> fileData) RAYLIB_CPP_THROWS {
+        LoadFromMemory(fileType, std::span{std::bit_cast<const unsigned char*>(fileData.data()), fileData.size()});
     }
 
     /**
@@ -212,41 +248,41 @@ class Image {
         return m_data;
     }
 
-    static ::Image Text(const std::string& text, int fontSize,
+    [[nodiscard]] static Image FromText(const std::string& text, int fontSize,
             ::Color color = DefaultColor) {
-        return ::ImageText(text.c_str(), fontSize, color);
+        return Image{::ImageText(text.c_str(), fontSize, color)};
     }
 
-    static ::Image Text(const ::Font& font, const std::string& text, float fontSize, float spacing,
+    [[nodiscard]] static Image FromText(const ::Font& font, const std::string& text, float fontSize, float spacing,
             ::Color tint = DefaultColor) {
-        return ::ImageTextEx(font, text.c_str(), fontSize, spacing, tint);
+        return Image{::ImageTextEx(font, text.c_str(), fontSize, spacing, tint)};
     }
 
     /**
      * Get pixel data from screen buffer and return an Image (screenshot)
      */
-    static Image LoadFromScreen() {
+    [[nodiscard]] static Image LoadFromScreen() {
         return Image{::LoadImageFromScreen()};
     }
 
     /**
      * Generate image: plain color
      */
-    static Image Color(int width, int height, ::Color color = DefaultColor) {
+    [[nodiscard]] static Image FromPlainColor(int width, int height, ::Color color = DefaultColor) {
         return Image{::GenImageColor(width, height, color)};
     }
 
     /**
      * Generate image: linear gradient
      */
-    static Image GradientLinear(int width, int height, int direction, ::Color start, ::Color end) {
+    [[nodiscard]] static Image FromGradientLinear(int width, int height, int direction, ::Color start, ::Color end) {
         return Image{::GenImageGradientLinear(width, height, direction, start, end)};
     }
 
     /**
      * Generate image: radial gradient
      */
-    static Image GradientRadial(int width, int height, float density,
+    [[nodiscard]] static Image FromGradientRadial(int width, int height, float density,
             ::Color inner, ::Color outer) {
         return Image{::GenImageGradientRadial(width, height, density, inner, outer)};
     }
@@ -254,7 +290,7 @@ class Image {
     /**
      * Generate image: checked
      */
-    static Image Checked(int width, int height, int checksX, int checksY,
+    [[nodiscard]] static Image FromChecked(int width, int height, int checksX, int checksY,
             ::Color col1 = {255, 255, 255, 255}, ::Color col2 = {0, 0, 0, 255}) {
         return Image{::GenImageChecked(width, height, checksX, checksY, col1, col2)};
     }
@@ -262,14 +298,14 @@ class Image {
     /**
      * Generate image: white noise
      */
-    static Image WhiteNoise(int width, int height, float factor) {
+    [[nodiscard]] static Image FromWhiteNoise(int width, int height, float factor) {
         return Image{::GenImageWhiteNoise(width, height, factor)};
     }
 
     /**
      * Generate image: cellular algorithm. Bigger tileSize means bigger cells
      */
-    static Image Cellular(int width, int height, int tileSize) {
+    [[nodiscard]] static Image FromCellular(int width, int height, int tileSize) {
         return Image{::GenImageCellular(width, height, tileSize)};
     }
 
@@ -280,13 +316,31 @@ class Image {
      *
      * @see ::LoadImage()
      */
-    RAYLIB_CPP_EXPECTED_RESULT(void) Load(const std::filesystem::path& fileName) RAYLIB_CPP_THROWS {
+    RAYLIB_CPP_EXPECTED_RESULT_VOID Load(const std::filesystem::path& fileName) RAYLIB_CPP_THROWS {
         set(::LoadImage(fileName.c_str()));
         if (!IsReady()) {
             RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Image from file: " + fileName.string()));
         }
         RAYLIB_CPP_RETURN_EXPECTED();
     }
+    /**
+     * Load an image.
+     */
+#ifdef RAYLIB_CPP_EXPECTED
+    [[nodiscard]] static RAYLIB_CPP_EXPECTED_RESULT(raylib::Image) LoadFromFile(const std::filesystem::path& fileName) {
+        raylib::Image ret;
+        if (auto result = ret.Load(fileName); !result) [[unlikely]] {
+            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(result.error());
+        }
+        RAYLIB_CPP_RETURN_EXPECTED_VALUE(ret);
+    }
+#else
+    [[nodiscard]] static raylib::Image LoadFromFile(const std::filesystem::path& fileName) {
+        raylib::Image ret;
+        ret.Load(fileName);
+        return ret;
+    }
+#endif
 
     /**
      * Load image from RAW file data.
@@ -295,13 +349,55 @@ class Image {
      *
      * @see ::LoadImageRaw()
      */
-    RAYLIB_CPP_EXPECTED_RESULT(void) LoadRaw(const std::filesystem::path& fileName, int _width, int _height, int _format, int headerSize) RAYLIB_CPP_THROWS {
+     RAYLIB_CPP_EXPECTED_RESULT_VOID LoadRaw(const std::filesystem::path& fileName, int _width, int _height, int _format, int headerSize) RAYLIB_CPP_THROWS {
         set(::LoadImageRaw(fileName.c_str(), _width, _height, _format, headerSize));
         if (!IsReady()) {
             RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Image from file: " + fileName.string()));
         }
         RAYLIB_CPP_RETURN_EXPECTED();
     }
+    RAYLIB_CPP_EXPECTED_RESULT_VOID LoadRaw(const std::filesystem::path& fileName, LoadImageRawOptions options) RAYLIB_CPP_THROWS {
+        set(::LoadImageRaw(fileName.c_str(), options.width, options.height, options.format, options.headerSize));
+        if (!IsReady()) {
+            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Image from file: " + fileName.string()));
+        }
+        RAYLIB_CPP_RETURN_EXPECTED();
+    }
+
+    /**
+     * Load an image from RAW file data
+     */
+#ifdef RAYLIB_CPP_EXPECTED
+    [[deprecated("Use LoadImageRaw(LoadImageRawOptions) to avoid parameter mismatches")]]
+    [[nodiscard]] static RAYLIB_CPP_EXPECTED_RESULT(raylib::Image) LoadImageRaw(const std::filesystem::path& fileName, int width, int height, int format, int headerSize) {
+        raylib::Image ret;
+        if (auto result = ret.LoadRaw(fileName, width, height, format, headerSize); !result) [[unlikely]] {
+            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(result.error());
+        }
+        RAYLIB_CPP_RETURN_EXPECTED_VALUE(ret);
+    }
+    [[nodiscard]] static RAYLIB_CPP_EXPECTED_RESULT(raylib::Image) LoadImageRaw(const std::filesystem::path& fileName, LoadImageRawOptions options) {
+        raylib::Image ret;
+        if (auto result = ret.LoadRaw(fileName, std::move(options)); !result) [[unlikely]] {
+            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(result.error());
+        }
+        RAYLIB_CPP_RETURN_EXPECTED_VALUE(ret);
+    }
+#else
+    [[deprecated("Use LoadImageRaw(LoadImageRawOptions) to avoid parameter mismatches")]]
+    [[nodiscard]] static raylib::Image LoadImageRaw(const std::filesystem::path& fileName,
+                                                    int width, int height,
+                                                    int format, int headerSize) {
+        raylib::Image ret;
+        ret.LoadRaw(fileName, width, height, format, headerSize);
+        return ret;
+    }
+    [[nodiscard]] static raylib::Image LoadImageRaw(const std::filesystem::path& fileName, LoadImageRawOptions options) {
+        raylib::Image ret;
+        ret.LoadRaw(fileName, std::move(options));
+        return ret;
+    }
+#endif
 
     /**
      * Load image sequence from file (frames appended to image.data).
@@ -310,7 +406,7 @@ class Image {
      *
      * @see ::LoadImageAnim()
      */
-    RAYLIB_CPP_EXPECTED_RESULT(void) LoadAnim(const std::filesystem::path& fileName, int& frames) RAYLIB_CPP_THROWS {
+    RAYLIB_CPP_EXPECTED_RESULT_VOID LoadAnim(const std::filesystem::path& fileName, int& frames) RAYLIB_CPP_THROWS {
         set(::LoadImageAnim(fileName.c_str(), &frames));
         if (!IsReady()) {
             RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Image from file: " + fileName.string()));
@@ -319,21 +415,94 @@ class Image {
     }
 
     /**
+     * Load animated image data
+     */
+#ifndef RAYLIB_CPP_EXPECTED
+    [[nodiscard]] static raylib::Image LoadImageAnim(const std::filesystem::path& fileName, int &frames) {
+        raylib::Image ret;
+        ret.LoadAnim(fileName, frames);
+        return ret;
+    }
+#else
+    [[deprecated("Use raylib::LoadImageAnim(fileName) when the reutrn type LoadImageAnimResult, frames varaible is included")]]
+    [[nodiscard]] static raylib::Image LoadImageAnim(const std::filesystem::path& fileName, int &frames) = delete;
+#endif
+
+    /**
      * Load image from memory buffer, fileType refers to extension: i.e. "png".
      *
      * @throws raylib::RaylibException Thrown if the image animation to load from the file.
      *
      * @see ::LoadImageFromMemory()
      */
-    RAYLIB_CPP_EXPECTED_RESULT(void) LoadFromMemory(
+    RAYLIB_CPP_EXPECTED_RESULT_VOID LoadFromMemory(
             const std::string& fileType,
             std::span<const unsigned char> fileData) RAYLIB_CPP_THROWS {
+        assert(std::cmp_less_equal(fileData.size(), std::numeric_limits<int>::max()));
         set(::LoadImageFromMemory(fileType.c_str(), fileData.data(), static_cast<int>(fileData.size())));
+
         if (!IsReady()) {
             RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Image data with file type: " + fileType));
         }
         RAYLIB_CPP_RETURN_EXPECTED();
     }
+#ifdef RAYLIB_CPP_EXPECTED
+    [[nodiscard]] auto LoadFromMemory(const std::string& fileType,
+                        std::span<const std::byte> fileData) RAYLIB_CPP_THROWS {
+        return LoadFromMemory(fileType, std::span<const unsigned char>{std::bit_cast<const unsigned char*>(fileData.data()), fileData.size()});
+    }
+#else
+    void LoadFromMemory(const std::string& fileType,
+                        std::span<const std::byte> fileData) RAYLIB_CPP_THROWS {
+        LoadFromMemory(fileType, std::span<const unsigned char>{std::bit_cast<const unsigned char*>(fileData.data()), fileData.size()});
+    }
+#endif
+    /**
+     * Load image from memory buffer, fileType refers to extension like "png"
+     */
+#ifdef RAYLIB_CPP_EXPECTED
+    static RAYLIB_CPP_EXPECTED_RESULT(raylib::Image) LoadImageFromMemory(const std::string& fileType, std::span<const unsigned char> fileData) {
+        raylib::Image ret;
+        if (auto result = ret.LoadFromMemory(fileType, fileData); !result) [[unlikely]] {
+            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(result.error());
+        }
+        RAYLIB_CPP_RETURN_EXPECTED_VALUE(ret);
+    }
+#else
+    [[nodiscard]] static raylib::Image LoadImageFromMemory(const std::string& fileType, std::span<const unsigned char> fileData) {
+        raylib::Image ret;
+        ret.LoadFromMemory(fileType, fileData);
+        return ret;
+    }
+    [[nodiscard]] static raylib::Image LoadImageFromMemory(const std::string& fileType, std::span<const std::byte> fileData) {
+        raylib::Image ret;
+        ret.LoadFromMemory(fileType, std::span{std::bit_cast<const unsigned char*>(fileData.data()), fileData.size()});
+        return ret;
+    }
+#endif
+
+    RAYLIB_CPP_EXPECTED_RESULT_VOID LoadSvg(const std::filesystem::path& fileName, int width, int height) RAYLIB_CPP_THROWS {
+        set(::LoadImageSvg(fileName.c_str(), width, height));
+        if (!IsReady()) {
+            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Image from svg: " + fileName.string()));
+        }
+        RAYLIB_CPP_RETURN_EXPECTED();
+    }
+#ifdef RAYLIB_CPP_EXPECTED
+    [[nodiscard]] static RAYLIB_CPP_EXPECTED_RESULT(raylib::Image) LoadImageSvg(const std::filesystem::path& fileName, int width, int height) {
+        raylib::Image ret;
+        if (auto result = ret.LoadSvg(fileName, width, height); !result) [[unlikely]] {
+            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(result.error());
+        }
+        RAYLIB_CPP_RETURN_EXPECTED_VALUE(ret);
+    }
+#else
+    [[nodiscard]] static raylib::Image LoadImageSvg(const std::filesystem::path& fileName, int width, int height) {
+        raylib::Image ret;
+        ret.LoadSvg(fileName, width, height);
+        return ret;
+    }
+#endif
 
     /**
      * Load an image from the given file.
@@ -342,13 +511,29 @@ class Image {
      *
      * @see ::LoadImageFromTexture()
      */
-    RAYLIB_CPP_EXPECTED_RESULT(void) LoadFromTexture(const ::Texture2D& texture) RAYLIB_CPP_THROWS {
+    RAYLIB_CPP_EXPECTED_RESULT_VOID LoadFromTexture(const ::Texture2D& texture) RAYLIB_CPP_THROWS {
         set(::LoadImageFromTexture(texture));
         if (!IsReady()) {
             RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Image from texture."));
         }
         RAYLIB_CPP_RETURN_EXPECTED();
     }
+#ifdef RAYLIB_CPP_EXPECTED
+    [[nodiscard]] static RAYLIB_CPP_EXPECTED_RESULT(raylib::Image) LoadImageFromTexture(const ::Texture2D& texture) {
+        raylib::Image ret;
+        if (auto result = ret.LoadFromTexture(texture); !result) [[unlikely]] {
+            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(result.error());
+        }
+        RAYLIB_CPP_RETURN_EXPECTED_VALUE(ret);
+    }
+#else
+    [[nodiscard]] static raylib::Image LoadImageFromTexture(const ::Texture2D& texture) {
+        raylib::Image ret;
+        ret.LoadFromTexture(texture);
+        return ret;
+    }
+#endif
+
 
     /**
      * Unload image from CPU memory (RAM)
@@ -363,10 +548,10 @@ class Image {
     /**
      * Export image data to file, returns true on success
      *
-     * @throws raylib::RaylibException Thrown if the image failed to load from the file.
+     * @throws raylib::RaylibException
      */
-    RAYLIB_CPP_EXPECTED_RESULT(void) Export(const std::filesystem::path& fileName) const RAYLIB_CPP_THROWS {
-        if (!::ExportImage(m_data, fileName.c_str())) {
+    RAYLIB_CPP_EXPECTED_RESULT_VOID Export(const std::filesystem::path& fileName) const RAYLIB_CPP_THROWS {
+        if (!::ExportImage(m_data, fileName.c_str())) [[unlikely]] {
             RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to export Image to file: " + fileName.string()));
         }
         RAYLIB_CPP_RETURN_EXPECTED();
@@ -375,13 +560,16 @@ class Image {
     /**
      * Export image to memory buffer
      */
+    [[deprecated("Use ExportToMemory(fileType), return values already holds the fileSize")]]
     RayArrayHolder<unsigned char> ExportToMemory(const std::string &fileType, int &fileSize) {
         auto* idata = ::ExportImageToMemory(m_data, fileType.c_str(), &fileSize);
+        assert(fileSize >= 0);
         return RayArrayHolder<unsigned char>(idata, static_cast<size_t>(fileSize));
     }
     RayArrayHolder<unsigned char> ExportToMemory(const std::string &fileType) {
-        int fileSize;
+        int fileSize{0};
         auto* idata = ::ExportImageToMemory(m_data, fileType.c_str(), &fileSize);
+        assert(fileSize >= 0);
         return RayArrayHolder<unsigned char>(idata, static_cast<size_t>(fileSize));
     }
 
@@ -390,7 +578,7 @@ class Image {
      *
      * @throws raylib::RaylibException Thrown if the image failed to load from the file.
      */
-    RAYLIB_CPP_EXPECTED_RESULT(void) ExportAsCode(const std::filesystem::path& fileName) const RAYLIB_CPP_THROWS {
+    RAYLIB_CPP_EXPECTED_RESULT_VOID ExportAsCode(const std::filesystem::path& fileName) const RAYLIB_CPP_THROWS {
         if (!::ExportImageAsCode(m_data, fileName.c_str())) {
             RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to export Image code to file: " + fileName.string()));
         }
@@ -420,7 +608,7 @@ class Image {
     /**
      * Create an image from another image piece
      */
-    [[nodiscard]] Image FromImage(const ::Rectangle& rec) const {
+    [[nodiscard]] Image SubImage(const ::Rectangle& rec) const {
         return Image{::ImageFromImage(m_data, rec)};
     }
 
@@ -688,30 +876,26 @@ class Image {
         ::ImageDrawLine(&m_data, startPosX, startPosY, endPosX, endPosY, color);
     }
 
-    void DrawLine(::Vector2 start, ::Vector2 end, ::Color color = {255, 255, 255, 255}) {
+    void DrawLine(::Vector2 start, ::Vector2 end, ::Color color = DefaultColor) {
         ::ImageDrawLineV(&m_data, start, end, color);
     }
 
-    void DrawCircle(int centerX, int centerY, int radius,
-            ::Color color = DefaultColor) {
+    void DrawCircle(int centerX, int centerY, int radius, ::Color color = DefaultColor) {
         ::ImageDrawCircle(&m_data, centerX, centerY, radius, color);
     }
 
-    void DrawCircle(::Vector2 center, int radius,
-            ::Color color = DefaultColor) {
+    void DrawCircle(::Vector2 center, int radius, ::Color color = DefaultColor) {
         ::ImageDrawCircleV(&m_data, center, radius, color);
     }
 
-    void DrawRectangle(int posX, int posY, int _width, int _height,
-            ::Color color = DefaultColor) {
+    [[deprecated("Use DrawRectangle(Rectangle) to avoid parameter mismatch")]]
+    void DrawRectangle(int posX, int posY, int _width, int _height, ::Color color = DefaultColor) {
         ::ImageDrawRectangle(&m_data, posX, posY, _width, _height, color);
     }
-
-    void DrawRectangle(::Vector2 position, ::Vector2 size,
-            ::Color color = DefaultColor) {
+    [[deprecated("Use DrawRectangle(Rectangle) to avoid parameter mismatch")]]
+    void DrawRectangle(::Vector2 position, ::Vector2 size, ::Color color = DefaultColor) {
         ::ImageDrawRectangleV(&m_data, position, size, color);
     }
-
     void DrawRectangle(const ::Rectangle& rec, ::Color color = DefaultColor) {
         ::ImageDrawRectangleRec(&m_data, rec, color);
     }
@@ -740,8 +924,7 @@ class Image {
             color);
     }
 
-    void DrawText(const std::string& text, ::Vector2 position, int fontSize,
-            ::Color color = DefaultColor) {
+    void DrawText(const std::string& text, ::Vector2 position, int fontSize, ::Color color = DefaultColor) {
         ::ImageDrawText(&m_data,
             text.c_str(),
             static_cast<int>(position.x),
@@ -750,57 +933,57 @@ class Image {
             color);
     }
 
-    void DrawText(const std::string& text, int x, int y, int fontSize,
-            ::Color color = DefaultColor) {
+    void DrawText(const std::string& text, int x, int y, int fontSize, ::Color color = DefaultColor) {
         ::ImageDrawText(&m_data, text.c_str(), x, y, fontSize, color);
     }
 
-    void DrawText(const char* text, int x, int y, int fontSize,
-            ::Color color = DefaultColor) {
+    void DrawText(const char* text, int x, int y, int fontSize, ::Color color = DefaultColor) {
         ::ImageDrawText(&m_data, text, x, y, fontSize, color);
     }
 
     void DrawText(const ::Font& font, const std::string& text, ::Vector2 position,
-            float fontSize, float spacing, ::Color tint = DefaultColor) {
+                  float fontSize, float spacing, ::Color tint = DefaultColor) {
         ::ImageDrawTextEx(&m_data, font, text.c_str(), position, fontSize, spacing, tint);
     }
-    /*
-    void DrawText(const raylib::Font& font, const std::string& text, ::Vector2 position,
-                  float fontSize, float spacing, ::Color tint = {255, 255, 255, 255}) {
-        DrawText(font.c_raylib(), text, position, fontSize, spacing, tint);
-    }
-    */
 
     void DrawText(const ::Font& font, const char* text, ::Vector2 position,
-            float fontSize, float spacing, ::Color tint = DefaultColor) {
+                  float fontSize, float spacing, ::Color tint = DefaultColor) {
         ::ImageDrawTextEx(&m_data, font, text, position, fontSize, spacing, tint);
     }
-    /*
-    void DrawText(const raylib::Font& font, const char* text, ::Vector2 position,
-                  float fontSize, float spacing, ::Color tint = DefaultColor) {
-        DrawText(font.c_raylib(), text, position, fontSize, spacing, tint);
-    }
-    */
 
     /**
      * Load color data from image as a Color array (RGBA - 32bit)
      */
     [[nodiscard]] RayImageColors LoadColors() const {
         /// @NOTE: assume allocated size in LoadImageColors
-        return {::LoadImageColors(m_data), static_cast<unsigned long>(m_data.width * m_data.height) * sizeof(::Color)};
+        assert(m_data.width >= 0);
+        assert(m_data.height >= 0);
+        return {::LoadImageColors(m_data), static_cast<size_t>(m_data.width * m_data.height)};
     }
-    /// @TODO: get RayImageColors as mdspan
+#ifdef __cpp_lib_mdspan
+    /**
+     * Load color data from image as a Color 2D array (RGBA - 32bit)
+     */
+    [[nodiscard]] RayImageColors2 LoadColors2() const {
+        /// @NOTE: assume allocated size in LoadImageColors
+        assert(m_data.width >= 0);
+        assert(m_data.height >= 0);
+        return {::LoadImageColors(m_data), static_cast<size_t>(m_data.width),  static_cast<size_t>(m_data.height)};
+    }
+#endif
 
     /**
      * Load colors palette from image as a Color array (RGBA - 32bit)
      */
     [[nodiscard]] RayImagePlatte LoadPalette(int maxPaletteSize, int &colorsCount) const {
         ::Color* colors = ::LoadImagePalette(m_data, maxPaletteSize, &colorsCount);
+        assert(colorsCount >= 0);
         return {colors, static_cast<size_t>(colorsCount)};
     }
     [[nodiscard]] RayImagePlatte LoadPalette(int maxPaletteSize) const {
         int colorsCount{0};
         ::Color* colors = ::LoadImagePalette(m_data, maxPaletteSize, &colorsCount);
+        assert(colorsCount >= 0);
         return {colors, static_cast<size_t>(colorsCount)};
     }
 
@@ -821,32 +1004,18 @@ class Image {
     }
 
     /**
-     * Load texture from image data.
-     */
-     /*
-    [[deprecated("Use Texture.Load()")]]
-    [[nodiscard]] raylib::Texture2D LoadTexture() const {
-        return raylib::Texture2D{::LoadTextureFromImage(*this)};
-    }
-    */
-
-    /**
-     * Loads a texture from the image data.
-     *
-     * @see LoadTexture()
-     */
-     /*
-     [[deprecated("Use LoadTexture()")]]
-    explicit operator ::Texture2D() {
-        return LoadTexture();
-    }
-    */
-
-    /**
      * Get pixel data size in bytes for certain format
      */
-    static int GetPixelDataSize(int width, int height, int format = PIXELFORMAT_UNCOMPRESSED_R32G32B32A32) noexcept {
+    [[nodiscard]] static int GetPixelDataSize(int width, int height, int format = PIXELFORMAT_UNCOMPRESSED_R32G32B32A32) noexcept {
         return ::GetPixelDataSize(width, height, format);
+    }
+    struct GetPixelDataSizeOptions {
+        int width;
+        int height;
+        int format {PIXELFORMAT_UNCOMPRESSED_R32G32B32A32};
+    };
+    [[nodiscard]] static int GetPixelDataSize(GetPixelDataSizeOptions options) noexcept {
+        return ::GetPixelDataSize(options.width, options.height, options.format);
     }
 
     /**

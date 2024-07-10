@@ -249,7 +249,7 @@ class Wave {
      *
      * @throws raylib::RaylibException Throws if the Wave failed to load.
      */
-    RAYLIB_CPP_EXPECTED_RESULT(void) Load(const std::filesystem::path& fileName) RAYLIB_CPP_THROWS {
+    RAYLIB_CPP_EXPECTED_RESULT_VOID Load(const std::filesystem::path& fileName) RAYLIB_CPP_THROWS {
         set(::LoadWave(fileName.c_str()));
         if (!IsReady()) {
             RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Wave from file: " + fileName.string()));
@@ -262,7 +262,7 @@ class Wave {
      *
      * @throws raylib::RaylibException Throws if the Wave failed to load.
      */
-    RAYLIB_CPP_EXPECTED_RESULT(void) Load(const std::string& fileType, std::span<const unsigned char> fileData) {
+    RAYLIB_CPP_EXPECTED_RESULT_VOID Load(const std::string& fileType, std::span<const unsigned char> fileData) {
         set(::LoadWaveFromMemory(fileType.c_str(), fileData.data(), static_cast<int>(fileData.size())));
         if (!IsReady()) {
             RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Wave from file data of type: " + fileType));

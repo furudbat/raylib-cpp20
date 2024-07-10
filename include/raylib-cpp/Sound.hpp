@@ -194,7 +194,7 @@ class Sound {
      *
      * @throws raylib::RaylibException Throws if the Sound failed to load.
      */
-    RAYLIB_CPP_EXPECTED_RESULT(void) Load(const std::filesystem::path& fileName) RAYLIB_CPP_THROWS {
+    RAYLIB_CPP_EXPECTED_RESULT_VOID Load(const std::filesystem::path& fileName) RAYLIB_CPP_THROWS {
         set(::LoadSound(fileName.c_str()));
         if (!IsReady()) {
             RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Sound from file"));
@@ -207,7 +207,7 @@ class Sound {
      *
      * @throws raylib::RaylibException Throws if the Sound failed to load.
      */
-    RAYLIB_CPP_EXPECTED_RESULT(void) LoadFromWave(const ::Wave& wave) RAYLIB_CPP_THROWS {
+    RAYLIB_CPP_EXPECTED_RESULT_VOID LoadFromWave(const ::Wave& wave) RAYLIB_CPP_THROWS {
         set(::LoadSoundFromWave(wave));
         if (!IsReady()) {
             RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Wave"));

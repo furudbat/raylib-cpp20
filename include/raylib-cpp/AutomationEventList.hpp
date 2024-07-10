@@ -100,7 +100,7 @@ class AutomationEventList {
      *
      * @throws raylib::RaylibException Throws if the AutomationEventList failed to load.
      */
-    RAYLIB_CPP_EXPECTED_RESULT(void) Load(const std::filesystem::path& fileName) RAYLIB_CPP_THROWS {
+    RAYLIB_CPP_EXPECTED_RESULT_VOID Load(const std::filesystem::path& fileName) RAYLIB_CPP_THROWS {
         Unload();
         set(::LoadAutomationEventList(fileName.c_str()));
         if (!IsReady()) {

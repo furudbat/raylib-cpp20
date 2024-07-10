@@ -113,6 +113,12 @@ using unexpected = E;
 
 namespace raylib {
 
+#if __has_include(<gsl/gsl>)
+using czstring = gsl::czstring;
+#else
+using czstring = const char*;
+#endif
+
 struct RayPointerDeleter {
     template<typename T>
     constexpr void operator()(T *arg) const {
@@ -122,6 +128,16 @@ struct RayPointerDeleter {
 
 template<typename T>
 using RayUniquePtr = std::unique_ptr<T, RayPointerDeleter>;
+
+template<typename T>
+RayUniquePtr<T> make_RayUniquePtr(auto&&... args) {
+    return std::make_unique<T, RayPointerDeleter>(std::forward<decltype(args)>(args)...);
+}
+
+template<typename T>
+RayUniquePtr<T[]> make_RayUniquePtrArray(size_t count) {
+    return RayUniquePtr<T[]>(std::bit_cast<T*>(RL_MALLOC(count*sizeof(T))));
+}
 
 #if __has_include(<gsl/gsl>)
 template <typename T>
@@ -149,6 +165,32 @@ struct RayArrayHolder {
     std::span<T> AsSpan() { return {data.get(), size}; }
     std::span<const T> AsSpan() const { return {data.get(), size}; }
 };
+
+#ifdef __cpp_lib_mdspan
+template<typename T, typename D = RayPointerDeleter>
+struct Ray2DArrayHolder {
+    using TExtents = std::extents<std::size_t, std::dynamic_extent, std::dynamic_extent>;
+    using TMdspan = std::mdspan<T, TExtents>;
+    using ConstTMdspan = std::mdspan<const T, TransformExtents>;
+
+    std::unique_ptr<T, D> data{nullptr};
+    size_t width{0};
+    size_t height{0};
+
+    RayArrayHolder() = default;
+    RayArrayHolder(owner<T*> _data, size_t _width, size_t _height) : data(_data), width(_width), height(_height) {}
+
+    operator TMdspan() {
+        return TMdspan(data.get(), width, height);
+    }
+    operator ConstTMdspan() const {
+        return ConstTMdspan(data.get(), width, height);
+    }
+
+    auto AsMdSpan() { return TMdspan(data.get(), width, height); }
+    auto AsMdSpan() const { return ConstTMdspan(data.get(), width, height); }
+};
+#endif
 
 
 inline static constexpr ::Image NullImage {

@@ -216,7 +216,7 @@ class TextureUnmanaged {
     void DrawBillboard(const ::Camera& camera,
             ::Rectangle source, ::Vector3 position, ::Vector2 size,
             ::Color tint = DefaultDrawTintColor) const noexcept {
-        DrawBillboardRec(camera, m_data, source, position, size, tint);
+        ::DrawBillboardRec(camera, m_data, source, position, size, tint);
     }
 
     /**
@@ -228,7 +228,7 @@ class TextureUnmanaged {
             ::Rectangle source, Vector3 position,
             ::Vector3 up, Vector2 size, Vector2 origin, float rotation = DefaultDrawRotation,
             ::Color tint = DefaultDrawTintColor) const noexcept {
-        DrawBillboardPro(camera, m_data, source, position, up, size, origin, rotation, tint);
+        ::DrawBillboardPro(camera, m_data, source, position, up, size, origin, rotation, tint);
     }
 
     /**

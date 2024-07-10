@@ -51,12 +51,12 @@ int main()
         const double time = GetTime();
 
         // Calculate time scale for cube position and size
-        const float scale = (2.0f + std::sinf(time))*0.7f;
+        const float scale = static_cast<float>(2.0f + std::sin(time))*0.7f;
 
         // Move camera around the scene
         const double cameraTime = time*0.3;
-        camera.position.x = std::cosf(cameraTime)*40.0f;
-        camera.position.z = std::sinf(cameraTime)*40.0f;
+        camera.position.x = std::cos(cameraTime)*40.0f;
+        camera.position.z = std::sin(cameraTime)*40.0f;
         //----------------------------------------------------------------------------------
 
         // Draw

@@ -243,7 +243,7 @@ class AudioStream {
      *
      * @throws raylib::RaylibException Throws if the AudioStream failed to load.
      */
-    RAYLIB_CPP_EXPECTED_RESULT(void) Load(unsigned int SampleRate, unsigned int SampleSize, unsigned int Channels = LoadDefaultChannels) {
+    RAYLIB_CPP_EXPECTED_RESULT_VOID Load(unsigned int SampleRate, unsigned int SampleSize, unsigned int Channels = LoadDefaultChannels) {
         Unload();
         set(::LoadAudioStream(SampleRate, SampleSize, Channels));
         if (!IsReady()) {

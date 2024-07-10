@@ -78,7 +78,7 @@ class ShaderUnmanaged {
         std::reference_wrapper<const std::string> vsCode;
         std::reference_wrapper<const std::string> fsCode;
     };
-    static RAYLIB_CPP_EXPECTED_RESULT(ShaderUnmanaged) LoadFromMemory(LoadFromMemoryOptions options) RAYLIB_CPP_THROWS {
+    RAYLIB_CPP_EXPECTED_STATIC_RESULT(ShaderUnmanaged) LoadFromMemory(LoadFromMemoryOptions options) RAYLIB_CPP_THROWS {
         auto shader = ::LoadShaderFromMemory(options.vsCode.get().c_str(), options.fsCode.get().c_str());
         if(!::IsShaderReady(shader)) {
             RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Shader from memory: " + options.vsCode.get() + ", " + options.fsCode.get()));
@@ -90,7 +90,7 @@ class ShaderUnmanaged {
         const char* vsCode;
         const char* fsCode;
     };
-    static RAYLIB_CPP_EXPECTED_RESULT(ShaderUnmanaged) LoadFromMemory(LoadFromMemoryOptionsC options) RAYLIB_CPP_THROWS {
+    RAYLIB_CPP_EXPECTED_STATIC_RESULT(ShaderUnmanaged) LoadFromMemory(LoadFromMemoryOptionsC options) RAYLIB_CPP_THROWS {
         auto shader = ::LoadShaderFromMemory(options.vsCode, options.fsCode);
         if(!::IsShaderReady(shader)) {
             RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Shader from memory: " + std::string{options.vsCode} + ", " + std::string{options.fsCode}));

@@ -201,46 +201,12 @@ public:
     return ::OpenURL(url.c_str());
 }
 
-/**
- * Load an image.
- */
-#ifdef RAYLIB_CPP_EXPECTED
-[[maybe_unused]] RLCPPAPI inline RAYLIB_CPP_EXPECTED_RESULT(raylib::Image) LoadImage(const std::filesystem::path& fileName) {
-    raylib::Image ret;
-    if (auto result = ret.Load(fileName); !result) [[unlikely]] {
-        RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(result.error());
-    }
-    RAYLIB_CPP_RETURN_EXPECTED_VALUE(ret);
-}
-#else
-[[maybe_unused]] RLCPPAPI inline raylib::Image LoadImage(const std::filesystem::path& fileName) {
-    return raylib::Image{::LoadImage(fileName.c_str())};
-}
-#endif
 
-/**
- * Load an image from RAW file data
- */
-#ifdef RAYLIB_CPP_EXPECTED
-[[maybe_unused]] RLCPPAPI inline RAYLIB_CPP_EXPECTED_RESULT(raylib::Image) LoadImageRaw(const std::filesystem::path& fileName, int width, int height, int format, int headerSize) {
-    raylib::Image ret;
-    if (auto result = ret.LoadRaw(fileName, width, height, format, headerSize); !result) [[unlikely]] {
-        RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(result.error());
-    }
-    RAYLIB_CPP_RETURN_EXPECTED_VALUE(ret);
-}
-#else
-[[maybe_unused]] RLCPPAPI inline raylib::Image LoadImageRaw(const std::filesystem::path& fileName,
-        int width, int height,
-        int format, int headerSize) {
-    return raylib::Image{::LoadImageRaw(fileName.c_str(), width, height, format, headerSize)};
-}
-#endif
 
+struct LoadImageAnimResult { raylib::Image image; int frames; };
 /**
  * Load animated image data
  */
-struct LoadImageAnimResult { raylib::Image image; int frames; };
 #ifdef RAYLIB_CPP_EXPECTED
 [[maybe_unused]] RLCPPAPI inline RAYLIB_CPP_EXPECTED_RESULT(LoadImageAnimResult) LoadImageRaw(const std::filesystem::path& fileName) {
     LoadImageAnimResult ret;
@@ -250,69 +216,14 @@ struct LoadImageAnimResult { raylib::Image image; int frames; };
     RAYLIB_CPP_RETURN_EXPECTED_VALUE(ret);
 }
 #else
-[[maybe_unused]] RLCPPAPI inline raylib::Image LoadImageAnim(const std::filesystem::path& fileName, int &frames) {
-    return raylib::Image{::LoadImageAnim(fileName.c_str(), &frames)};
-}
 [[maybe_unused]] RLCPPAPI inline LoadImageAnimResult LoadImageAnim(const std::filesystem::path& fileName) {
     int frames{0};
-    auto image = raylib::Image{::LoadImageAnim(fileName.c_str(), &frames)};
+    raylib::Image image;
+    image.LoadAnim(fileName.c_str(), frames);
     return { .image = image, .frames = frames };
 }
 #endif
 
-/**
- * Load image from memory buffer, fileType refers to extension like "png"
- */
-#ifdef RAYLIB_CPP_EXPECTED
-[[maybe_unused]] RLCPPAPI inline RAYLIB_CPP_EXPECTED_RESULT(raylib::Image) LoadImageFromMemory(const std::string& fileType, std::span<const unsigned char> fileData) {
-    raylib::Image ret;
-    if (auto result = ret.LoadFromMemory(fileType, fileData); !result) [[unlikely]] {
-        RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(result.error());
-    }
-    RAYLIB_CPP_RETURN_EXPECTED_VALUE(ret);
-}
-#else
-[[maybe_unused]] RLCPPAPI inline raylib::Image LoadImageFromMemory(const std::string& fileType,
-                                                                   std::span<const unsigned char> fileData) {
-    return raylib::Image{::LoadImageFromMemory(fileType.c_str(), fileData.data(), static_cast<int>(fileData.size()))};
-}
-#endif
-
-#ifdef RAYLIB_CPP_EXPECTED
-[[maybe_unused]] RLCPPAPI inline RAYLIB_CPP_EXPECTED_RESULT(raylib::Image) LoadImageFromTexture(const ::Texture2D& texture) {
-    raylib::Image ret;
-    if (auto result = ret.LoadFromTexture(texture); !result) [[unlikely]] {
-        RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(result.error());
-    }
-    RAYLIB_CPP_RETURN_EXPECTED_VALUE(ret);
-}
-#endif
-
-/**
- * Export image data to file
- */
-#ifdef RAYLIB_CPP_EXPECTED
-[[maybe_unused]] RLCPPAPI inline RAYLIB_CPP_EXPECTED_RESULT(void) ExportImage(const raylib::Image& image, const std::filesystem::path& fileName) {
-    return image.Export(fileName);
-}
-#else
-[[maybe_unused]] RLCPPAPI inline bool ExportImage(const raylib::Image& image, const std::filesystem::path& fileName) {
-    return ::ExportImage(image.c_raylib(), fileName.c_str());
-}
-#endif
-
-/**
- * Export image as code file (.h) defining an array of bytes
- */
-#ifdef RAYLIB_CPP_EXPECTED
-[[maybe_unused]] RLCPPAPI inline RAYLIB_CPP_EXPECTED_RESULT(void) ExportImageAsCode(const raylib::Image& image, const std::filesystem::path& fileName) {
-    return image.ExportAsCode(fileName);
-}
-#else
-[[maybe_unused]] RLCPPAPI inline bool ExportImageAsCode(const raylib::Image& image, const std::filesystem::path& fileName) {
-    return ::ExportImageAsCode(image.c_raylib(), fileName.c_str());
-}
-#endif
 
 /**
  * Draw text (using default font)
@@ -495,7 +406,7 @@ struct LoadImageAnimResult { raylib::Image image; int frames; };
 }
 
 #ifdef RAYLIB_CPP_EXPECTED
-inline RAYLIB_CPP_EXPECTED_RESULT(AudioDevice) InitAudioDevice() {
+[[maybe_unused]] RLCPPAPI inline RAYLIB_CPP_EXPECTED_RESULT(AudioDevice) InitAudioDevice() {
     AudioDevice ret;
     if (auto result = ret.Init(); !result) [[unlikely]] {
         RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(result.error());
@@ -506,7 +417,7 @@ inline RAYLIB_CPP_EXPECTED_RESULT(AudioDevice) InitAudioDevice() {
 
 
 #ifdef RAYLIB_CPP_EXPECTED
-inline RAYLIB_CPP_EXPECTED_RESULT(AutomationEventList) LoadAutomationEventList(const std::filesystem::path& fileName) {
+[[maybe_unused]] RLCPPAPI inline RAYLIB_CPP_EXPECTED_RESULT(AutomationEventList) LoadAutomationEventList(const std::filesystem::path& fileName) {
     AutomationEventList ret;
     if (auto result = ret.Load(fileName); !result) [[unlikely]] {
         RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(result.error());
