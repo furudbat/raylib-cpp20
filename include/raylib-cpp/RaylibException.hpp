@@ -1,11 +1,12 @@
 #ifndef RAYLIB_CPP_INCLUDE_RAYLIBEXCEPTION_HPP_
 #define RAYLIB_CPP_INCLUDE_RAYLIBEXCEPTION_HPP_
 
+
+#include "raylib.hpp"
+#include "RaylibError.hpp"
+
 #include <stdexcept>
 #include <string>
-
-#include "./raylib.hpp"
-#include "./RaylibError.hpp"
 
 namespace raylib {
 /**

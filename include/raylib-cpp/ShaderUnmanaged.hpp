@@ -1,16 +1,18 @@
 #ifndef RAYLIB_CPP_INCLUDE_SHADERUNMANAGED_HPP_
 #define RAYLIB_CPP_INCLUDE_SHADERUNMANAGED_HPP_
 
+
+#include "raylib.hpp"
+#include "raylib-cpp-utils.hpp"
+#include "Texture.hpp"
+
+#include <rlgl.h>
+
 #include <string>
 #include <filesystem>
 #include <optional>
 #include <utility>
 #include <variant>
-
-#include "./raylib.hpp"
-#include "./raylib-cpp-utils.hpp"
-#include "./Texture.hpp"
-#include <rlgl.h>
 
 namespace raylib {
 
@@ -25,15 +27,15 @@ class ShaderUnmanaged {
  public:
     constexpr ShaderUnmanaged() : m_data{NullShader} {}
 
-    constexpr explicit ShaderUnmanaged(owner<const ::Shader&> shader) = delete;
-    constexpr explicit ShaderUnmanaged(owner<::Shader&&> shader) noexcept {
+    constexpr explicit ShaderUnmanaged(const ::Shader& shader) = delete;
+    constexpr explicit ShaderUnmanaged(::Shader&& shader) noexcept {
         set(shader);
 
         shader.id = 0;
         shader.locs = nullptr;
     }
 
-    constexpr ShaderUnmanaged(owner<unsigned int> id, owner<int*> locs = nullptr) : m_data{id, locs} {}
+    constexpr explicit ShaderUnmanaged(unsigned int id, owner<int*> locs = nullptr) : m_data{id, locs} {}
 
     struct LoadShaderOptions {
         std::optional<std::filesystem::path> vsFileName;
@@ -44,15 +46,15 @@ class ShaderUnmanaged {
     }
 
     struct LoadShaderOptionsC {
-        const char* vsFileName{nullptr};
-        const char* fsFileName{nullptr};
+        czstring vsFileName{nullptr};
+        czstring fsFileName{nullptr};
     };
     explicit ShaderUnmanaged(LoadShaderOptionsC options) {
         set(::LoadShader(options.vsFileName, options.fsFileName));
     }
 
     [[deprecated("Use ShaderUnmanaged(LoadShaderOptionsC), named and strong typed parameters")]]
-    ShaderUnmanaged(const char* vsFileName, const char* fsFileName) {
+    ShaderUnmanaged(czstring vsFileName, czstring fsFileName) {
         set(::LoadShader(vsFileName, fsFileName));
     }
 
@@ -167,11 +169,11 @@ class ShaderUnmanaged {
      *
      * @see GetShaderLocation()
      */
+    [[nodiscard]] int GetLocation(czstring uniformName) const {
+        return ::GetShaderLocation(m_data, uniformName);
+    }
     [[nodiscard]] int GetLocation(const std::string& uniformName) const {
         return ::GetShaderLocation(m_data, uniformName.c_str());
-    }
-    [[nodiscard]] int GetLocation(const char* uniformName) const {
-        return ::GetShaderLocation(m_data, uniformName);
     }
 
     /**
@@ -179,11 +181,11 @@ class ShaderUnmanaged {
      *
      * @see GetShaderLocationAttrib()
      */
+    [[nodiscard]] int GetLocationAttrib(czstring attribName) const {
+        return ::GetShaderLocationAttrib(m_data, attribName);
+    }
     [[nodiscard]] int GetLocationAttrib(const std::string& attribName) const {
         return ::GetShaderLocationAttrib(m_data, attribName.c_str());
-    }
-    [[nodiscard]] int GetLocationAttrib(const char* attribName) const {
-        return ::GetShaderLocationAttrib(m_data, attribName);
     }
 
     /**
@@ -243,7 +245,21 @@ class ShaderUnmanaged {
        }, value);
        return *this;
     }
-    ShaderUnmanaged& SetValueFromLocation(const char* uniformName, std::variant<float,
+    ShaderUnmanaged& SetValueFromLocation(czstring uniformName, std::variant<float,
+            std::array<float, 2>, ///< vec2 (2 float)
+            std::array<float, 3>, ///< vec3 (3 float)
+            std::array<float, 4>, ///< vec4 (4 float)
+            ::Vector2,            ///< vec2 (2 float)
+            ::Vector3,            ///< vec3 (3 float)
+            ::Vector4,            ///< vec4 (4 float)
+            int,
+            std::array<int, 2>,   ///< ivec2 (2 int)
+            std::array<int, 3>,   ///< ivec3 (3 int)
+            std::array<int, 4>,   ///< ivec4 (4 int)
+            ::Texture2D> value) {
+        return SetValue(GetLocation(uniformName), value);
+    }
+    ShaderUnmanaged& SetValueFromLocation(const std::string& uniformName, std::variant<float,
             std::array<float, 2>, ///< vec2 (2 float)
             std::array<float, 3>, ///< vec3 (3 float)
             std::array<float, 4>, ///< vec4 (4 float)

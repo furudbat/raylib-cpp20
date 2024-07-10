@@ -51,12 +51,12 @@ int main()
         const double time = GetTime();
 
         // Calculate time scale for cube position and size
-        const float scale = static_cast<float>(2.0f + std::sin(time))*0.7f;
+        const float scale = static_cast<float>(2.0 + std::sin(time))*0.7f;
 
         // Move camera around the scene
         const double cameraTime = time*0.3;
-        camera.position.x = std::cos(cameraTime)*40.0f;
-        camera.position.z = std::sin(cameraTime)*40.0f;
+        camera.position.x = static_cast<float>(std::cos(cameraTime)*40.0);
+        camera.position.z = static_cast<float>(std::sin(cameraTime)*40.0);
         //----------------------------------------------------------------------------------
 
         // Draw
@@ -76,7 +76,7 @@ int main()
                 for (int z = 0; z < numBlocks; z++)
                 {
                     // Scale of the blocks depends on x/y/z positions
-                    const float blockScale = (x + y + z)/30.0f;
+                    const float blockScale = static_cast<float>(x + y + z)/30.0f;
 
                     // Scatter makes the waving effect by adding blockScale over time
                     const float scatter = sinf(blockScale*20.0f + (float)(time*4.0f));

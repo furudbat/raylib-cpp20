@@ -1,9 +1,9 @@
 #ifndef RAYLIB_CPP_INCLUDE_RAY_HPP_
 #define RAYLIB_CPP_INCLUDE_RAY_HPP_
 
-#include "./raylib.hpp"
-#include "./raylib-cpp-utils.hpp"
-#include "./RayCollision.hpp"
+#include "raylib.hpp"
+#include "raylib-cpp-utils.hpp"
+#include "RayCollision.hpp"
 
 namespace raylib {
 /**

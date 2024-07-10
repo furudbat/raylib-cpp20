@@ -1,9 +1,9 @@
 #ifndef RAYLIB_CPP_INCLUDE_MATRIX_HPP_
 #define RAYLIB_CPP_INCLUDE_MATRIX_HPP_
 
-#include "./raylib.hpp"
-#include "./raylib-cpp-utils.hpp"
-#include "./raymath.hpp"
+#include "raylib.hpp"
+#include "raylib-cpp-utils.hpp"
+#include "raymath.hpp"
 
 #ifndef RAYLIB_CPP_NO_MATH
 #include <cmath>
@@ -140,11 +140,11 @@ class Matrix : public ::Matrix {
         return ::MatrixTranslate(x, y, z);
     }
 
-    static Matrix Rotate(Vector3 axis, float angle) noexcept {
+    static Matrix Rotate(::Vector3 axis, float angle) noexcept {
         return ::MatrixRotate(axis, angle);
     }
 
-    static Matrix RotateXYZ(Vector3 angle) noexcept {
+    static Matrix RotateXYZ(::Vector3 angle) noexcept {
         return ::MatrixRotateXYZ(angle);
     }
 
@@ -186,7 +186,7 @@ class Matrix : public ::Matrix {
         return ::MatrixOrtho(left, right, bottom, top, near, far);
     }
 
-    static Matrix LookAt(Vector3 eye, Vector3 target, Vector3 up) noexcept {
+    static Matrix LookAt(::Vector3 eye, ::Vector3 target, ::Vector3 up) noexcept {
         return ::MatrixLookAt(eye, target, up);
     }
 

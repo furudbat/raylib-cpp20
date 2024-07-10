@@ -1,14 +1,14 @@
 #ifndef RAYLIB_CPP_INCLUDE_AUDIOSTREAM_HPP_
 #define RAYLIB_CPP_INCLUDE_AUDIOSTREAM_HPP_
 
-#include <cstdint>
-
-#include "./raylib.hpp"
-#include "./raylib-cpp-utils.hpp"
+#include "raylib.hpp"
+#include "raylib-cpp-utils.hpp"
 #ifdef __cpp_exceptions
-#include "./RaylibException.hpp"
+#include "RaylibException.hpp"
 #endif
-#include "./RaylibError.hpp"
+#include "RaylibError.hpp"
+
+#include <cstdint>
 
 namespace raylib {
 
@@ -21,8 +21,8 @@ class AudioStream {
     inline static constexpr float SetDefaultVolume = 1.0f;
     inline static constexpr float SetDefaultPan = 0.5f;
 
-    explicit constexpr AudioStream(owner<const ::AudioStream&> music) = delete;
-    explicit constexpr AudioStream(owner<::AudioStream&&> music = {
+    explicit constexpr AudioStream(const ::AudioStream& music) = delete;
+    explicit constexpr AudioStream(::AudioStream&& music = {
         .buffer = nullptr,
         .processor = nullptr,
         .sampleRate = 0,

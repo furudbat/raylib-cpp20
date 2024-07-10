@@ -1,14 +1,14 @@
 #ifndef RAYLIB_CPP_INCLUDE_MODELANIMATION_HPP_
 #define RAYLIB_CPP_INCLUDE_MODELANIMATION_HPP_
 
+
+#include "raylib.hpp"
+#include "raylib-cpp-utils.hpp"
+#include "Mesh.hpp"
+
 #include <vector>
 #include <string>
 #include <filesystem>
-
-#include "./raylib.hpp"
-#include "./raylib-cpp-utils.hpp"
-#include "./Mesh.hpp"
-
 #include <version>
 #ifdef __cpp_lib_mdspan
 #include <mdspan>
@@ -21,8 +21,8 @@ namespace raylib {
  */
 class ModelAnimation {
  public:
-    constexpr ModelAnimation(owner<const ::ModelAnimation&>) = delete;
-    constexpr ModelAnimation(owner<::ModelAnimation&&> model) {
+    constexpr ModelAnimation(const ::ModelAnimation&) = delete;
+    constexpr ModelAnimation(::ModelAnimation&& model) {
         set(model);
 
         model.boneCount = 0;
@@ -131,9 +131,9 @@ public:
     /**
      * Load model animations from file
      */
-    [[nodiscard]] static std::vector<ModelAnimation> Load(const std::filesystem::path& fileName) {
+    [[nodiscard]] static std::vector<ModelAnimation> Load(czstring fileName) {
         int count = 0;
-        auto modelAnimations = RayUniquePtr<::ModelAnimation>(::LoadModelAnimations(fileName.c_str(), &count));
+        auto modelAnimations = RayUniquePtr<::ModelAnimation>(::LoadModelAnimations(fileName, &count));
         std::vector<ModelAnimation> ret;
         ret.reserve(static_cast<size_t>(count));
         for (auto& model : std::span{modelAnimations.get(), static_cast<size_t>(count)}) {
@@ -144,6 +144,9 @@ public:
             model.frameCount = 0;
         }
         return ret;
+    }
+    [[nodiscard]] static std::vector<ModelAnimation> Load(const std::filesystem::path& fileName) {
+        return Load(fileName.c_str());
     }
 
     /**
@@ -173,7 +176,7 @@ public:
         m_data.framePoses = model.framePoses;
 
         // Duplicate the name. TextCopy() uses the null terminator, which we ignore here.
-        for (int i = 0; i < 32; i++) {
+        for (size_t i = 0; i < 32; i++) {
             m_data.name[i] = model.name[i];
         }
     }

@@ -4,18 +4,18 @@
 #ifndef RAYLIB_CPP_INCLUDE_GUARDS_HPP_
 #define RAYLIB_CPP_INCLUDE_GUARDS_HPP_
 
+#include "raylib.hpp"
+#include "AudioDevice.hpp"
+#include "AudioStream.hpp"
+#include "AutomationEventList.hpp"
+#include "Image.hpp"
+#include "Texture.hpp"
+#include "Wave.hpp"
+#include "raylib-cpp-utils.hpp"
+
 #include <filesystem>
 #include <string>
 #include <vector>
-
-#include "./raylib.hpp"
-#include "./AudioDevice.hpp"
-#include "./AudioStream.hpp"
-#include "./AutomationEventList.hpp"
-#include "./Image.hpp"
-#include "./Texture.hpp"
-#include "./Wave.hpp"
-#include "./raylib-cpp-utils.hpp"
 
 namespace raylib {
 

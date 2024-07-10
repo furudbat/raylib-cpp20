@@ -1,15 +1,16 @@
 #ifndef RAYLIB_CPP_INCLUDE_MESH_HPP_
 #define RAYLIB_CPP_INCLUDE_MESH_HPP_
 
+
+#include "raylib.hpp"
+#include "raylib-cpp-utils.hpp"
+#include "BoundingBox.hpp"
+#include "Image.hpp"
+#include "MeshUnmanaged.hpp"
+
 #include <string>
 #include <vector>
 #include <filesystem>
-
-#include "./raylib.hpp"
-#include "./raylib-cpp-utils.hpp"
-#include "./BoundingBox.hpp"
-#include "./Image.hpp"
-#include "./MeshUnmanaged.hpp"
 
 namespace raylib {
 
@@ -24,8 +25,8 @@ class Mesh {
  public:
     constexpr Mesh() = default;
 
-    constexpr explicit Mesh(owner<const ::Mesh&> mesh) = delete;
-    constexpr explicit Mesh(owner<::Mesh&&> mesh) {
+    constexpr explicit Mesh(const ::Mesh& mesh) = delete;
+    constexpr explicit Mesh(::Mesh&& mesh) {
         m_mesh.set(mesh);
 
         mesh.vertexCount = 0;

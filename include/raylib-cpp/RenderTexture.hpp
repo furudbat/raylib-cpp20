@@ -1,16 +1,17 @@
 #ifndef RAYLIB_CPP_INCLUDE_RENDERTEXTURE_HPP_
 #define RAYLIB_CPP_INCLUDE_RENDERTEXTURE_HPP_
 
-#include "./raylib.hpp"
-#include "./raylib-cpp-utils.hpp"
-#include "./TextureUnmanaged.hpp"
-#include <utility>
+#include "raylib.hpp"
+#include "raylib-cpp-utils.hpp"
+#include "TextureUnmanaged.hpp"
 #ifdef __cpp_exceptions
-#include "./RaylibException.hpp"
+#include "RaylibException.hpp"
 #endif
-#include "./RaylibError.hpp"
+#include "RaylibError.hpp"
 
 #include <rlgl.h>
+
+#include <utility>
 
 namespace raylib {
 
@@ -47,7 +48,7 @@ class RenderTexture {
 
     constexpr explicit RenderTexture(const ::RenderTexture& renderTexture) = delete;
     constexpr RenderTexture(const ::RenderTexture& renderTexture, RenderTextureCOptions options) = delete;
-    constexpr RenderTexture(owner<::RenderTexture&&> renderTexture, RenderTextureCOptions options) noexcept : m_renderTextureOption(options.id),
+    constexpr RenderTexture(::RenderTexture&& renderTexture, RenderTextureCOptions options) noexcept : m_renderTextureOption(options.id),
                                                                                                               m_renderTextureTextureOption(options.texture),
                                                                                                               m_renderTextureDepthOption(options.depth) {
         set(renderTexture);
@@ -94,9 +95,9 @@ class RenderTexture {
         return m_data.texture;
     }
 
-    void SetTexture(owner<const ::Texture&> newTexture) = delete;
-    void SetTexture(owner<const ::Texture&> newTexture, RenderTextureTextureOptions option) = delete;
-    void SetTexture(owner<::Texture&&> newTexture, RenderTextureTextureOptions option) noexcept {
+    void SetTexture(const ::Texture& newTexture) = delete;
+    void SetTexture(const ::Texture& newTexture, RenderTextureTextureOptions option) = delete;
+    void SetTexture(::Texture&& newTexture, RenderTextureTextureOptions option) noexcept {
         m_data.texture = newTexture;
         m_renderTextureTextureOption = option;
         newTexture = NullTexture;
@@ -109,9 +110,9 @@ class RenderTexture {
         return TextureUnmanaged{m_data.depth};
     }
 
-    void SetDepth(owner<const ::Texture&> newTexture) = delete;
-    void SetDepth(owner<const ::Texture&> newTexture, RenderTextureTextureOptions option) = delete;
-    void SetDepth(owner<::Texture&&> newTexture, RenderTextureTextureOptions option) noexcept {
+    void SetDepth(const ::Texture& newTexture) = delete;
+    void SetDepth(const ::Texture& newTexture, RenderTextureTextureOptions option) = delete;
+    void SetDepth(::Texture&& newTexture, RenderTextureTextureOptions option) noexcept {
         m_data.depth = newTexture;
         m_renderTextureDepthOption = option;
         newTexture = NullTexture;

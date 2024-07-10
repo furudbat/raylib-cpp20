@@ -1,10 +1,10 @@
 #ifndef RAYLIB_CPP_INCLUDE_GAMEPAD_HPP_
 #define RAYLIB_CPP_INCLUDE_GAMEPAD_HPP_
 
-#include <string>
+#include "raylib.hpp"
+#include "raylib-cpp-utils.hpp"
 
-#include "./raylib.hpp"
-#include "./raylib-cpp-utils.hpp"
+#include <string>
 
 namespace raylib {
 /**

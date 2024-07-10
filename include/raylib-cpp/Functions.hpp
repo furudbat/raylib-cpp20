@@ -4,12 +4,12 @@
 #ifndef RAYLIB_CPP_INCLUDE_FUNCTIONS_HPP_
 #define RAYLIB_CPP_INCLUDE_FUNCTIONS_HPP_
 
+#include "raylib.hpp"
+#include "raylib-cpp-utils.hpp"
+
 #include <filesystem>
 #include <string>
 #include <vector>
-
-#include "./raylib.hpp"
-#include "./raylib-cpp-utils.hpp"
 
 namespace raylib {
 

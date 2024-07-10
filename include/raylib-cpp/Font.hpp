@@ -1,16 +1,16 @@
 #ifndef RAYLIB_CPP_INCLUDE_FONT_HPP_
 #define RAYLIB_CPP_INCLUDE_FONT_HPP_
 
+#include "raylib.hpp"
+#include "raylib-cpp-utils.hpp"
+#include "TextureUnmanaged.hpp"
+#ifdef __cpp_exceptions
+#include "RaylibException.hpp"
+#endif
+#include "RaylibError.hpp"
+
 #include <string>
 #include <span>
-
-#include "./raylib.hpp"
-#include "./raylib-cpp-utils.hpp"
-#include "./TextureUnmanaged.hpp"
-#ifdef __cpp_exceptions
-#include "./RaylibException.hpp"
-#endif
-#include "./RaylibError.hpp"
 
 namespace raylib {
 /**
@@ -23,10 +23,10 @@ class Font {
     constexpr Font(int _baseSize,
             int _glyphCount,
             int _glyphPadding,
-            owner<::Texture2D> _texture,
+            ::Texture2D&& _texture,
             owner<::Rectangle*> _recs = nullptr,
             owner<::GlyphInfo*> _glyphs = nullptr) : m_data{_baseSize, _glyphCount, _glyphPadding, _texture, _recs, _glyphs} {
-        // Nothing.
+        _texture = NullTexture;
     }
 
     /**
@@ -36,8 +36,8 @@ class Font {
         set(::GetFontDefault());
     }
 
-    explicit constexpr Font(owner<const ::Font&> font) = delete;
-    explicit constexpr Font(owner<::Font&&> font) noexcept {
+    explicit constexpr Font(const ::Font& font) = delete;
+    explicit constexpr Font(::Font&& font) noexcept {
         set(font);
 
         font.baseSize = 0;
@@ -98,17 +98,21 @@ class Font {
      *
      * @see ::LoadFontFromMemory()
      */
-    Font(const std::string& fileType, std::span<const unsigned char> fileData, int fontSize,
+    Font(czstring fileType, std::span<const unsigned char> fileData, int fontSize,
          std::span<int> codepoints) RAYLIB_CPP_THROWS {
         Load(fileType, fileData, fontSize, codepoints);
     }
     Font(const std::string& fileType, std::span<const unsigned char> fileData, int fontSize,
+         std::span<int> codepoints) RAYLIB_CPP_THROWS {
+        Load(fileType, fileData, fontSize, codepoints);
+    }
+    Font(czstring fileType, std::span<const unsigned char> fileData, int fontSize,
          int* codepoints, int codepointCount) RAYLIB_CPP_THROWS {
         Load(fileType, fileData, fontSize, codepoints, codepointCount);
     }
 
-    Font& operator=(owner<const ::Font&> font) = delete;
-    Font& operator=(owner<::Font&&> font) noexcept {
+    Font& operator=(const ::Font& font) = delete;
+    Font& operator=(::Font&& font) noexcept {
         Unload();
         set(font);
 
@@ -251,21 +255,25 @@ class Font {
         RAYLIB_CPP_RETURN_EXPECTED();
     }
 
-    RAYLIB_CPP_EXPECTED_RESULT_VOID Load(const std::string& fileType, std::span<const unsigned char> fileData, int fontSize,
+    RAYLIB_CPP_EXPECTED_RESULT_VOID Load(czstring fileType, std::span<const unsigned char> fileData, int fontSize,
                                          std::span<int> codepoints) RAYLIB_CPP_THROWS {
-        set(::LoadFontFromMemory(fileType.c_str(), fileData.data(), static_cast<int>(fileData.size()), fontSize, codepoints.data(),
+        set(::LoadFontFromMemory(fileType, fileData.data(), static_cast<int>(fileData.size()), fontSize, codepoints.data(),
                                  static_cast<int>(codepoints.size())));
         if (!IsReady()) {
-            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Font " + fileType + " with from file data"));
+            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Font " + std::string{fileType} + " with from file data"));
         }
         RAYLIB_CPP_RETURN_EXPECTED();
     }
     RAYLIB_CPP_EXPECTED_RESULT_VOID Load(const std::string& fileType, std::span<const unsigned char> fileData, int fontSize,
+                                         std::span<int> codepoints) RAYLIB_CPP_THROWS {
+        RAYLIB_CPP_RETURN_EXPECTED_VOID_VALUE(Load(fileType.c_str(), fileData, fontSize, codepoints));
+    }
+    RAYLIB_CPP_EXPECTED_RESULT_VOID Load(czstring fileType, std::span<const unsigned char> fileData, int fontSize,
                                          int* codepoints, int codepointCount) RAYLIB_CPP_THROWS {
-        set(::LoadFontFromMemory(fileType.c_str(), fileData.data(), static_cast<int>(fileData.size()), fontSize, codepoints,
+        set(::LoadFontFromMemory(fileType, fileData.data(), static_cast<int>(fileData.size()), fontSize, codepoints,
                                  codepointCount));
         if (!IsReady()) {
-            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Font " + fileType + " with from file data"));
+            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError(::TextFormat("Failed to load Font %s with from file data", fileType)));
         }
         RAYLIB_CPP_RETURN_EXPECTED();
     }
@@ -280,17 +288,17 @@ class Font {
     /**
      * Draw text using font and additional parameters.
      */
-    void DrawText(const char* text, ::Vector2 position, float fontSize,
-                  float spacing, ::Color tint = DefaultTintColor) const noexcept {
+    void DrawText(czstring text, ::Vector2 position, float fontSize,
+                  float spacing, ::Color tint = DefaultTintColor) const {
         ::DrawTextEx(m_data, text, position,  fontSize,  spacing,  tint);
     }
-
-    /**
-     * Draw text using font and additional parameters.
-     */
     void DrawText(const std::string& text, ::Vector2 position, float fontSize,
                   float spacing, ::Color tint = DefaultTintColor) const {
         ::DrawTextEx(m_data, text.c_str(), position,  fontSize,  spacing,  tint);
+    }
+    void DrawTextWithBaseSize(czstring text, ::Vector2 position,
+                              float spacing, ::Color tint = DefaultTintColor) const {
+        DrawText(text, position, static_cast<float>(GetBaseSize()), spacing, tint);
     }
     void DrawTextWithBaseSize(const std::string& text, ::Vector2 position,
                               float spacing, ::Color tint = DefaultTintColor) const {
@@ -306,23 +314,23 @@ class Font {
             { .x = static_cast<float>(posX), .y = static_cast<float>(posY) },
             fontSize, spacing, tint);
     }
-
-    /**
-     * Draw text using font and additional parameters.
-     */
     void DrawText(const std::string& text, int posX, int posY, float fontSize,
                   float spacing, ::Color tint = DefaultTintColor) const {
         ::DrawTextEx(m_data, text.c_str(),
-            { .x = static_cast<float>(posX), .y = static_cast<float>(posY) },
-            fontSize, spacing, tint);
+                     { .x = static_cast<float>(posX), .y = static_cast<float>(posY) },
+                     fontSize, spacing, tint);
+    }
+    void DrawTextWithBaseSize(czstring text, int posX, int posY,
+                  float spacing, ::Color tint = DefaultTintColor) const {
+        DrawText(text, posX, posY, static_cast<float>(GetBaseSize()), spacing, tint);
     }
     void DrawTextWithBaseSize(const std::string& text, int posX, int posY,
-                  float spacing, ::Color tint = DefaultTintColor) const {
+                              float spacing, ::Color tint = DefaultTintColor) const {
         DrawText(text, posX, posY, static_cast<float>(GetBaseSize()), spacing, tint);
     }
 
     void DrawText(
-            const char* text,
+            czstring text,
             ::Vector2 position,
             ::Vector2 origin,
             float rotation,
@@ -334,7 +342,6 @@ class Font {
             rotation, fontSize,
             spacing, tint);
     }
-
     void DrawText(
             const std::string& text,
             ::Vector2 position,
@@ -375,15 +382,14 @@ class Font {
     /**
      * Measure string size for Font
      */
-    Vector2 MeasureText(const char* text, float fontSize, float spacing) const noexcept {
+    [[nodiscard]] Vector2 MeasureText(czstring text, float fontSize, float spacing) const noexcept {
         return ::MeasureTextEx(m_data, text, fontSize, spacing);
     }
-
-    /**
-     * Measure string size for Font
-     */
     [[nodiscard]] Vector2 MeasureText(const std::string& text, float fontSize, float spacing) const {
         return ::MeasureTextEx(m_data, text.c_str(), fontSize, spacing);
+    }
+    [[nodiscard]] Vector2 MeasureTextWithBaseSize(czstring text, float spacing) const {
+        return ::MeasureTextEx(m_data, text, static_cast<float>(GetBaseSize()), spacing);
     }
     [[nodiscard]] Vector2 MeasureTextWithBaseSize(const std::string& text, float spacing) const {
         return ::MeasureTextEx(m_data, text.c_str(), static_cast<float>(GetBaseSize()), spacing);
@@ -399,16 +405,12 @@ class Font {
     /**
      * Create an image from text (custom sprite font)
      */
-    raylib::Image ImageText(const char* text, float fontSize,
-                      float spacing, ::Color tint) const {
+    raylib::Image ImageText(czstring text, float fontSize,
+                            float spacing, ::Color tint) const {
         return raylib::Image{::ImageTextEx(m_data, text, fontSize, spacing, tint)};
     }
-
-    /**
-     * Create an image from text (custom sprite font)
-     */
     [[nodiscard]] raylib::Image ImageText(const std::string& text, float fontSize,
-                                    float spacing, ::Color tint) const {
+                                          float spacing, ::Color tint) const {
         return raylib::Image{::ImageTextEx(m_data, text.c_str(), fontSize, spacing, tint)};
     }
 

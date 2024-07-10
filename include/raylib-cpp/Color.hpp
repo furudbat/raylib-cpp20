@@ -1,12 +1,12 @@
 #ifndef RAYLIB_CPP_INCLUDE_COLOR_HPP_
 #define RAYLIB_CPP_INCLUDE_COLOR_HPP_
 
+#include "raylib.hpp"
+#include "Vector4.hpp"
+#include "raylib-cpp-utils.hpp"
+
 #include <string>
 #include <cstdint>
-
-#include "./raylib.hpp"
-#include "./Vector4.hpp"
-#include "./raylib-cpp-utils.hpp"
 
 namespace raylib {
 
@@ -207,19 +207,17 @@ class Color : public ::Color {
         ::DrawLineStrip(points, numPoints, *this);
     }
 
-    void DrawText(const char* text, int posX = 0, int posY = 0, int fontSize = DefaultDrawTextFontSize) const noexcept {
+    void DrawText(czstring text, int posX = 0, int posY = 0, int fontSize = DefaultDrawTextFontSize) const noexcept {
         ::DrawText(text, posX, posY, fontSize, *this);
     }
-
     void DrawText(const std::string& text, int posX = 0, int posY = 0, int fontSize = DefaultDrawTextFontSize) const noexcept {
         ::DrawText(text.c_str(), posX, posY, fontSize, *this);
     }
 
-    void DrawText(const ::Font& font, const char* text, ::Vector2 position,
+    void DrawText(const ::Font& font, czstring text, ::Vector2 position,
             float fontSize, float spacing) const noexcept {
         ::DrawTextEx(font, text, position, fontSize, spacing, *this);
     }
-
     void DrawText(const ::Font& font, const std::string& text, ::Vector2 position,
             float fontSize, float spacing) const noexcept {
         ::DrawTextEx(font, text.c_str(), position, fontSize, spacing, *this);
@@ -227,7 +225,7 @@ class Color : public ::Color {
 
     void DrawText(
             const ::Font& font,
-            const char* text,
+            czstring text,
             ::Vector2 position,
             ::Vector2 origin,
             float rotation,
@@ -235,7 +233,6 @@ class Color : public ::Color {
             float spacing) const noexcept {
         ::DrawTextPro(font, text, position, origin, rotation, fontSize, spacing, *this);
     }
-
     void DrawText(
             const ::Font& font,
             const std::string& text,

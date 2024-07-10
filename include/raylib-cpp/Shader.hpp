@@ -1,16 +1,17 @@
 #ifndef RAYLIB_CPP_INCLUDE_SHADER_HPP_
 #define RAYLIB_CPP_INCLUDE_SHADER_HPP_
 
+
+#include "raylib.hpp"
+#include "raylib-cpp-utils.hpp"
+#include "Texture.hpp"
+#include "ShaderUnmanaged.hpp"
+
 #include <string>
 #include <filesystem>
 #include <optional>
 #include <utility>
 #include <variant>
-
-#include "./raylib.hpp"
-#include "./raylib-cpp-utils.hpp"
-#include "Texture.hpp"
-#include "ShaderUnmanaged.hpp"
 
 namespace raylib {
 
@@ -27,20 +28,20 @@ public:
 
     constexpr Shader() = default;
 
-    constexpr explicit Shader(owner<const ::Shader&> shader) = delete;
-    constexpr explicit Shader(owner<::Shader&&> shader) noexcept {
+    constexpr explicit Shader(const ::Shader& shader) = delete;
+    constexpr explicit Shader(::Shader&& shader) noexcept {
         m_shader.set(shader);
 
         shader.id = 0;
         shader.locs = nullptr;
     }
 
-    constexpr Shader(owner<unsigned int> id, owner<int*> locs = nullptr) : m_shader(id, locs) {}
+    constexpr Shader(unsigned int id, owner<int*> locs = nullptr) : m_shader(id, locs) {}
     explicit Shader(LoadShaderOptions options) : m_shader(std::move(options)) {}
     explicit Shader(LoadShaderOptionsC options) : m_shader(std::move(options)) {}
 
     [[deprecated("Use Shader(LoadShaderOptionsC), named and strong typed parameters")]]
-    Shader(const char* vsFileName, const char* fsFileName) : m_shader(ShaderUnmanaged::LoadShaderOptionsC{ .vsFileName = vsFileName, .fsFileName = fsFileName }) {}
+    Shader(czstring vsFileName, czstring fsFileName) : m_shader(ShaderUnmanaged::LoadShaderOptionsC{ .vsFileName = vsFileName, .fsFileName = fsFileName }) {}
 
 
     constexpr Shader(const Shader&) = delete;
@@ -89,8 +90,8 @@ public:
     COMPOSITION_METHODE_CALL(SetLoc, m_shader)
     COMPOSITION_METHODE_CALL(SetLocFromLocation, m_shader)
 
-    constexpr Shader& operator=(owner<const ::Shader&> shader) = delete;
-    Shader& operator=(owner<::Shader&&> shader) noexcept {
+    constexpr Shader& operator=(const ::Shader& shader) = delete;
+    Shader& operator=(::Shader&& shader) noexcept {
         m_shader.set(shader);
 
         shader.id = rlGetShaderIdDefault();

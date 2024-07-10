@@ -106,7 +106,7 @@ int main()
                 {
                     raylib::ShaderDrawingGuard shaderDrawingGuard(shader);
 
-                    DrawPlane(Vector3Zero(), (Vector2) {10.0, 10.0}, WHITE);
+                    DrawPlane(Vector3Zero(), Vector2{10.0, 10.0}, WHITE);
                     DrawCube(Vector3Zero(), 2.0, 4.0, 2.0, WHITE);
                 }
 

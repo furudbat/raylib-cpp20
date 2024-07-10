@@ -91,6 +91,7 @@ template<class E>
 using unexpected = RAYLIB_CPP_UNEXPECTED<E>;
 #define RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(Error) return RAYLIB_CPP_UNEXPECTED(Error);
 #define RAYLIB_CPP_RETURN_EXPECTED_VALUE(Value) return Value;
+#define RAYLIB_CPP_RETURN_EXPECTED_VOID_VALUE(Value) return Value;
 #define RAYLIB_CPP_RETURN_EXPECTED() return {};
 #define RAYLIB_CPP_THROWS
 #else
@@ -101,11 +102,13 @@ using unexpected = E;
 #ifdef __cpp_exceptions
 #define RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(Error) throw RaylibException(Error);
 #define RAYLIB_CPP_RETURN_EXPECTED_VALUE(Value) return Value;
+#define RAYLIB_CPP_RETURN_EXPECTED_VOID_VALUE(Value) return Value;
 #define RAYLIB_CPP_RETURN_EXPECTED()
 #define RAYLIB_CPP_THROWS noexcept(false)
 #else
 #define RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(Error) std::abort();
 #define RAYLIB_CPP_RETURN_EXPECTED_VALUE(Value) return Value;
+#define RAYLIB_CPP_RETURN_EXPECTED_VOID_VALUE(Value) Value;
 #define RAYLIB_CPP_RETURN_EXPECTED()
 #define RAYLIB_CPP_THROWS
 #endif
@@ -140,8 +143,8 @@ RayUniquePtr<T[]> make_RayUniquePtrArray(size_t count) {
 }
 
 #if __has_include(<gsl/gsl>)
-template <typename T>
-using owner = gsl::owner<T>;
+template <class T, class = std::enable_if_t<std::is_pointer<T>::value>>
+using owner = T;
 #else
 template<typename T>
 using owner = T;

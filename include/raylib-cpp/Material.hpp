@@ -1,16 +1,17 @@
 #ifndef RAYLIB_CPP_INCLUDE_MATERIAL_HPP_
 #define RAYLIB_CPP_INCLUDE_MATERIAL_HPP_
 
-#include <string>
-#include <vector>
-#include <array>
-
 #include "Mesh.hpp"
 #include "Texture.hpp"
 #include "Shader.hpp"
-#include "./raylib.hpp"
-#include "./raylib-cpp-utils.hpp"
+#include "raylib.hpp"
+#include "raylib-cpp-utils.hpp"
+
 #include <rlgl.h>
+
+#include <string>
+#include <vector>
+#include <array>
 
 namespace raylib {
 
@@ -66,8 +67,8 @@ class Material {
         set(LoadMaterialDefault());
     }
 
-    explicit constexpr Material(owner<const ::Material&> material) = delete;
-    explicit Material(owner<::Material&&> material) noexcept {
+    explicit constexpr Material(const ::Material& material) = delete;
+    explicit Material(::Material&& material) noexcept {
         set(material);
 
         material.maps = nullptr;
@@ -101,8 +102,8 @@ class Material {
         return m_data;
     }
 
-    constexpr Material& operator=(owner<const ::Material&> material) = delete;
-    Material& operator=(owner<::Material&&> material) noexcept {
+    constexpr Material& operator=(const ::Material& material) = delete;
+    Material& operator=(::Material&& material) noexcept {
         set(material);
 
         material.maps = nullptr;
@@ -129,10 +130,10 @@ class Material {
     /**
      * Load materials from model file
      */
-    static std::vector<Material> Load(const std::string& fileName) {
+    static std::vector<Material> LoadMaterialsFromModel(czstring fileName) {
         RayMaterials materials = [&]() {
             int count = 0;
-            ::Material* materials_data = ::LoadMaterials(fileName.c_str(), &count);
+            ::Material* materials_data = ::LoadMaterials(fileName, &count);
             return RayMaterials(materials_data, static_cast<size_t>(count));
         }();
 
@@ -147,6 +148,9 @@ class Material {
         materials.size = 0;
 
         return ret;
+    }
+    static std::vector<Material> LoadMaterialsFromModel(const std::string& fileName) {
+        return LoadMaterialsFromModel(fileName.c_str());
     }
 
     //CONST_GETTER(::Shader, Shader, m_data.shader
@@ -271,12 +275,14 @@ class Material {
 
 
     CONST_GETTER(::MaterialMap*, Maps, m_data.maps)
+
     const ::MaterialMap& GetMap(size_t index) const {
         return m_data.maps[index];
     }
     ::MaterialMap& GetMap(size_t index) {
         return m_data.maps[index];
     }
+
     /** Retrieves the params value for the object. @return The params value of the object. */
     constexpr std::array<float, 4> GetParams() const {
         return std::array<float, 4>{ m_data.params[0], m_data.params[1], m_data.params[2], m_data.params[3] };

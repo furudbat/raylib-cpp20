@@ -1,9 +1,9 @@
 #ifndef RAYLIB_CPP_INCLUDE_RECTANGLE_HPP_
 #define RAYLIB_CPP_INCLUDE_RECTANGLE_HPP_
 
-#include "./raylib.hpp"
-#include "./raylib-cpp-utils.hpp"
-#include "./Vector2.hpp"
+#include "raylib.hpp"
+#include "raylib-cpp-utils.hpp"
+#include "Vector2.hpp"
 
 namespace raylib {
 /**

@@ -1,15 +1,15 @@
 #ifndef RAYLIB_CPP_INCLUDE_MESHUNMANAGED_HPP_
 #define RAYLIB_CPP_INCLUDE_MESHUNMANAGED_HPP_
 
+#include "raylib.hpp"
+#include "raylib-cpp-utils.hpp"
+#include "BoundingBox.hpp"
+#include "Image.hpp"
+
 #include <string>
 #include <vector>
 #include <filesystem>
 #include <cassert>
-
-#include "./raylib.hpp"
-#include "./raylib-cpp-utils.hpp"
-#include "./BoundingBox.hpp"
-#include "./Image.hpp"
 
 namespace raylib {
 
@@ -121,11 +121,14 @@ class MeshUnmanaged {
      *
      * @throws raylib::RaylibException Throws if failed to export the Mesh.
      */
-    RAYLIB_CPP_EXPECTED_RESULT_VOID Export(const std::string& fileName) RAYLIB_CPP_THROWS {
-        if (!::ExportMesh(m_data, fileName.c_str())) {
-            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to export the Mesh"));
+    RAYLIB_CPP_EXPECTED_RESULT_VOID Export(czstring fileName) RAYLIB_CPP_THROWS {
+        if (!::ExportMesh(m_data, fileName)) {
+            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError(::TextFormat("Failed to export the Mesh: %s", fileName)));
         }
         RAYLIB_CPP_RETURN_EXPECTED();
+    }
+    RAYLIB_CPP_EXPECTED_RESULT_VOID Export(const std::string& fileName) RAYLIB_CPP_THROWS {
+        return Export(fileName.c_str());
     }
 
     /**

@@ -1,15 +1,16 @@
 #ifndef RAYLIB_CPP_INCLUDE_WINDOW_HPP_
 #define RAYLIB_CPP_INCLUDE_WINDOW_HPP_
 
+
+#include "raylib.hpp"
+#include "Vector2.hpp"
+#ifdef __cpp_exceptions
+#include "RaylibException.hpp"
+#endif
+#include "RaylibError.hpp"
+
 #include <string>
 #include <chrono>
-
-#include "./raylib.hpp"
-#include "./Vector2.hpp"
-#ifdef __cpp_exceptions
-#include "./RaylibException.hpp"
-#endif
-#include "./RaylibError.hpp"
 
 namespace raylib {
 /**
@@ -37,7 +38,10 @@ class Window {
      *
      * @throws raylib::RaylibException Thrown if the window failed to initiate.
      */
-    Window(int width, int height, const std::string& title = "raylib", uint32_t flags = 0) {
+    Window(int width, int height, czstring title = "raylib", uint32_t flags = 0) {
+        Init(width, height, title, flags);
+    }
+    Window(int width, int height, const std::string& title, uint32_t flags = 0) {
         Init(width, height, title, flags);
     }
 
@@ -61,15 +65,18 @@ class Window {
      *
      * @throws raylib::RaylibException Thrown if the window failed to initiate.
      */
-    static RAYLIB_CPP_EXPECTED_RESULT_VOID Init(int width = 800, int height = 450, const std::string& title = "raylib", uint32_t flags = 0) {
+    static RAYLIB_CPP_EXPECTED_RESULT_VOID Init(int width = 800, int height = 450, czstring title = "raylib", uint32_t flags = 0) {
         if (flags != 0) {
             ::SetConfigFlags(flags);
         }
-        ::InitWindow(width, height, title.c_str());
+        ::InitWindow(width, height, title);
         if (!::IsWindowReady()) {
             RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to create Window"));
         }
         RAYLIB_CPP_RETURN_EXPECTED();
+    }
+    static RAYLIB_CPP_EXPECTED_RESULT_VOID Init(int width, int height, const std::string& title, uint32_t flags = 0) {
+        RAYLIB_CPP_RETURN_EXPECTED_VOID_VALUE(Init(width, height, title.c_str(), flags));
     }
 
     /**
@@ -256,6 +263,10 @@ class Window {
     /**
      * Set title for window
      */
+    Window& SetTitle(czstring title) {
+        ::SetWindowTitle(title);
+        return *this;
+    }
     Window& SetTitle(const std::string& title) {
         ::SetWindowTitle(title.c_str());
         return *this;
@@ -406,6 +417,9 @@ class Window {
     /**
      * Set clipboard text content
      */
+    void SetClipboardText(czstring text) {
+        ::SetClipboardText(text);
+    }
     void SetClipboardText(const std::string& text) {
         ::SetClipboardText(text.c_str());
     }

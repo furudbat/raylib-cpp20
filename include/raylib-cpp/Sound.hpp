@@ -1,15 +1,15 @@
 #ifndef RAYLIB_CPP_INCLUDE_SOUND_HPP_
 #define RAYLIB_CPP_INCLUDE_SOUND_HPP_
 
+#include "raylib.hpp"
+#include "raylib-cpp-utils.hpp"
+#ifdef __cpp_exceptions
+#include "RaylibException.hpp"
+#endif
+#include "RaylibError.hpp"
+
 #include <string>
 #include <filesystem>
-
-#include "./raylib.hpp"
-#include "./raylib-cpp-utils.hpp"
-#ifdef __cpp_exceptions
-#include "./RaylibException.hpp"
-#endif
-#include "./RaylibError.hpp"
 
 namespace raylib {
 
@@ -30,12 +30,12 @@ class Sound {
         m_data.frameCount = 0;
     }
 
-    constexpr Sound(owner<::AudioStream> _stream, unsigned int _frameCount) : m_data{_stream, _frameCount} {
+    constexpr Sound(::AudioStream _stream, unsigned int _frameCount) : m_data{_stream, _frameCount} {
         // Nothing.
     }
 
-    constexpr Sound(owner<const ::Sound&>) = delete;
-    constexpr Sound(owner<::Sound&&> other) noexcept {
+    constexpr Sound(const ::Sound&) = delete;
+    constexpr Sound(::Sound&& other) noexcept {
         set(other);
 
         other.stream = { nullptr, nullptr, 0, 0, 0 };
@@ -55,6 +55,9 @@ class Sound {
      *
      * @throws raylib::RaylibException Throws if the Sound failed to load.
      */
+    explicit Sound(czstring fileName) {
+        Load(fileName);
+    }
     explicit Sound(const std::filesystem::path& fileName) {
         Load(fileName);
     }
@@ -194,12 +197,15 @@ class Sound {
      *
      * @throws raylib::RaylibException Throws if the Sound failed to load.
      */
-    RAYLIB_CPP_EXPECTED_RESULT_VOID Load(const std::filesystem::path& fileName) RAYLIB_CPP_THROWS {
-        set(::LoadSound(fileName.c_str()));
+    RAYLIB_CPP_EXPECTED_RESULT_VOID Load(czstring fileName) RAYLIB_CPP_THROWS {
+        set(::LoadSound(fileName));
         if (!IsReady()) {
             RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Sound from file"));
         }
         RAYLIB_CPP_RETURN_EXPECTED();
+    }
+    RAYLIB_CPP_EXPECTED_RESULT_VOID Load(const std::filesystem::path& fileName) RAYLIB_CPP_THROWS {
+        RAYLIB_CPP_RETURN_EXPECTED_VOID_VALUE(Load(fileName.c_str()))
     }
 
     /**

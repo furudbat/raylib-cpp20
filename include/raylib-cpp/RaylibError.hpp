@@ -1,10 +1,11 @@
 #ifndef RAYLIB_CPP_INCLUDE_RAYLIBERROR_HPP_
 #define RAYLIB_CPP_INCLUDE_RAYLIBERROR_HPP_
 
+
+#include "raylib.hpp"
+
 #include <string>
 #include <optional>
-
-#include "./raylib.hpp"
 
 namespace raylib {
 
@@ -23,11 +24,11 @@ class RaylibError {
      *
      * @param message The message to provide for the exception.
      */
-    explicit RaylibError(std::string msg) : message(msg) {
+    explicit RaylibError(std::string msg) : message(std::move(msg)) {
         // Nothing
     }
 
-    RaylibError(RaylibErrorCode _code, std::string msg) : code(_code), message(msg) {
+    RaylibError(RaylibErrorCode _code, std::string msg) : code(_code), message(std::move(msg)) {
         // Nothing
     }
 

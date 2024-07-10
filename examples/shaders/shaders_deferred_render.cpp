@@ -262,10 +262,10 @@ int main()
                 // forward rendering
                 BeginMode3D(camera);
                 rlEnableShader(rlGetShaderIdDefault());
-                for(int i = 0; i < MAX_LIGHTS; i++)
+                for(const auto& light : lights)
                 {
-                    if (lights[i].enabled) DrawSphereEx(lights[i].position, 0.2f, 8, 8, lights[i].color);
-                    else DrawSphereWires(lights[i].position, 0.2f, 8, 8, ColorAlpha(lights[i].color, 0.3f));
+                    if (light.enabled) DrawSphereEx(light.position, 0.2f, 8, 8, light.color);
+                    else DrawSphereWires(light.position, 0.2f, 8, 8, ColorAlpha(light.color, 0.3f));
                 }
                 rlDisableShader();
                 EndMode3D();

@@ -1,8 +1,8 @@
 #ifndef RAYLIB_CPP_INCLUDE_RAYCOLLISION_HPP_
 #define RAYLIB_CPP_INCLUDE_RAYCOLLISION_HPP_
 
-#include "./raylib.hpp"
-#include "./raylib-cpp-utils.hpp"
+#include "raylib.hpp"
+#include "raylib-cpp-utils.hpp"
 
 namespace raylib {
 /**

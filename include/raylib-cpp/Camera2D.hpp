@@ -1,9 +1,9 @@
 #ifndef RAYLIB_CPP_INCLUDE_CAMERA2D_HPP_
 #define RAYLIB_CPP_INCLUDE_CAMERA2D_HPP_
 
-#include "./raylib.hpp"
-#include "./Vector2.hpp"
-#include "./raylib-cpp-utils.hpp"
+#include "raylib.hpp"
+#include "Vector2.hpp"
+#include "raylib-cpp-utils.hpp"
 
 namespace raylib {
 /**

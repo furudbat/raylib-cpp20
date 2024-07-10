@@ -1,16 +1,16 @@
 #ifndef RAYLIB_CPP_INCLUDE_MUSIC_HPP_
 #define RAYLIB_CPP_INCLUDE_MUSIC_HPP_
 
+#include "raylib.hpp"
+#include "raylib-cpp-utils.hpp"
+#ifdef __cpp_exceptions
+#include "RaylibException.hpp"
+#endif
+#include "RaylibError.hpp"
+
 #include <string>
 #include <filesystem>
 #include <chrono>
-
-#include "./raylib.hpp"
-#include "./raylib-cpp-utils.hpp"
-#ifdef __cpp_exceptions
-#include "./RaylibException.hpp"
-#endif
-#include "./RaylibError.hpp"
 
 namespace raylib {
 /**
@@ -21,14 +21,14 @@ class Music {
     inline static constexpr float DefaultSetPan = 0.5f; ///< center
 
     //[[deprecated("Use Music(music)")]]
-    explicit Music(owner<::AudioStream> stream,
+    explicit Music(::AudioStream stream,
             unsigned int frameCount = 0,
             bool looping = false,
             int ctxType = 0,
             owner<void*> ctxData = nullptr) : m_data{stream, frameCount, looping, ctxType, ctxData} {}
 
-    explicit constexpr Music(owner<const ::Music&> music) = delete;
-    explicit constexpr Music(owner<::Music&&> music = {
+    explicit constexpr Music(const ::Music& music) = delete;
+    explicit constexpr Music(::Music&& music = {
             .stream = {nullptr, nullptr, 0, 0, 0},
             .frameCount = 0,
             .looping = false,
@@ -49,6 +49,9 @@ class Music {
      *
      * @throws raylib::RaylibException Throws if the music failed to load.
      */
+    Music(czstring fileName) RAYLIB_CPP_THROWS {
+        Load(fileName);
+    }
     Music(const std::filesystem::path& fileName) RAYLIB_CPP_THROWS {
         Load(fileName);
     }
@@ -59,6 +62,9 @@ class Music {
      * @throws raylib::RaylibException Throws if the music failed to load.
      */
     Music(const std::string& fileType, std::span<unsigned char> data) RAYLIB_CPP_THROWS {
+        LoadFromMemory(fileType, data);
+    }
+    Music(czstring fileType, std::span<unsigned char> data) RAYLIB_CPP_THROWS {
         LoadFromMemory(fileType, data);
     }
 
@@ -239,12 +245,15 @@ class Music {
      *
      * @throws raylib::RaylibException Throws if the music failed to load.
      */
-    RAYLIB_CPP_EXPECTED_RESULT_VOID Load(const std::filesystem::path& fileName) {
-        set(::LoadMusicStream(fileName.c_str()));
+    RAYLIB_CPP_EXPECTED_RESULT_VOID Load(czstring fileName) {
+        set(::LoadMusicStream(fileName));
         if (!IsReady()) {
-            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Music from file: " + fileName.string()));
+            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError(::TextFormat("Failed to load Music from file: %s", fileName)));
         }
         RAYLIB_CPP_RETURN_EXPECTED();
+    }
+    RAYLIB_CPP_EXPECTED_RESULT_VOID Load(const std::filesystem::path& fileName) {
+        RAYLIB_CPP_RETURN_EXPECTED_VOID_VALUE(Load(fileName.c_str()));
     }
 
     /**
@@ -252,12 +261,15 @@ class Music {
      *
      * @throws raylib::RaylibException Throws if the music failed to load.
      */
-    RAYLIB_CPP_EXPECTED_RESULT_VOID LoadFromMemory(const std::string& fileType, std::span<unsigned char> data) {
-        set(::LoadMusicStreamFromMemory(fileType.c_str(), data.data(), static_cast<int>(data.size())));
+    RAYLIB_CPP_EXPECTED_RESULT_VOID LoadFromMemory(czstring fileType, std::span<unsigned char> data) {
+        set(::LoadMusicStreamFromMemory(fileType, data.data(), static_cast<int>(data.size())));
         if (!IsReady()) {
-            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError(::TextFormat("Failed to load Music from %s file dat", fileType.c_str())));
+            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError(::TextFormat("Failed to load Music from %s file dat", fileType)));
         }
         RAYLIB_CPP_RETURN_EXPECTED();
+    }
+    RAYLIB_CPP_EXPECTED_RESULT_VOID LoadFromMemory(const std::string& fileType, std::span<unsigned char> data) {
+        RAYLIB_CPP_RETURN_EXPECTED_VOID_VALUE(LoadFromMemory(fileType.c_str(), data));
     }
 
     /**

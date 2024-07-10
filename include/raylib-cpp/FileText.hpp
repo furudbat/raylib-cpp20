@@ -1,16 +1,16 @@
 #ifndef RAYLIB_CPP_INCLUDE_FILETEXT_HPP_
 #define RAYLIB_CPP_INCLUDE_FILETEXT_HPP_
 
+#include "raylib.hpp"
+#include "raylib-cpp-utils.hpp"
+#ifdef __cpp_exceptions
+#include "RaylibException.hpp"
+#endif
+#include "RaylibError.hpp"
+
 #include <bit>
 #include <string>
 #include <filesystem>
-
-#include "./raylib.hpp"
-#include "./raylib-cpp-utils.hpp"
-#ifdef __cpp_exceptions
-#include "./RaylibException.hpp"
-#endif
-#include "./RaylibError.hpp"
 
 namespace raylib {
 
@@ -33,6 +33,9 @@ public:
     explicit FileText(const std::filesystem::path& fileName) {
         Load(fileName);
     }
+    explicit FileText(czstring fileName) {
+        Load(fileName);
+    }
 
     GETTER(const char*, Data, m_data)
     GETTER(unsigned int, Length, m_length)
@@ -50,7 +53,7 @@ public:
     }
 
     void Load(const std::filesystem::path& fileName) { Load(fileName.c_str()); }
-    void Load(const char* fileName) noexcept {
+    void Load(czstring fileName) noexcept {
         m_data = ::LoadFileText(fileName);
         m_length = ::TextLength(m_data);
     }

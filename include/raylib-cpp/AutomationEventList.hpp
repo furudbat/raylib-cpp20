@@ -1,16 +1,16 @@
 #ifndef RAYLIB_CPP_INCLUDE_AUTOMATIONEVENTLIST_HPP_
 #define RAYLIB_CPP_INCLUDE_AUTOMATIONEVENTLIST_HPP_
 
+#include "raylib.hpp"
+#include "raylib-cpp-utils.hpp"
+#ifdef __cpp_exceptions
+#include "RaylibException.hpp"
+#endif
+#include "RaylibError.hpp"
+
 #include <cstdint>
 #include <filesystem>
 #include <utility>
-
-#include "./raylib.hpp"
-#include "./raylib-cpp-utils.hpp"
-#ifdef __cpp_exceptions
-#include "./RaylibException.hpp"
-#endif
-#include "./RaylibError.hpp"
 
 namespace raylib {
 
@@ -19,7 +19,7 @@ namespace raylib {
  */
 class AutomationEventList {
  public:
-    inline static constexpr unsigned int DefaultCapacity = 16384;
+    inline static constexpr unsigned int DefaultCapacity = 16384U;
 
     [[deprecated("Use AutomationEventList(automationEventList)")]]
     explicit constexpr AutomationEventList(uint32_t _capacity,
@@ -28,8 +28,8 @@ class AutomationEventList {
         // Nothing.
     }
 
-    constexpr AutomationEventList(owner<const ::AutomationEventList&> automationEventList) = delete;
-    constexpr AutomationEventList(owner<::AutomationEventList&&> automationEventList = {
+    constexpr AutomationEventList(const ::AutomationEventList& automationEventList) = delete;
+    constexpr AutomationEventList(::AutomationEventList&& automationEventList = {
             .capacity = DefaultCapacity,
             .count = 0,
             .events = nullptr,
@@ -100,13 +100,16 @@ class AutomationEventList {
      *
      * @throws raylib::RaylibException Throws if the AutomationEventList failed to load.
      */
-    RAYLIB_CPP_EXPECTED_RESULT_VOID Load(const std::filesystem::path& fileName) RAYLIB_CPP_THROWS {
+    RAYLIB_CPP_EXPECTED_RESULT_VOID Load(czstring fileName) RAYLIB_CPP_THROWS {
         Unload();
-        set(::LoadAutomationEventList(fileName.c_str()));
+        set(::LoadAutomationEventList(fileName));
         if (!IsReady()) {
             RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load automation event list"));
         }
         RAYLIB_CPP_RETURN_EXPECTED();
+    }
+    RAYLIB_CPP_EXPECTED_RESULT_VOID Load(const std::filesystem::path& fileName) RAYLIB_CPP_THROWS {
+        RAYLIB_CPP_RETURN_EXPECTED_VOID_VALUE(Load(fileName.c_str()));
     }
 
     /**

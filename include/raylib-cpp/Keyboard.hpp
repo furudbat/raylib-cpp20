@@ -1,7 +1,7 @@
 #ifndef RAYLIB_CPP_INCLUDE_KEYBOARD_HPP_
 #define RAYLIB_CPP_INCLUDE_KEYBOARD_HPP_
 
-#include "./raylib.hpp"
+#include "raylib.hpp"
 
 namespace raylib {
 /**

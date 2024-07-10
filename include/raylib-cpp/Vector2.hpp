@@ -1,15 +1,14 @@
 #ifndef RAYLIB_CPP_INCLUDE_VECTOR2_HPP_
 #define RAYLIB_CPP_INCLUDE_VECTOR2_HPP_
 
+#include "raylib.hpp"
+#include "raymath.hpp"
+#include "raylib-cpp-utils.hpp"
+
+#include <string>
 #ifndef RAYLIB_CPP_NO_MATH
 #include <cmath>
 #endif
-
-#include <string>
-
-#include "./raylib.hpp"
-#include "./raymath.hpp"
-#include "./raylib-cpp-utils.hpp"
 
 namespace raylib {
 /**

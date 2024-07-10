@@ -1,17 +1,17 @@
 #ifndef RAYLIB_CPP_INCLUDE_TEXTUREUNMANAGED_HPP_
 #define RAYLIB_CPP_INCLUDE_TEXTUREUNMANAGED_HPP_
 
+#include "raylib.hpp"
+#include "Image.hpp"
+#include "Vector2.hpp"
+#include "raylib-cpp-utils.hpp"
+#ifdef __cpp_exceptions
+#include "RaylibException.hpp"
+#endif
+#include "RaylibError.hpp"
+
 #include <bit>
 #include <string>
-
-#include "./raylib.hpp"
-#include "./Image.hpp"
-#include "./Vector2.hpp"
-#include "./raylib-cpp-utils.hpp"
-#ifdef __cpp_exceptions
-#include "./RaylibException.hpp"
-#endif
-#include "./RaylibError.hpp"
 
 namespace raylib {
 

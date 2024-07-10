@@ -1,19 +1,17 @@
 #ifndef RAYLIB_CPP_INCLUDE_MODEL_HPP_
 #define RAYLIB_CPP_INCLUDE_MODEL_HPP_
 
+#include "raylib.hpp"
+#include "raylib-cpp-utils.hpp"
+#include "Mesh.hpp"
+#include "ModelAnimation.hpp"
+#ifdef __cpp_exceptions
+#include "RaylibException.hpp"
+#endif
+#include "RaylibError.hpp"
+
 #include <string>
 #include <filesystem>
-
-#include "./raylib.hpp"
-#include "./raylib-cpp-utils.hpp"
-
-#include "./Mesh.hpp"
-#include "./ModelAnimation.hpp"
-#ifdef __cpp_exceptions
-#include "./RaylibException.hpp"
-#endif
-#include "./RaylibError.hpp"
-
 #include <unordered_map>
 
 namespace raylib {
@@ -52,8 +50,8 @@ class Model {
 
     Model() = default;
 
-    explicit Model(owner<const ::Model&> model) = delete;
-    explicit Model(owner<::Model&&> model) noexcept {
+    explicit Model(const ::Model& model) = delete;
+    explicit Model(::Model&& model) noexcept {
         set(model);
 
         model.meshCount = 0;
@@ -71,6 +69,9 @@ class Model {
      *
      * @throws raylib::RaylibException Throws if failed to load the Modal.
      */
+    Model(czstring fileName) RAYLIB_CPP_THROWS {
+        Load(fileName);
+    }
     Model(const std::filesystem::path& fileName) RAYLIB_CPP_THROWS {
         Load(fileName);
     }
@@ -107,8 +108,8 @@ class Model {
         other.m_data.bindPose = nullptr;
     }
 
-    Model& operator=(owner<const ::Model&> model) = delete;
-    Model& operator=(owner<::Model&&> model) noexcept {
+    Model& operator=(const ::Model& model) = delete;
+    Model& operator=(::Model&& model) noexcept {
         set(model);
         m_trackMaterialOwnership.clear();
 
@@ -446,12 +447,15 @@ class Model {
      *
      * @throws raylib::RaylibException Throws if failed to load the Modal.
      */
-    RAYLIB_CPP_EXPECTED_RESULT_VOID Load(const std::filesystem::path& fileName) RAYLIB_CPP_THROWS {
-        set(::LoadModel(fileName.c_str()));
+    RAYLIB_CPP_EXPECTED_RESULT_VOID Load(czstring fileName) RAYLIB_CPP_THROWS {
+        set(::LoadModel(fileName));
         if (!IsReady()) {
-            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Model from " + fileName.string()));
+            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError(::TextFormat("Failed to load Model: %s", fileName)));
         }
         RAYLIB_CPP_RETURN_EXPECTED();
+    }
+    RAYLIB_CPP_EXPECTED_RESULT_VOID Load(const std::filesystem::path& fileName) RAYLIB_CPP_THROWS {
+        RAYLIB_CPP_RETURN_EXPECTED_VOID_VALUE(Load(fileName.c_str()))
     }
 
     /**
@@ -511,12 +515,15 @@ class Model {
         RAYLIB_CPP_RETURN_EXPECTED();
     }
 
-    RAYLIB_CPP_EXPECTED_STATIC_RESULT(Model) LoadFromFile(const std::filesystem::path& fileName) RAYLIB_CPP_THROWS {
-        Model model (::LoadModel(fileName.c_str()));
+    RAYLIB_CPP_EXPECTED_STATIC_RESULT(Model) LoadFromFile(czstring fileName) RAYLIB_CPP_THROWS {
+        Model model (::LoadModel(fileName));
         if (!model.IsReady()) {
-            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Model from " + fileName.string()));
+            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError(::TextFormat("Failed to load Model: %s", fileName)));
         }
         RAYLIB_CPP_RETURN_EXPECTED_VALUE(model);
+    }
+    RAYLIB_CPP_EXPECTED_STATIC_RESULT(Model) LoadFromFile(const std::filesystem::path& fileName) RAYLIB_CPP_THROWS {
+        RAYLIB_CPP_RETURN_EXPECTED_VALUE(LoadFromFile(fileName.c_str()));
     }
     RAYLIB_CPP_EXPECTED_STATIC_RESULT(Model) LoadFromMesh(::Mesh&& mesh) RAYLIB_CPP_THROWS {
         Model model (::LoadModelFromMesh(mesh));
