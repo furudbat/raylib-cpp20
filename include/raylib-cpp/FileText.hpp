@@ -52,11 +52,11 @@ public:
         return m_data;
     }
 
-    void Load(const std::filesystem::path& fileName) { Load(fileName.c_str()); }
     void Load(czstring fileName) noexcept {
         m_data = ::LoadFileText(fileName);
         m_length = ::TextLength(m_data);
     }
+    void Load(const std::filesystem::path& fileName) { Load(fileName.c_str()); }
 
     void Unload() noexcept {
         if (m_data != nullptr) {

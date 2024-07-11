@@ -112,7 +112,7 @@ class Camera3D : public ::Camera3D {
             const ::Texture2D& texture,
             const ::Vector3& center,
             float size,
-            ::Color tint = {255, 255, 255, 255}) const noexcept {
+            ::Color tint = WHITE) const noexcept {
         ::DrawBillboard(*this, texture, center, size, tint);
     }
 
@@ -124,7 +124,7 @@ class Camera3D : public ::Camera3D {
             ::Rectangle sourceRec,
             ::Vector3 center,
             ::Vector2 size,
-            ::Color tint = {255, 255, 255, 255}) const noexcept {
+            ::Color tint = WHITE) const noexcept {
         ::DrawBillboardRec(*this, texture, sourceRec, center, size, tint);
     }
 

@@ -8,6 +8,7 @@
 #include "RaylibException.hpp"
 #endif
 #include "RaylibError.hpp"
+#include "enums.hpp"
 
 #include <string>
 #include <chrono>

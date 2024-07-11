@@ -31,7 +31,8 @@ int main()
 
     // Load RAW image data (512x512, 32bit RGBA, no file header)
     raylib::Texture2D fudesumi = [](){
-        raylib::Image fudesumiRaw ("resources/fudesumi.raw", 384, 512, PIXELFORMAT_UNCOMPRESSED_R8G8B8A8, 0);
+        //raylib::Image fudesumiRaw ("resources/fudesumi.raw", 384, 512, raylib::PixelFormat::UncompressedR8G8B8A8, 0);
+        raylib::Image fudesumiRaw ("resources/fudesumi.raw", { .width = 384, .height = 512, .format = raylib::PixelFormat::UncompressedR8G8B8A8, .headerSize = 0 });
         return raylib::Texture2D(fudesumiRaw);  // Upload CPU (RAM) image to GPU (VRAM)
     }();
 

@@ -9,15 +9,21 @@
 #include "RaylibException.hpp"
 #endif
 #include "RaylibError.hpp"
+#include "enums.hpp"
 
 #include <bit>
 #include <cassert>
 #include <filesystem>
-#include <span>
 #include <string>
+#include <variant>
+#if defined(__has_include) && __has_include(<version>)
 #include <version>
+#if defined(__cpp_lib_span) && __cpp_lib_span >= 202002L
+#include <span>
+#endif // __cpp_lib_span >= 202002L
 #ifdef __cpp_lib_mdspan
 #include <mdspan>
+#endif
 #endif
 
 namespace raylib {
@@ -67,7 +73,7 @@ class Image {
         int width{0};
         int height{0};
         int mipmaps{1};
-        int format{PIXELFORMAT_UNCOMPRESSED_R8G8B8A8};
+        PixelFormat format{PixelFormat::UncompressedR8G8B8A8};
     };
     template<typename T>
     constexpr Image(RayUniquePtr<T[]>&& pdata, RawPtrImageOptions options) : m_data{pdata.release(), options.width, options.height, options.mipmaps, options.format} {
@@ -107,7 +113,7 @@ class Image {
     struct LoadImageRawOptions {
         int width;
         int height;
-        int format;
+        PixelFormat format;
         int headerSize{0};
     };
     /**
@@ -123,6 +129,10 @@ class Image {
     }
     [[deprecated("use Image(LoadImageRawOptions) to avoid parameter mismatches")]]
     Image(const std::filesystem::path& fileName, int _width, int _height, int _format, int headerSize = 0) RAYLIB_CPP_THROWS {
+        LoadRaw(fileName, _width, _height, _format, headerSize);
+    }
+    [[deprecated("use Image(LoadImageRawOptions) to avoid parameter mismatches")]]
+    Image(const std::filesystem::path& fileName, int _width, int _height, PixelFormat _format, int headerSize = 0) RAYLIB_CPP_THROWS {
         LoadRaw(fileName, _width, _height, _format, headerSize);
     }
 
@@ -390,7 +400,7 @@ class Image {
      * @see ::LoadImageRaw()
      */
      RAYLIB_CPP_EXPECTED_RESULT_VOID LoadRaw(czstring fileName, int _width, int _height, int _format, int headerSize) RAYLIB_CPP_THROWS {
-        set(::LoadImageRaw(fileName, _width, _height, _format, headerSize));
+        set(::LoadImageRaw(fileName, _width, _height, static_cast<int>(_format), headerSize));
         if (!IsReady()) {
             RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError(::TextFormat("Failed to load Image from file: %s", fileName)));
         }
@@ -399,8 +409,11 @@ class Image {
     RAYLIB_CPP_EXPECTED_RESULT_VOID LoadRaw(const std::filesystem::path& fileName, int width, int height, int format, int headerSize) RAYLIB_CPP_THROWS {
         RAYLIB_CPP_RETURN_EXPECTED_VOID_VALUE(LoadRaw(fileName.c_str(), width, height, format, headerSize));
     }
+    RAYLIB_CPP_EXPECTED_RESULT_VOID LoadRaw(const std::filesystem::path& fileName, int width, int height, PixelFormat format, int headerSize) RAYLIB_CPP_THROWS {
+        RAYLIB_CPP_RETURN_EXPECTED_VOID_VALUE(LoadRaw(fileName.c_str(), width, height, static_cast<int>(format), headerSize));
+    }
     RAYLIB_CPP_EXPECTED_RESULT_VOID LoadRaw(czstring fileName, LoadImageRawOptions options) RAYLIB_CPP_THROWS {
-        set(::LoadImageRaw(fileName, options.width, options.height, options.format, options.headerSize));
+        set(::LoadImageRaw(fileName, options.width, options.height, static_cast<int>(options.format), options.headerSize));
         if (!IsReady()) {
             RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError(::TextFormat("Failed to load Image from file: %s", fileName)));
         }
@@ -444,17 +457,17 @@ class Image {
     [[deprecated("Use LoadImageRaw(LoadImageRawOptions) to avoid parameter mismatches")]]
     [[nodiscard]] static raylib::Image LoadImageRaw(czstring fileName,
                                                     int width, int height,
-                                                    int format, int headerSize) {
+                                                    PixelFormat format, int headerSize) {
         raylib::Image ret;
-        ret.LoadRaw(fileName, width, height, format, headerSize);
+        ret.LoadRaw(fileName, width, height, static_cast<int>(format), headerSize);
         return ret;
     }
     [[deprecated("Use LoadImageRaw(LoadImageRawOptions) to avoid parameter mismatches")]]
     [[nodiscard]] static raylib::Image LoadImageRaw(const std::filesystem::path& fileName,
                                                     int width, int height,
-                                                    int format, int headerSize) {
+                                                    PixelFormat format, int headerSize) {
         raylib::Image ret;
-        ret.LoadRaw(fileName.c_str(), width, height, format, headerSize);
+        ret.LoadRaw(fileName.c_str(), width, height, static_cast<int>(format), headerSize);
         return ret;
     }
     [[nodiscard]] static raylib::Image LoadImageRaw(czstring fileName, LoadImageRawOptions options) {
@@ -696,11 +709,73 @@ class Image {
         RAYLIB_CPP_RETURN_EXPECTED_VOID_VALUE(ExportAsCode(fileName.c_str()));
     }
 
-    CONST_GETTER(void*, Data, m_data.data)
+    CONST_GETTER(void*, DataC, m_data.data)
     GETTER(int, Width, m_data.width)
     GETTER(int, Height, m_data.height)
     GETTER(int, Mipmaps, m_data.mipmaps)
-    GETTER(int, Format, m_data.format)
+    GETTER(PixelFormat, Format, static_cast<PixelFormat>(m_data.format))
+    GETTER(int, FormatC, m_data.format)
+
+    [[nodiscard]] std::variant<
+            std::nullptr_t,
+            std::span<const uint8_t>,
+            std::span<const uint16_t>,
+            std::span<const uint32_t>,
+            std::span<const float>,
+            std::span<const float16>
+            > GetData() const {
+        switch(static_cast<PixelFormat>(m_data.format)) {
+            case PixelFormat::UncompressedGrayscale:
+                return std::span<const uint8_t>{std::bit_cast<uint8_t*>(m_data.data), static_cast<size_t>(m_data.width*m_data.height)};
+            case PixelFormat::UncompressedGrayAlpha:
+                return std::span<const uint8_t>{std::bit_cast<uint8_t*>(m_data.data), static_cast<size_t>(m_data.width*m_data.height*2)};
+            case PixelFormat::UncompressedR5G6B5:
+                return std::span<const uint16_t>{std::bit_cast<uint16_t*>(m_data.data), static_cast<size_t>(m_data.width*m_data.height)};
+            case PixelFormat::UncompressedR8G8B8:
+                return std::span<const uint8_t>{std::bit_cast<uint8_t*>(m_data.data), static_cast<size_t>(m_data.width*m_data.height*3)};
+            case PixelFormat::UncompressedR5G5B5A1:
+                return std::span<const uint16_t>{std::bit_cast<uint16_t*>(m_data.data), static_cast<size_t>(m_data.width*m_data.height)};
+            case PixelFormat::UncompressedR4G4B4A4:
+                return std::span<const uint16_t>{std::bit_cast<uint16_t*>(m_data.data), static_cast<size_t>(m_data.width*m_data.height)};
+            case PixelFormat::UncompressedR8G8B8A8:
+                return std::span<const uint32_t>{std::bit_cast<uint32_t*>(m_data.data), static_cast<size_t>(m_data.width*m_data.height)};
+            case PixelFormat::UncompressedR32:
+                return std::span<const float>{std::bit_cast<float*>(m_data.data), static_cast<size_t>(m_data.width*m_data.height)};
+            case PixelFormat::UncompressedR32G32B32:
+                return std::span<const float>{std::bit_cast<float*>(m_data.data), static_cast<size_t>(m_data.width*m_data.height*3)};
+            case PixelFormat::UncompressedR32G32B32A32:
+                return std::span<const float>{std::bit_cast<float*>(m_data.data), static_cast<size_t>(m_data.width*m_data.height*4)};
+            case PixelFormat::UncompressedR16:
+                return std::span<const float16>{std::bit_cast<float16*>(m_data.data), static_cast<size_t>(m_data.width*m_data.height)};
+            case PixelFormat::UncompressedR16G16B16:
+                return std::span<const float16>{std::bit_cast<float16*>(m_data.data), static_cast<size_t>(m_data.width*m_data.height*3)};
+            case PixelFormat::UncompressedR16G16B16A16:
+                return std::span<const float16>{std::bit_cast<float16*>(m_data.data), static_cast<size_t>(m_data.width*m_data.height*4)};
+            case PixelFormat::CompressedDxt1Rgb:
+                return std::span<const uint8_t>{std::bit_cast<uint8_t*>(m_data.data), static_cast<size_t>(m_data.width*m_data.height/2)};
+            case PixelFormat::CompressedDxt1Rgba:
+                return std::span<const uint8_t>{std::bit_cast<uint8_t*>(m_data.data), static_cast<size_t>(m_data.width*m_data.height/2)};
+            case PixelFormat::CompressedDxt3Rgba:
+                return std::span<const uint8_t>{std::bit_cast<uint8_t*>(m_data.data), static_cast<size_t>(m_data.width*m_data.height)};
+            case PixelFormat::CompressedDxt5Rgba:
+                return std::span<const uint8_t>{std::bit_cast<uint8_t*>(m_data.data), static_cast<size_t>(m_data.width*m_data.height)};
+            case PixelFormat::CompressedEtc1Rgb:
+                return std::span<const uint8_t>{std::bit_cast<uint8_t*>(m_data.data), static_cast<size_t>(m_data.width*m_data.height/2)};
+            case PixelFormat::CompressedEtc2Rgb:
+                return std::span<const uint8_t>{std::bit_cast<uint8_t*>(m_data.data), static_cast<size_t>(m_data.width*m_data.height/2)};
+            case PixelFormat::CompressedEtc2EacRgba:
+                return std::span<const uint8_t>{std::bit_cast<uint8_t*>(m_data.data), static_cast<size_t>(m_data.width*m_data.height)};
+            case PixelFormat::CompressedPvrtRgb:
+                return std::span<const uint8_t>{std::bit_cast<uint8_t*>(m_data.data), static_cast<size_t>(m_data.width*m_data.height/2)};
+            case PixelFormat::CompressedPvrtRgba:
+                return std::span<const uint8_t>{std::bit_cast<uint8_t*>(m_data.data), static_cast<size_t>(m_data.width*m_data.height/2)};
+            case PixelFormat::CompressedAstc4x4Rgba:
+                return std::span<const uint8_t>{std::bit_cast<uint8_t*>(m_data.data), static_cast<size_t>(m_data.width*m_data.height)};
+            case PixelFormat::CompressedAstc8x8Rgba:
+                return std::span<const uint8_t>{std::bit_cast<uint8_t*>(m_data.data), static_cast<size_t>(m_data.width*m_data.height/4)};
+        }
+        return nullptr;
+    }
 
     /**
      * Retrieve the width and height of the image.
@@ -1117,16 +1192,17 @@ class Image {
     /**
      * Get pixel data size in bytes for certain format
      */
+    [[deprecated("Use GetPixelDataSize(options) for stronger types and avoiding parameter mismatching")]]
     [[nodiscard]] static int GetPixelDataSize(int width, int height, int format = PIXELFORMAT_UNCOMPRESSED_R32G32B32A32) noexcept {
         return ::GetPixelDataSize(width, height, format);
     }
     struct GetPixelDataSizeOptions {
         int width;
         int height;
-        int format {PIXELFORMAT_UNCOMPRESSED_R32G32B32A32};
+        PixelFormat format {PixelFormat::UncompressedR32G32B32A32};
     };
     [[nodiscard]] static int GetPixelDataSize(GetPixelDataSizeOptions options) noexcept {
-        return ::GetPixelDataSize(options.width, options.height, options.format);
+        return ::GetPixelDataSize(options.width, options.height, static_cast<int>(options.format));
     }
 
     /**

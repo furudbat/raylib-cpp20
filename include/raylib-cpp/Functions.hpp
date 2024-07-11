@@ -6,12 +6,16 @@
 
 #include "raylib.hpp"
 #include "raylib-cpp-utils.hpp"
+#include "enums.hpp"
 
 #include <filesystem>
 #include <string>
 #include <vector>
 
 namespace raylib {
+
+static inline constexpr auto Deg2Rad = DEG2RAD;
+static inline constexpr auto Rad2Deg = RAD2DEG;
 
 class RayDirectoryFilesFilePathList {
 public:
@@ -228,13 +232,9 @@ struct LoadImageAnimResult { raylib::Image image; int frames; };
 /**
  * Draw text (using default font)
  */
-[[maybe_unused]] RLCPPAPI inline void DrawText(const char* text, int posX, int posY, int fontSize, ::Color color) noexcept {
+[[maybe_unused]] RLCPPAPI inline void DrawText(czstring text, int posX, int posY, int fontSize, ::Color color) noexcept {
     ::DrawText(text, posX, posY, fontSize, color);
 }
-
-/**
- * Draw text (using default font)
- */
 [[maybe_unused]] RLCPPAPI inline void DrawText(
         const std::string& text,
         int posX, int posY,
@@ -246,7 +246,7 @@ struct LoadImageAnimResult { raylib::Image image; int frames; };
 /**
  * Draw text using font and additional parameters
  */
-[[maybe_unused]] RLCPPAPI inline void DrawTextEx(const Font& font, const char* text, ::Vector2 position,
+[[maybe_unused]] RLCPPAPI inline void DrawTextEx(const Font& font, czstring text, ::Vector2 position,
                                                  float fontSize, float spacing, ::Color tint) {
     ::DrawTextEx(font.c_raylib(), text, position, fontSize, spacing, tint);
 }
@@ -262,7 +262,7 @@ struct LoadImageAnimResult { raylib::Image image; int frames; };
 /**
  * Draw text using Font and pro parameters (rotation)
  */
-[[maybe_unused]] RLCPPAPI inline void DrawTextPro(const Font& font, const char* text, ::Vector2 position,
+[[maybe_unused]] RLCPPAPI inline void DrawTextPro(const Font& font, czstring text, ::Vector2 position,
         ::Vector2 origin, float rotation, float fontSize, float spacing, ::Color tint) {
     ::DrawTextPro(font.c_raylib(), text, position, origin, rotation, fontSize, spacing, tint);
 }
@@ -292,7 +292,7 @@ struct LoadImageAnimResult { raylib::Image image; int frames; };
 /**
  * Measure string width for default font
  */
-[[maybe_unused]] RLCPPAPI inline int MeasureText(const char* text, int fontSize) noexcept {
+[[maybe_unused]] RLCPPAPI inline int MeasureText(czstring text, int fontSize) noexcept {
     return ::MeasureText(text, fontSize);
 }
 
@@ -306,7 +306,7 @@ struct LoadImageAnimResult { raylib::Image image; int frames; };
 /**
  * Check if two text string are equal
  */
-[[maybe_unused]] RLCPPAPI inline bool TextIsEqual(const char* text1, const char* text2) {
+[[maybe_unused]] RLCPPAPI inline bool TextIsEqual(czstring text1, const char* text2) {
     return ::TextIsEqual(text1, text2);
 }
 
@@ -320,7 +320,7 @@ struct LoadImageAnimResult { raylib::Image image; int frames; };
 /**
  * Check if two text string are equal
  */
-[[maybe_unused]] RLCPPAPI inline unsigned int TextLength(const char* text) noexcept {
+[[maybe_unused]] RLCPPAPI inline unsigned int TextLength(czstring text) noexcept {
     return ::TextLength(text);
 }
 

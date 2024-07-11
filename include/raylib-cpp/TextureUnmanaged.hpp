@@ -9,6 +9,7 @@
 #include "RaylibException.hpp"
 #endif
 #include "RaylibError.hpp"
+#include "enums.hpp"
 
 #include <bit>
 #include <string>

@@ -5,6 +5,7 @@
 #include "raylib-cpp-utils.hpp"
 #include "BoundingBox.hpp"
 #include "Image.hpp"
+#include "enums.hpp"
 
 #include <string>
 #include <vector>

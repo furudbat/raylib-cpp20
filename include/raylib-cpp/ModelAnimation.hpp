@@ -9,10 +9,12 @@
 #include <vector>
 #include <string>
 #include <filesystem>
+#if defined(__has_include) && __has_include(<version>)
 #include <version>
 #ifdef __cpp_lib_mdspan
 #include <mdspan>
 #include <bit>
+#endif
 #endif
 
 namespace raylib {

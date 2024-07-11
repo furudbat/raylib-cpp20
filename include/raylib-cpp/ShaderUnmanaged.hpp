@@ -5,6 +5,7 @@
 #include "raylib.hpp"
 #include "raylib-cpp-utils.hpp"
 #include "Texture.hpp"
+#include "enums.hpp"
 
 #include <rlgl.h>
 
