@@ -63,8 +63,8 @@ namespace MaterialMapIndex {
     inline constexpr MaterialMapIndexT Height {6};            // Heightmap material
     inline constexpr MaterialMapIndexT Cubemap {7};           // Cubemap material (NOTE: Uses GL_TEXTURE_CUBE_MAP)
     inline constexpr MaterialMapIndexT Irradiance {8};        // Irradiance material (NOTE: Uses GL_TEXTURE_CUBE_MAP)
-    inline constexpr MaterialMapIndexT PREFILTER {9};         // Prefilter material (NOTE: Uses GL_TEXTURE_CUBE_MAP)
-    inline constexpr MaterialMapIndexT BRDF {10};             // Brdf material
+    inline constexpr MaterialMapIndexT Prefilter {9};         // Prefilter material (NOTE: Uses GL_TEXTURE_CUBE_MAP)
+    inline constexpr MaterialMapIndexT Brdf {10};             // Brdf material
     inline constexpr MaterialMapIndexT Diffuse = Albedo;
     inline constexpr MaterialMapIndexT Specular = Metalness;
 }
@@ -86,19 +86,19 @@ namespace ShaderLocationIndex {
     inline constexpr ShaderLocationIndexT ColorDiffuse{12};       // Shader location: vector uniform: diffuse color
     inline constexpr ShaderLocationIndexT ColorSpecular{13};      // Shader location: vector uniform: specular color
     inline constexpr ShaderLocationIndexT ColorAmbient{14};       // Shader location: vector uniform: ambient color
-    inline constexpr ShaderLocationIndexT Albedo{15};          // Shader location: sampler2d texture: albedo (same as: MAP_DIFFUSE)
-    inline constexpr ShaderLocationIndexT Metalness{16};       // Shader location: sampler2d texture: metalness (same as: MAP_SPECULAR)
-    inline constexpr ShaderLocationIndexT Normal{17};          // Shader location: sampler2d texture: normal
-    inline constexpr ShaderLocationIndexT Roughness{18};       // Shader location: sampler2d texture: roughness
-    inline constexpr ShaderLocationIndexT Occlusion{19};       // Shader location: sampler2d texture: occlusion
-    inline constexpr ShaderLocationIndexT Emission{20};        // Shader location: sampler2d texture: emission
-    inline constexpr ShaderLocationIndexT Height{21};          // Shader location: sampler2d texture: height
-    inline constexpr ShaderLocationIndexT Cubemap{22};         // Shader location: samplerCube texture: cubemap
-    inline constexpr ShaderLocationIndexT Irradiance{23};      // Shader location: samplerCube texture: irradiance
-    inline constexpr ShaderLocationIndexT Prefilter{24};       // Shader location: samplerCube texture: prefilter
-    inline constexpr ShaderLocationIndexT Brdf{25};             // Shader location: sampler2d texture: brdf
-    inline constexpr ShaderLocationIndexT Diffuse = Albedo;
-    inline constexpr ShaderLocationIndexT Specular = Metalness;
+    inline constexpr ShaderLocationIndexT MapAlbedo{15};          // Shader location: sampler2d texture: albedo (same as: MAP_DIFFUSE)
+    inline constexpr ShaderLocationIndexT MapMetalness{16};       // Shader location: sampler2d texture: metalness (same as: MAP_SPECULAR)
+    inline constexpr ShaderLocationIndexT MapNormal{17};          // Shader location: sampler2d texture: normal
+    inline constexpr ShaderLocationIndexT MapRoughness{18};       // Shader location: sampler2d texture: roughness
+    inline constexpr ShaderLocationIndexT MapOcclusion{19};       // Shader location: sampler2d texture: occlusion
+    inline constexpr ShaderLocationIndexT MapEmission{20};        // Shader location: sampler2d texture: emission
+    inline constexpr ShaderLocationIndexT MapHeight{21};          // Shader location: sampler2d texture: height
+    inline constexpr ShaderLocationIndexT MapCubemap{22};         // Shader location: samplerCube texture: cubemap
+    inline constexpr ShaderLocationIndexT MapIrradiance{23};      // Shader location: samplerCube texture: irradiance
+    inline constexpr ShaderLocationIndexT MapPrefilter{24};       // Shader location: samplerCube texture: prefilter
+    inline constexpr ShaderLocationIndexT MapBrdf{25};             // Shader location: sampler2d texture: brdf
+    inline constexpr ShaderLocationIndexT MapDiffuse = MapAlbedo;
+    inline constexpr ShaderLocationIndexT MapSpecular = MapMetalness;
 }
 
 // Shader uniform data type

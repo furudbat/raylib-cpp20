@@ -79,6 +79,8 @@ class Image {
     constexpr Image(RayUniquePtr<T[]>&& pdata, RawPtrImageOptions options) : m_data{pdata.release(), options.width, options.height, options.mipmaps, options.format} {
         pdata = nullptr;
     }
+    constexpr Image(owner<void*> _data, RawPtrImageOptions options) : m_data{_data, options.width, options.height, options.mipmaps,
+                                                                             static_cast<int>(options.format)} {}
 
     explicit constexpr Image(const ::Image& image) = delete;
     explicit constexpr Image(::Image&& image = {
@@ -1232,7 +1234,7 @@ class Image {
         m_data.format = image.format;
     }
 
-    ::Image m_data;
+    ::Image m_data{};
 };
 }  // namespace raylib
 

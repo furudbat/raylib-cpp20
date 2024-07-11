@@ -80,7 +80,7 @@ int main()
 
     raylib::Shader deferredShader (LoadShader("resources/shaders/glsl330/deferred_shading.vs",
                                        "resources/shaders/glsl330/deferred_shading.fs"));
-    deferredShader.SetLocFromLocation(SHADER_LOC_VECTOR_VIEW, "viewPosition");
+    deferredShader.SetLocFromLocation(raylib::ShaderLocationIndex::VectorView, "viewPosition");
 
     // Initialize the G-buffer
     GBuffer gBuffer;
@@ -175,7 +175,7 @@ int main()
         camera.Update(CAMERA_ORBITAL);
 
         // Update the shader with the camera view vector (points towards { 0.0f, 0.0f, 0.0f })
-        deferredShader.SetValueFromLoc(SHADER_LOC_VECTOR_VIEW, camera.position);
+        deferredShader.SetValueFromLoc(raylib::ShaderLocationIndex::VectorView, camera.position);
 
         // Check key inputs to enable/disable lights
         if (IsKeyPressed(KEY_Y)) { lights[0].enabled = !lights[0].enabled; }

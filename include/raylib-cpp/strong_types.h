@@ -16,9 +16,9 @@ namespace strong_types {
     class Type {
         T obj;
     public:
-        Type() = default;
+        constexpr Type() = default;
 
-        Type(const Type &other) = default;
+        constexpr Type(const Type &other) = default;
 
         template<ConversionType USE = CONVERSION, std::enable_if_t<USE != ConversionType::Implicit, int> = 0>
         constexpr explicit Type(const T &&o) noexcept : obj{o} {};
@@ -32,7 +32,7 @@ namespace strong_types {
         template<ConversionType USE = CONVERSION, std::enable_if_t<USE == ConversionType::Implicit, int> = 0>
         constexpr Type(const T &o) noexcept : obj{o} {};
 
-        Type &operator=(const Type<T, P> &other) noexcept {
+        constexpr Type &operator=(const Type<T, P> &other) noexcept {
             if (&other == this) {
                 return *this;
             }
@@ -42,12 +42,12 @@ namespace strong_types {
         }
 
         template<ConversionType USE = CONVERSION, std::enable_if_t<USE == ConversionType::Explicit, int> = 0>
-        explicit operator T() const noexcept {
+        constexpr explicit operator T() const noexcept {
             return obj;
         }
 
         template<ConversionType USE = CONVERSION, std::enable_if_t<USE == ConversionType::Implicit, int> = 0>
-        operator T() const noexcept {
+        constexpr operator T() const noexcept {
             return obj;
         }
 

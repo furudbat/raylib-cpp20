@@ -13,8 +13,17 @@
 #include <vector>
 #include <array>
 
-namespace raylib {
+//----------------------------------------------------------------------------------
+// Defines and Macros
+//----------------------------------------------------------------------------------
+#ifndef MAX_MATERIAL_MAPS
+#define MAX_MATERIAL_MAPS       12    // Maximum number of maps supported
+#endif
+#ifndef MAX_MESH_VERTEX_BUFFERS
+#define MAX_MESH_VERTEX_BUFFERS  7    // Maximum vertex buffers (VBO) per mesh
+#endif
 
+namespace raylib {
 
 enum class MaterialShaderOption : uint8_t {
     UnloadShaderWhenUnloadingMaterial = 0,             ///< Unloads Shader when UnloadingMaterial
@@ -48,7 +57,7 @@ struct RayMaterials {
     std::span<const ::Material> AsSpan() const { return {data, size}; }
 };
 
-inline ::Shader DefaultMaterialShader() {
+[[maybe_unused]] RLCPPAPI inline ::Shader DefaultMaterialShader() {
     return ::Shader {
         .id = rlGetShaderIdDefault(),
         .locs = rlGetShaderLocsDefault(),
@@ -130,10 +139,11 @@ class Material {
     /**
      * Load materials from model file
      */
-    static std::vector<Material> LoadMaterialsFromModel(czstring fileName) {
+    [[nodiscard]] static std::vector<Material> LoadMaterialsFromModel(czstring fileName) {
         RayMaterials materials = [&]() {
             int count = 0;
             ::Material* materials_data = ::LoadMaterials(fileName, &count);
+            assert(count >= 0);
             return RayMaterials(materials_data, static_cast<size_t>(count));
         }();
 
@@ -149,7 +159,7 @@ class Material {
 
         return ret;
     }
-    static std::vector<Material> LoadMaterialsFromModel(const std::string& fileName) {
+    [[nodiscard]] static std::vector<Material> LoadMaterialsFromModel(const std::string& fileName) {
         return LoadMaterialsFromModel(fileName.c_str());
     }
 
@@ -274,18 +284,29 @@ class Material {
     }
 
 
-    CONST_GETTER(::MaterialMap*, Maps, m_data.maps)
+    //CONST_GETTER(::MaterialMap*, MapsC, m_data.maps)
+    SPAN_GETTER(::MaterialMap, Maps, m_data.maps, MAX_MATERIAL_MAPS)
 
-    const ::MaterialMap& GetMap(size_t index) const {
+    [[nodiscard]] const ::MaterialMap& GetMap(size_t index) const {
         return m_data.maps[index];
     }
-    ::MaterialMap& GetMap(size_t index) {
+    [[nodiscard]] ::MaterialMap& GetMap(size_t index) {
         return m_data.maps[index];
+    }
+
+    [[nodiscard]] const ::MaterialMap& GetMap(MaterialMapIndexT index) const {
+        return m_data.maps[static_cast<size_t>(index)];
+    }
+    [[nodiscard]] ::MaterialMap& GetMap(MaterialMapIndexT index) {
+        return m_data.maps[static_cast<size_t>(index)];
     }
 
     /** Retrieves the params value for the object. @return The params value of the object. */
-    constexpr std::array<float, 4> GetParams() const {
+    [[nodiscard]] constexpr std::array<float, 4> GetParams() const {
         return std::array<float, 4>{ m_data.params[0], m_data.params[1], m_data.params[2], m_data.params[3] };
+    }
+    [[nodiscard]] constexpr std::span<float> GetParams() {
+        return std::span<float>{ m_data.params, 4 };
     }
     /** Sets the params value for the object. @param value The value of which to set params to. */
     constexpr void SetParams(std::array<float, 4> value) {
@@ -322,8 +343,19 @@ class Material {
         ::SetMaterialTexture(&m_data, mapType, texture);
         return *this;
     }
+    [[deprecated("Use SetMaterialTexture(MaterialMapIndex, ...)")]]
     Material& SetMaterialTexture(int mapType, const raylib::Texture2D& texture) {
         ::SetMaterialTexture(&m_data, mapType, texture.c_raylib());
+        return *this;
+    }
+    Material& SetMaterialTexture(MaterialMapIndexT mapType, const ::Texture2D& texture) noexcept {
+        // underlying type is size_t, but SetMaterialTexture needs int
+        ::SetMaterialTexture(&m_data, static_cast<int>(static_cast<size_t>(mapType)), texture);
+        return *this;
+    }
+    Material& SetMaterialTexture(MaterialMapIndexT mapType, const raylib::Texture2D& texture) {
+        // underlying type is size_t, but SetMaterialTexture needs int
+        ::SetMaterialTexture(&m_data, static_cast<int>(static_cast<size_t>(mapType)), texture.c_raylib());
         return *this;
     }
 

@@ -103,20 +103,20 @@ int main()
                 .fsFileName = TextFormat("resources/shaders/glsl%i/pbr.fs", GLSL_VERSION),
         });
 
-        shader.SetLocFromLocation(SHADER_LOC_MAP_ALBEDO, "albedoMap");
+        shader.SetLocFromLocation(raylib::ShaderLocationIndex::MapAlbedo, "albedoMap");
         // WARNING: Metalness, roughness, and ambient occlusion are all packed into a MRA texture
         // They are passed as to the SHADER_LOC_MAP_METALNESS location for convenience,
         // shader already takes care of it accordingly
-        shader.SetLocFromLocation(SHADER_LOC_MAP_METALNESS, "mraMap");
-        shader.SetLocFromLocation(SHADER_LOC_MAP_NORMAL, "normalMap");
+        shader.SetLocFromLocation(raylib::ShaderLocationIndex::MapMetalness, "mraMap");
+        shader.SetLocFromLocation(raylib::ShaderLocationIndex::MapNormal, "normalMap");
         // WARNING: Similar to the MRA map, the emissive map packs different information
         // into a single texture: it stores height and emission data
         // It is binded to SHADER_LOC_MAP_EMISSION location an properly processed on shader
-        shader.SetLocFromLocation(SHADER_LOC_MAP_EMISSION, "emissiveMap");
-        shader.SetLocFromLocation(SHADER_LOC_COLOR_DIFFUSE, "albedoColor");
+        shader.SetLocFromLocation(raylib::ShaderLocationIndex::MapEmission, "emissiveMap");
+        shader.SetLocFromLocation(raylib::ShaderLocationIndex::ColorDiffuse, "albedoColor");
 
         // Setup additional required shader locations, including lights data
-        shader.SetLocFromLocation(SHADER_LOC_VECTOR_VIEW, "viewPos");
+        shader.SetLocFromLocation(raylib::ShaderLocationIndex::VectorView, "viewPos");
         int lightCountLoc = shader.GetLocation("numOfLights");
         int maxLightCount = MaxLights;
         shader.SetValue(lightCountLoc, maxLightCount);
@@ -149,11 +149,11 @@ int main()
     car.SetMaterialShader(0, shader, raylib::ModelMaterialShaderOption::UnbindShaderBeforeUnloadAndUnloadMaterial);
 
     // Setup materials[0].maps default parameters
-    car.GetMaterials()[0].maps[MATERIAL_MAP_ALBEDO].color = WHITE;
-    car.GetMaterials()[0].maps[MATERIAL_MAP_METALNESS].value = 0.0f;
-    car.GetMaterials()[0].maps[MATERIAL_MAP_ROUGHNESS].value = 0.0f;
-    car.GetMaterials()[0].maps[MATERIAL_MAP_OCCLUSION].value = 1.0f;
-    car.GetMaterials()[0].maps[MATERIAL_MAP_EMISSION].color = (Color){ 255, 162, 0, 255 };
+    car.GetMaterialMap(0, raylib::MaterialMapIndex::Albedo).color = WHITE;
+    car.GetMaterialMap(0, raylib::MaterialMapIndex::Metalness).value = 0.0f;
+    car.GetMaterialMap(0, raylib::MaterialMapIndex::Roughness).value = 0.0f;
+    car.GetMaterialMap(0, raylib::MaterialMapIndex::Occlusion).value = 1.0f;
+    car.GetMaterialMap(0, raylib::MaterialMapIndex::Emission).color = (Color){ 255, 162, 0, 255 };
 
     raylib::Texture old_car_d;
     raylib::Texture old_car_mra;

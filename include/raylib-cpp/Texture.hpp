@@ -6,6 +6,8 @@
 
 namespace raylib {
 
+class Model;
+
 /**
  * Texture type
  *
@@ -34,11 +36,19 @@ class Texture {
     /**
      * Move/Create a texture structure manually.
      */
+    [[deprecated("Use Texture(..., PixelFormat)")]]
     constexpr Texture(unsigned int id,
                        int width, int height,
                        int mipmaps = 1,
                        int format = PIXELFORMAT_UNCOMPRESSED_R8G8B8A8)
             : m_texture{id, width, height, mipmaps, format} {
+        // Nothing.
+    }
+    constexpr Texture(unsigned int id,
+                      int width, int height,
+                      int mipmaps = 1,
+                      PixelFormat format = PixelFormat::UncompressedR8G8B8A8)
+            : m_texture{id, width, height, mipmaps, static_cast<int>(format)} {
         // Nothing.
     }
 
@@ -115,7 +125,8 @@ class Texture {
     GETTER(int, Width, m_texture.m_data.width)
     GETTER(int, Height, m_texture.m_data.height)
     GETTER(int, Mipmaps, m_texture.m_data.mipmaps)
-    GETTER(int, Format, m_texture.m_data.format)
+    GETTER(PixelFormat, Format, static_cast<PixelFormat>(m_texture.m_data.format))
+    GETTER(int, FormatC, m_texture.m_data.format)
 
     constexpr float GetWidthF() const { return static_cast<float>(m_texture.m_data.width); }
     constexpr float GetHeightF() const { return static_cast<float>(m_texture.m_data.height); }
@@ -139,10 +150,10 @@ class Texture {
      *
      * @see LoadTextureCubemap()
      */
-    Texture(const ::Image& image, int layout) RAYLIB_CPP_THROWS {
+    Texture(const ::Image& image, CubemapLayout layout) RAYLIB_CPP_THROWS {
         Load(image, layout);
     }
-    Texture(const raylib::Image& image, int layout) RAYLIB_CPP_THROWS {
+    Texture(const raylib::Image& image, CubemapLayout layout) RAYLIB_CPP_THROWS {
         Load(image, layout);
     }
 
@@ -186,13 +197,13 @@ class Texture {
     /**
      * Load cubemap from image, multiple image cubemap layouts supported
      */
-    RAYLIB_CPP_EXPECTED_RESULT_VOID Load(const ::Image& image, int layoutType) RAYLIB_CPP_THROWS {
-        m_texture.set(::LoadTextureCubemap(image, layoutType));
+    RAYLIB_CPP_EXPECTED_RESULT_VOID Load(const ::Image& image, CubemapLayout layoutType) RAYLIB_CPP_THROWS {
+        m_texture.set(::LoadTextureCubemap(image, static_cast<int>(layoutType)));
         if (!m_texture.IsReady()) {
             RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Texture from Cubemap"));
         }
     }
-    inline RAYLIB_CPP_EXPECTED_RESULT_VOID Load(const raylib::Image& image, int layoutType) RAYLIB_CPP_THROWS {
+    inline RAYLIB_CPP_EXPECTED_RESULT_VOID Load(const raylib::Image& image, CubemapLayout layoutType) RAYLIB_CPP_THROWS {
         RAYLIB_CPP_RETURN_EXPECTED_VALUE(Load(image.c_raylib(), layoutType));
     }
 
@@ -230,14 +241,14 @@ class Texture {
     RAYLIB_CPP_EXPECTED_STATIC_RESULT(Texture) LoadFromImage(const raylib::Image& image) RAYLIB_CPP_THROWS {
         return LoadFromImage(image.c_raylib());
     }
-    RAYLIB_CPP_EXPECTED_STATIC_RESULT(Texture) LoadCubemapFromImage(const ::Image& image, int format) RAYLIB_CPP_THROWS {
-        Texture texture (::LoadTextureCubemap(image, format));
+    RAYLIB_CPP_EXPECTED_STATIC_RESULT(Texture) LoadCubemapFromImage(const ::Image& image, PixelFormat format) RAYLIB_CPP_THROWS {
+        Texture texture (::LoadTextureCubemap(image, static_cast<int>(format)));
         if (!texture.m_texture.IsReady()) {
             RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Texture from Image"));
         }
         RAYLIB_CPP_RETURN_EXPECTED_VALUE(texture);
     }
-    RAYLIB_CPP_EXPECTED_STATIC_RESULT(Texture) LoadCubemapFromImage(const raylib::Image& image, int format) RAYLIB_CPP_THROWS {
+    RAYLIB_CPP_EXPECTED_STATIC_RESULT(Texture) LoadCubemapFromImage(const raylib::Image& image, PixelFormat format) RAYLIB_CPP_THROWS {
         return LoadCubemapFromImage(image.c_raylib(), format);
     }
 
@@ -273,6 +284,8 @@ class Texture {
 
 private:
     TextureUnmanaged m_texture;
+
+    friend class Model;
 };
 
 // Create the Texture aliases.

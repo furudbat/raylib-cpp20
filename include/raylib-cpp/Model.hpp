@@ -166,13 +166,24 @@ class Model {
     SPAN_GETTER(::BoneInfo, Bones, m_data.bones, m_data.boneCount)
     SPAN_GETTER(::Transform, BindPoses, m_data.bindPose, m_data.boneCount)
 
-    ::MaterialMap& GetMaterialMap(size_t material_index, size_t map_index) {
+    [[deprecated("Use GetMaterialMap(MaterialMapIndex)")]]
+    [[nodiscard]] ::MaterialMap& GetMaterialMap(size_t material_index, size_t map_index) {
         assert(std::cmp_less(material_index, m_data.materialCount));
         return m_data.materials[material_index].maps[map_index];
     }
-    const ::MaterialMap& GetMaterialMap(size_t material_index, size_t map_index) const {
+    [[deprecated("Use GetMaterialMap(MaterialMapIndex)")]]
+    [[nodiscard]] const ::MaterialMap& GetMaterialMap(size_t material_index, size_t map_index) const {
         assert(std::cmp_less(material_index, m_data.materialCount));
         return m_data.materials[material_index].maps[map_index];
+    }
+
+    [[nodiscard]] ::MaterialMap& GetMaterialMap(size_t material_index, MaterialMapIndexT map_index) {
+        assert(std::cmp_less(material_index, m_data.materialCount));
+        return m_data.materials[static_cast<size_t>(material_index)].maps[static_cast<size_t>(map_index)];
+    }
+    [[nodiscard]] const ::MaterialMap& GetMaterialMap(size_t material_index, MaterialMapIndexT map_index) const {
+        assert(std::cmp_less(material_index, m_data.materialCount));
+        return m_data.materials[static_cast<size_t>(material_index)].maps[static_cast<size_t>(map_index)];
     }
 
     constexpr ::Mesh& GetMesh(size_t index) {
@@ -194,9 +205,11 @@ class Model {
     }
 
     constexpr int& GetMeshMaterial(size_t index) {
+        assert(std::cmp_less(index, m_data.meshCount));
         return m_data.meshMaterial[index];
     }
     constexpr int GetMeshMaterial(size_t index) const {
+        assert(std::cmp_less(index, m_data.meshCount));
         return m_data.meshMaterial[index];
     }
 
@@ -279,6 +292,9 @@ class Model {
         m_data.materials[material_index].maps[map_index].texture = texture.c_raylib();
         trackMaterialOwnership(material_index, option);
     }
+    void SetMaterialMapTexture(size_t material_index, MaterialMapIndexT map_index, const raylib::Texture& texture, ModelMaterialTextureOption option = ModelMaterialTextureOption::NoUnload) {
+        SetMaterialMapTexture(material_index, static_cast<size_t>(map_index), texture, option);
+    }
     void SetMaterialMapTexture(size_t material_index, size_t map_index, ::Texture&& texture, ModelMaterialTextureOption option) {
         assert(std::cmp_less(material_index, m_data.materialCount));
         m_data.materials[material_index].maps[map_index].texture = texture;
@@ -300,10 +316,33 @@ class Model {
                 break;
         }
     }
-
+    void SetMaterialMapTexture(size_t material_index, MaterialMapIndexT map_index, raylib::Texture&& texture) {
+        assert(std::cmp_less(material_index, m_data.materialCount));
+        m_data.materials[material_index].maps[static_cast<size_t>(map_index)].texture = texture.c_raylib();
+        trackMaterialOwnership(material_index, ModelMaterialTextureOption::UnloadMaterial);
+        switch(m_trackMaterialOwnership[material_index]) {
+            case ModelMaterialOptions::None:
+                break;
+            case ModelMaterialOptions::UnloadMaterial:
+            case ModelMaterialOptions::UnbindShaderBeforeUnloadAndUnloadMaterial:
+                // ownership of texture moved into maps
+                texture.m_texture.m_data.id = 0;
+                texture.m_texture.m_data.format = 0;
+                texture.m_texture.m_data.width = 0;
+                texture.m_texture.m_data.height = 0;
+                texture.m_texture.m_data.mipmaps = 0;
+                break;
+            case ModelMaterialOptions::UnbindShader:
+                // only impact shader, manage texture by user
+                break;
+        }
+    }
 
     void SetMaterialManagement(size_t material_index, ModelMaterialOptions options) {
         m_trackMaterialOwnership[material_index] = options;
+    }
+    void SetMaterialManagement(MaterialMapIndexT material_index, ModelMaterialOptions options) {
+        m_trackMaterialOwnership[static_cast<size_t>(material_index)] = options;
     }
 
     /**

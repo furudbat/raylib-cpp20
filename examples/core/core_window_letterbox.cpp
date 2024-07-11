@@ -37,7 +37,7 @@ int main()
 
     // Render texture initialization, used to hold the rendering result so we can easily resize it
     raylib::RenderTexture2D target(gameScreenWidth, gameScreenHeight);
-    target.GetTexture().SetFilter(TEXTURE_FILTER_BILINEAR); // Texture scale filter to use
+    target.GetTexture().SetFilter(raylib::TextureFilter::Bilinear); // Texture scale filter to use
 
     std::array<raylib::Color, 10> colors;
     //colors.fill(raylib::Color{0});

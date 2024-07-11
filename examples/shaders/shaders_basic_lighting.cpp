@@ -55,7 +55,7 @@ int main()
     raylib::Shader shader (LoadShader(TextFormat("resources/shaders/glsl%i/lighting.vs", GLSL_VERSION),
                                       TextFormat("resources/shaders/glsl%i/lighting.fs", GLSL_VERSION)));
     // Get some required shader locations
-    shader.SetLocFromLocation(SHADER_LOC_VECTOR_VIEW, "viewPos");
+    shader.SetLocFromLocation(raylib::ShaderLocationIndex::VectorView, "viewPos");
     // NOTE: "matModel" location name is automatically assigned on shader loading,
     // no need to get the location again if using that uniform name
     //shader.locs[SHADER_LOC_MATRIX_MODEL] = GetShaderLocation(shader, "matModel");
@@ -82,7 +82,7 @@ int main()
         camera.Update(CAMERA_ORBITAL);
 
         // Update the shader with the camera view vector (points towards { 0.0f, 0.0f, 0.0f })
-        shader.SetValueFromLoc(SHADER_LOC_VECTOR_VIEW, camera.position);
+        shader.SetValueFromLoc(raylib::ShaderLocationIndex::VectorView, camera.position);
 
         // Check key inputs to enable/disable lights
         if (IsKeyPressed(KEY_Y)) { lights[0].enabled = !lights[0].enabled; }

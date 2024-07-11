@@ -103,13 +103,19 @@ class ShaderUnmanaged {
 
     GETTERSETTER(unsigned int, Id, m_data.id)
     CONST_GETTER(int*, Locs, m_data.locs)
-    //SPAN_GETTER(int, Locs, m_data.locs, RL_MAX_SHADER_LOCATIONS)
     int GetLoc(size_t index) const {
         if(m_data.locs != nullptr) {
             return m_data.locs[index];
         }
         return -1;
     }
+    int GetLoc(ShaderLocationIndexT index) const {
+        if(m_data.locs != nullptr) {
+            return m_data.locs[static_cast<size_t>(index)];
+        }
+        return -1;
+    }
+    //SPAN_GETTER(int, LocsSpan, m_data.locs, RL_MAX_SHADER_LOCATIONS)
     std::span<const int> GetLocsSpan() const { return { m_data.locs, m_data.locs != nullptr ? static_cast<size_t>(RL_MAX_SHADER_LOCATIONS) : 0}; }
     std::span<int> GetLocsSpan() { return { m_data.locs, m_data.locs != nullptr ? static_cast<size_t>(RL_MAX_SHADER_LOCATIONS) : 0}; }
     void SetLocs(std::span<const int> value) {
@@ -126,15 +132,30 @@ class ShaderUnmanaged {
             }
         }
     }
-    void SetLoc(size_t index, int value) {
+    [[deprecated("Use SetLoc(ShaderLocationIndex)")]]
+    void SetLoc(int index, int value) {
         if(m_data.locs != nullptr) {
-            m_data.locs[index] = value;
+            m_data.locs[static_cast<size_t>(index)] = value;
         }
     }
-    void SetLocFromLocation(size_t index, const char *uniformName) {
+    void SetLoc(ShaderLocationIndexT index, int value) {
         if(m_data.locs != nullptr) {
-            m_data.locs[index] = ::GetShaderLocation(m_data, uniformName);
+            m_data.locs[static_cast<size_t>(index)] = value;
         }
+    }
+    [[deprecated("Use SetLocFromLocation(ShaderLocationIndex)")]]
+    void SetLocFromLocation(int index, czstring uniformName) {
+        if(m_data.locs != nullptr) {
+            m_data.locs[static_cast<size_t>(index)] = ::GetShaderLocation(m_data, uniformName);
+        }
+    }
+    void SetLocFromLocation(ShaderLocationIndexT index, czstring uniformName) {
+        if(m_data.locs != nullptr) {
+            m_data.locs[static_cast<size_t>(index)] = ::GetShaderLocation(m_data, uniformName);
+        }
+    }
+    void SetLocFromLocation(ShaderLocationIndexT index, const std::string& uniformName) {
+        SetLocFromLocation(index, uniformName.c_str());
     }
 
     constexpr ShaderUnmanaged& operator=(const ::Shader& shader) noexcept {
@@ -201,7 +222,15 @@ class ShaderUnmanaged {
     }
     template<typename T>
     /// @TODO: requires T can only be vec, ivec, int, float, ... (SHADER_UNIFORM)
+    [[deprecated("Use SetValue(..., ShaderUniformDataType)")]]
     ShaderUnmanaged& SetValue(int uniformLoc, const T& value, int uniformType) {
+        ::SetShaderValue(m_data, uniformLoc, &value, uniformType);
+        return *this;
+    }
+    template<typename T>
+    /// @TODO: requires T can only be vec, ivec, int, float, ... (SHADER_UNIFORM)
+    //[[deprecated("Use SetValue(..., variant)")]]
+    ShaderUnmanaged& SetValue(int uniformLoc, const T& value, ShaderUniformDataType uniformType) {
         ::SetShaderValue(m_data, uniformLoc, &value, uniformType);
         return *this;
     }
@@ -274,7 +303,22 @@ class ShaderUnmanaged {
             ::Texture2D> value) {
         return SetValue(GetLocation(uniformName), value);
     }
+    [[deprecated("Use SetValueFromLoc(ShaderLocationIndex, ...)")]]
     ShaderUnmanaged& SetValueFromLoc(size_t loc_index, std::variant<float,
+            std::array<float, 2>, ///< vec2 (2 float)
+            std::array<float, 3>, ///< vec3 (3 float)
+            std::array<float, 4>, ///< vec4 (4 float)
+            ::Vector2,            ///< vec2 (2 float)
+            ::Vector3,            ///< vec3 (3 float)
+            ::Vector4,            ///< vec4 (4 float)
+            int,
+            std::array<int, 2>,   ///< ivec2 (2 int)
+            std::array<int, 3>,   ///< ivec3 (3 int)
+            std::array<int, 4>,   ///< ivec4 (4 int)
+            ::Texture2D> value) {
+        return SetValue(GetLoc(loc_index), value);
+    }
+    ShaderUnmanaged& SetValueFromLoc(ShaderLocationIndexT loc_index, std::variant<float,
             std::array<float, 2>, ///< vec2 (2 float)
             std::array<float, 3>, ///< vec3 (3 float)
             std::array<float, 4>, ///< vec4 (4 float)

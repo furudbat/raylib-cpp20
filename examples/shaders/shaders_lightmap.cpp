@@ -80,7 +80,7 @@ int main()
     raylib::Texture light (LoadTexture("resources/spark_flame.png"));
 
     texture.GenMipmaps();
-    texture.SetFilter(TEXTURE_FILTER_TRILINEAR);
+    texture.SetFilter(raylib::TextureFilter::Trilinear);
 
     raylib::RenderTexture lightmap (MapSize, MapSize);
 

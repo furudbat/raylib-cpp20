@@ -17,6 +17,7 @@
 namespace raylib {
 
 class Texture;
+class Model;
 
 /**
  * A Texture that is not managed by C++ RAII.
@@ -52,6 +53,13 @@ class TextureUnmanaged {
             : m_data{id, width, height, mipmaps, format} {
         // Nothing.
     }
+    constexpr TextureUnmanaged(unsigned int id,
+                      int width, int height,
+                      int mipmaps,
+                      PixelFormat format)
+            : m_data{id, width, height, mipmaps, static_cast<int>(format)} {
+        // Nothing.
+    }
 
     /**
      * Creates a texture object based on the given Texture struct data.
@@ -77,7 +85,8 @@ class TextureUnmanaged {
     GETTER(int, Width, m_data.width)
     GETTER(int, Height, m_data.height)
     GETTER(int, Mipmaps, m_data.mipmaps)
-    GETTER(int, Format, m_data.format)
+    GETTER(PixelFormat, Format, static_cast<PixelFormat>(m_data.format))
+    GETTER(int, FormatC, m_data.format)
 
     constexpr float GetWidthF() const { return static_cast<float>(m_data.width); }
     constexpr float GetHeightF() const { return static_cast<float>(m_data.height); }
@@ -127,16 +136,26 @@ class TextureUnmanaged {
     /**
      * Set texture scaling filter mode
      */
+    [[deprecated("Use SetFilter(TextureFilter)")]]
     TextureUnmanaged& SetFilter(int filterMode) noexcept {
         ::SetTextureFilter(m_data, filterMode);
+        return *this;
+    }
+    TextureUnmanaged& SetFilter(TextureFilter filterMode) noexcept {
+        ::SetTextureFilter(m_data, static_cast<int>(filterMode));
         return *this;
     }
 
     /**
      * Set texture wrapping mode
      */
+    [[deprecated("Use SetWrap(TextureWrap)")]]
     TextureUnmanaged& SetWrap(int wrapMode) noexcept {
         ::SetTextureWrap(m_data, wrapMode);
+        return *this;
+    }
+    TextureUnmanaged& SetWrap(TextureWrap wrapMode) noexcept {
+        ::SetTextureWrap(m_data, static_cast<int>(wrapMode));
         return *this;
     }
 
@@ -279,6 +298,7 @@ class TextureUnmanaged {
     ::Texture m_data;
 
     friend class Texture;
+    friend class Model;
 };
 
 // Create the TextureUnmanaged aliases.

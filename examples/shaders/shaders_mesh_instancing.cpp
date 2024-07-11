@@ -73,16 +73,16 @@ int main()
         raylib::Shader shader(LoadShader(TextFormat("resources/shaders/glsl%i/lighting_instancing.vs", GLSL_VERSION),
                                          TextFormat("resources/shaders/glsl%i/lighting.fs", GLSL_VERSION)));
         // Get shader locations
-        shader.SetLocFromLocation(SHADER_LOC_MATRIX_MVP, "mvp");
-        shader.SetLocFromLocation(SHADER_LOC_VECTOR_VIEW, "viewPos");
-        shader.SetLocFromLocation(SHADER_LOC_MATRIX_MODEL, "instanceTransform");
+        shader.SetLocFromLocation(raylib::ShaderLocationIndex::MatrixMvp, "mvp");
+        shader.SetLocFromLocation(raylib::ShaderLocationIndex::VectorView, "viewPos");
+        shader.SetLocFromLocation(raylib::ShaderLocationIndex::MatrixModel, "instanceTransform");
 
         // Set shader value: ambient light level
         //const int ambientLoc = shader.GetLocation("ambient");
         shader.SetValueFromLocation("ambient", std::array<float, 4>{{0.2f, 0.2f, 0.2f, 1.0f}});
 
         // Create one light
-        CreateLight(LIGHT_DIRECTIONAL, (Vector3) {50.0f, 50.0f, 0.0f}, Vector3Zero(), WHITE, shader.c_raylib());
+        CreateLight(LIGHT_DIRECTIONAL, Vector3{50.0f, 50.0f, 0.0f}, Vector3Zero(), WHITE, shader.c_raylib());
 
         return shader;
     };

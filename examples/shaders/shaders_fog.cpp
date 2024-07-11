@@ -58,15 +58,15 @@ int main()
     raylib::Texture texture = raylib::Texture::LoadFromFile("resources/texel_checker.png");
 
     // Assign texture to default model material
-    modelA.GetMaterials()[0].maps[MATERIAL_MAP_DIFFUSE].texture = texture.c_raylib();
-    modelB.GetMaterials()[0].maps[MATERIAL_MAP_DIFFUSE].texture = texture.c_raylib();
-    modelC.GetMaterials()[0].maps[MATERIAL_MAP_DIFFUSE].texture = texture.c_raylib();
+    modelA.SetMaterialMapTexture(0, raylib::MaterialMapIndex::Diffuse, texture, raylib::ModelMaterialTextureOption::NoUnload);
+    modelB.SetMaterialMapTexture(0, raylib::MaterialMapIndex::Diffuse, texture, raylib::ModelMaterialTextureOption::NoUnload);
+    modelC.SetMaterialMapTexture(0, raylib::MaterialMapIndex::Diffuse, texture, raylib::ModelMaterialTextureOption::NoUnload);
 
     // Load shader and set up some uniforms
     raylib::Shader shader (LoadShader(TextFormat("resources/shaders/glsl%i/lighting.vs", GLSL_VERSION),
                                       TextFormat("resources/shaders/glsl%i/fog.fs", GLSL_VERSION)));
-    shader.SetLocFromLocation(SHADER_LOC_MATRIX_MODEL, "matModel");
-    shader.SetLocFromLocation(SHADER_LOC_VECTOR_VIEW, "viewPos");
+    shader.SetLocFromLocation(raylib::ShaderLocationIndex::MatrixModel, "matModel");
+    shader.SetLocFromLocation(raylib::ShaderLocationIndex::VectorView, "viewPos");
 
     // Ambient light level
     int ambientLoc = shader.GetLocation("ambient");
@@ -129,7 +129,7 @@ int main()
         modelB.Draw((Vector3){ -2.6f, 0, 0 }, 1.0f, WHITE);
         modelC.Draw((Vector3){ 2.6f, 0, 0 }, 1.0f, WHITE);
 
-        for (int i = -20; i < 20; i += 2) modelA.Draw((Vector3){ (float)i, 0, 2 }, 1.0f, WHITE);
+        for (int i = -20; i < 20; i += 2) modelA.Draw(Vector3{ (float)i, 0, 2 }, 1.0f, WHITE);
 
         EndMode3D();
 

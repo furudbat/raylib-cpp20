@@ -37,7 +37,7 @@ int main()
     raylib::Vector2 textSize {{ .x = 0.0F, .y = 0.0F }};
 
     // Setup texture scaling filter
-    font.GetTexture().SetFilter(TEXTURE_FILTER_POINT);
+    font.GetTexture().SetFilter(raylib::TextureFilter::Point);
     int currentFontFilter {0};      // TEXTURE_FILTER_POINT
 
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
@@ -53,18 +53,18 @@ int main()
         // Choose font texture filter method
         if (IsKeyPressed(KEY_ONE))
         {
-            font.GetTexture().SetFilter(TEXTURE_FILTER_POINT);
+            font.GetTexture().SetFilter(raylib::TextureFilter::Point);
             currentFontFilter = 0;
         }
         else if (IsKeyPressed(KEY_TWO))
         {
-            font.GetTexture().SetFilter(TEXTURE_FILTER_BILINEAR);
+            font.GetTexture().SetFilter(raylib::TextureFilter::Bilinear);
             currentFontFilter = 1;
         }
         else if (IsKeyPressed(KEY_THREE))
         {
             // NOTE: Trilinear filter won't be noticed on 2D drawing
-            font.GetTexture().SetFilter(TEXTURE_FILTER_TRILINEAR);
+            font.GetTexture().SetFilter(raylib::TextureFilter::Trilinear);
             currentFontFilter = 2;
         }
 
