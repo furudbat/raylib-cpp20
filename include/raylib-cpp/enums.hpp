@@ -12,7 +12,7 @@ namespace raylib {
 // NOTE: Every bit registers one state (use it with bit masks)
 // By default all flags are set to 0
 enum class ConfigFlags : uint32_t {
-    vsyncHint         = 0x00000040,   // Set to try enabling V-Sync on GPU
+    VsyncHint         = 0x00000040,   // Set to try enabling V-Sync on GPU
     FullscreenMode    = 0x00000002,   // Set to run program in fullscreen
     WindowResizable   = 0x00000004,   // Set to allow resizable window
     WindowUndecorated = 0x00000008,   // Set to disable window decoration (frame and buttons)

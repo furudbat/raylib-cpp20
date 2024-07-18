@@ -4,6 +4,8 @@
 #include "Image.hpp"
 #include "TextureUnmanaged.hpp"
 
+#include <filesystem>
+
 namespace raylib {
 
 class Model;
@@ -128,8 +130,8 @@ class Texture {
     GETTER(PixelFormat, Format, static_cast<PixelFormat>(m_texture.m_data.format))
     GETTER(int, FormatC, m_texture.m_data.format)
 
-    constexpr float GetWidthF() const { return static_cast<float>(m_texture.m_data.width); }
-    constexpr float GetHeightF() const { return static_cast<float>(m_texture.m_data.height); }
+    [[nodiscard]] constexpr float GetWidthF() const { return static_cast<float>(m_texture.m_data.width); }
+    [[nodiscard]] constexpr float GetHeightF() const { return static_cast<float>(m_texture.m_data.height); }
 
     /**
      * Creates a texture from the given Image.

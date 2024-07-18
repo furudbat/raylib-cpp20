@@ -248,7 +248,7 @@ class Wave {
     /**
      * Load sound from wave data
      */
-    raylib::Sound LoadSound() const {
+    [[nodiscard]] raylib::Sound LoadSound() const {
         return raylib::Sound{::LoadSoundFromWave(m_data)};
     }
 

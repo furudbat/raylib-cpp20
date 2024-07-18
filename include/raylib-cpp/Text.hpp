@@ -120,8 +120,8 @@ class Text {
     }
 
     /** Retrieves the name value for the object. @return The name value of the object. */
-    std::string& GetText() & { return text; }
-    const std::string& GetText() const & { return text; }
+    [[nodiscard]] std::string& GetText() & { return text; }
+    [[nodiscard]] const std::string& GetText() const & { return text; }
     /** Sets the name value for the object. @param value The value of which to set name to. */
     void SetText(std::string value) { text = value; }
     GETTERSETTER(float, FontSize, fontSize)

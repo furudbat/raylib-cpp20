@@ -88,8 +88,8 @@ class TextureUnmanaged {
     GETTER(PixelFormat, Format, static_cast<PixelFormat>(m_data.format))
     GETTER(int, FormatC, m_data.format)
 
-    constexpr float GetWidthF() const { return static_cast<float>(m_data.width); }
-    constexpr float GetHeightF() const { return static_cast<float>(m_data.height); }
+    [[nodiscard]] constexpr float GetWidthF() const { return static_cast<float>(m_data.width); }
+    [[nodiscard]] constexpr float GetHeightF() const { return static_cast<float>(m_data.height); }
 
 
     /**

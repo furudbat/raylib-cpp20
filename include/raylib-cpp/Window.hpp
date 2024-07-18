@@ -12,6 +12,7 @@
 
 #include <string>
 #include <chrono>
+#include <cstdint>
 
 namespace raylib {
 /**
@@ -127,35 +128,35 @@ class Window {
     /**
      * Check if window is currently minimized
      */
-    [[nodiscard]] bool IsMinimized() const noexcept {
+    [[nodiscard]] static bool IsMinimized() noexcept {
         return ::IsWindowMinimized();
     }
 
     /**
      * Check if window is currently minimized
      */
-    [[nodiscard]] bool IsMaximized() const noexcept {
+    [[nodiscard]] static bool IsMaximized() noexcept {
         return ::IsWindowMaximized();
     }
 
     /**
      * Check if window is currently focused
      */
-    [[nodiscard]] bool IsFocused() const noexcept {
+    [[nodiscard]] static bool IsFocused() noexcept {
         return ::IsWindowFocused();
     }
 
     /**
      * Check if window has been resized last frame
      */
-    [[nodiscard]] bool IsResized() const noexcept {
+    [[nodiscard]] static bool IsResized() noexcept {
         return ::IsWindowResized();
     }
 
     /**
      * Check if one specific window flag is enabled
      */
-    [[nodiscard]] bool IsState(uint32_t flag) const noexcept {
+    [[nodiscard]] static bool IsState(uint32_t flag) noexcept {
         return ::IsWindowState(flag);
     }
 
@@ -346,14 +347,14 @@ class Window {
     /**
      * Get the screen's width and height.
      */
-    [[nodiscard]] raylib::Vector2 GetSize() const noexcept {
+    [[nodiscard]] raylib::Vector2 GetSize() noexcept {
         return raylib::Vector2{{.x = static_cast<float>(GetWidth()), .y = static_cast<float>(GetHeight())}};
     }
 
     /**
      * Get native window handle
      */
-    [[nodiscard]] void* GetHandle() const noexcept {
+    [[nodiscard]] static void* GetHandle() noexcept {
         return ::GetWindowHandle();
     }
 
@@ -376,42 +377,42 @@ class Window {
     /**
      * Get current screen width
      */
-    [[nodiscard]] int GetWidth() const noexcept {
+    [[nodiscard]] static int GetWidth() noexcept {
         return ::GetScreenWidth();
     }
 
     /**
      * Get current screen height
      */
-    [[nodiscard]] int GetHeight() const noexcept {
+    [[nodiscard]] static int GetHeight() noexcept {
         return ::GetScreenHeight();
     }
 
     /**
      * Get current render width (it considers HiDPI)
      */
-    [[nodiscard]] int GetRenderWidth() const noexcept {
+    [[nodiscard]] static int GetRenderWidth() noexcept {
         return ::GetRenderWidth();
     }
 
     /**
      * Get current render height (it considers HiDPI)
      */
-    [[nodiscard]] int GetRenderHeight() const noexcept {
+    [[nodiscard]] static int GetRenderHeight() noexcept {
         return ::GetRenderHeight();
     }
 
     /**
      * Get window position XY on monitor
      */
-    [[nodiscard]] ::Vector2 GetPosition() const noexcept {
+    [[nodiscard]] static ::Vector2 GetPosition() noexcept {
         return ::GetWindowPosition();
     }
 
     /**
      * Get window scale DPI factor
      */
-    [[nodiscard]] ::Vector2 GetScaleDPI() const noexcept {
+    [[nodiscard]] static ::Vector2 GetScaleDPI() noexcept {
         return ::GetWindowScaleDPI();
     }
 
@@ -459,27 +460,27 @@ class Window {
     /**
      * Returns time in seconds for last frame drawn
      */
-    [[nodiscard]] float GetFrameTime() const noexcept {
+    [[nodiscard]] static float GetFrameTime() noexcept {
         return ::GetFrameTime();
     }
-    [[nodiscard]] std::chrono::milliseconds GetFrameTimeMs() const {
+    [[nodiscard]] static std::chrono::milliseconds GetFrameTimeMs() {
         return std::chrono::milliseconds{static_cast<int64_t>(::GetFrameTime() * 1000)};
     }
 
     /**
      * Returns elapsed time in seconds since InitWindow()
      */
-    [[nodiscard]] double GetTime() const noexcept {
+    [[nodiscard]] static double GetTime() noexcept {
         return ::GetTime();
     }
-    [[nodiscard]] std::chrono::milliseconds GetTimeMs() const {
+    [[nodiscard]] static std::chrono::milliseconds GetTimeMs() {
         return std::chrono::milliseconds{static_cast<int64_t>(::GetTime() * 1000)};
     }
 
     /**
      * Check if window has been initialized successfully
      */
-    static bool IsReady() noexcept {
+    [[nodiscard]] static bool IsReady() noexcept {
         return ::IsWindowReady();
     }
 

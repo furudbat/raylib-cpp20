@@ -6,7 +6,7 @@
 #include <utility>
 
 namespace strong_types {
-    enum class ConversionType {
+    enum class ConversionType : uint8_t {
         None,
         Explicit,
         Implicit
@@ -20,17 +20,17 @@ namespace strong_types {
 
         constexpr Type(const Type &other) = default;
 
-        template<ConversionType USE = CONVERSION, std::enable_if_t<USE != ConversionType::Implicit, int> = 0>
-        constexpr explicit Type(const T &&o) noexcept : obj{o} {};
+        template<ConversionType USE = CONVERSION>
+        constexpr explicit Type(const T &&o) noexcept requires (USE != ConversionType::Implicit) : obj{o} {}
 
-        template<ConversionType USE = CONVERSION, std::enable_if_t<USE == ConversionType::Implicit, int> = 0>
-        constexpr Type(const T &&o) noexcept : obj{o} {};
+        template<ConversionType USE = CONVERSION>
+        constexpr Type(const T &&o) noexcept requires (USE == ConversionType::Implicit) : obj{o} {}
 
-        template<ConversionType USE = CONVERSION, std::enable_if_t<USE != ConversionType::Implicit, int> = 0>
-        constexpr explicit Type(const T &o) noexcept : obj{o} {};
+        template<ConversionType USE = CONVERSION>
+        constexpr explicit Type(const T &o) noexcept requires (USE != ConversionType::Implicit) : obj{o} {}
 
-        template<ConversionType USE = CONVERSION, std::enable_if_t<USE == ConversionType::Implicit, int> = 0>
-        constexpr Type(const T &o) noexcept : obj{o} {};
+        template<ConversionType USE = CONVERSION>
+        constexpr Type(const T &o) noexcept requires (USE == ConversionType::Implicit) : obj{o} {}
 
         constexpr Type &operator=(const Type<T, P> &other) noexcept {
             if (&other == this) {
@@ -41,13 +41,13 @@ namespace strong_types {
             return *this;
         }
 
-        template<ConversionType USE = CONVERSION, std::enable_if_t<USE == ConversionType::Explicit, int> = 0>
-        constexpr explicit operator T() const noexcept {
+        template<ConversionType USE = CONVERSION>
+        constexpr explicit operator T() const noexcept requires (USE == ConversionType::Explicit) {
             return obj;
         }
 
-        template<ConversionType USE = CONVERSION, std::enable_if_t<USE == ConversionType::Implicit, int> = 0>
-        constexpr operator T() const noexcept {
+        template<ConversionType USE = CONVERSION>
+        constexpr operator T() const noexcept requires (USE == ConversionType::Implicit) {
             return obj;
         }
 
@@ -95,8 +95,8 @@ namespace strong_types {
             return Type<T, P>{obj + other.obj};
         }
 
-        template <class Integer, std::enable_if_t< std::is_integral_v<Integer>>* = nullptr >
-        friend constexpr Type<T, P> operator*(const Type<T, P> &left, const Integer &right) {
+        template <class Integer>
+        friend constexpr Type<T, P> operator*(const Type<T, P> &left, const Integer &right) requires (std::is_integral_v<Integer>) {
             auto result = left;
             for (Integer i = 1; i < right; ++i) {
                 result.obj += left.obj;
@@ -105,8 +105,8 @@ namespace strong_types {
             return result;
         }
 
-        template <class Integer, std::enable_if_t< std::is_integral_v<Integer>>* = nullptr >
-        friend constexpr Type<T, P> operator*(const Integer &left, const Type<T, P> &right) {
+        template <class Integer>
+        friend constexpr Type<T, P> operator*(const Integer &left, const Type<T, P> &right) requires (std::is_integral_v<Integer>) {
             auto result = right;
             for (Integer i = 1; i < left; ++i) {
                 result.obj += right.obj;

@@ -74,7 +74,7 @@ class RayCollision : public ::RayCollision {
 
     GETTER(bool, IsHit, hit)
     /** Retrieves the Hit value for the object. @return The Hit value of the object. */
-    constexpr RayCollisionHit GetHit() const & { return hit ? RayCollisionHit::Hit : RayCollisionHit::Miss; }
+    [[nodiscard]] constexpr RayCollisionHit GetHit() const & { return hit ? RayCollisionHit::Hit : RayCollisionHit::Miss; }
     /** Sets the Hit value for the object. @param value The value of which to set Hit to. */
     constexpr void SetHit(RayCollisionHit value) { hit = value == RayCollisionHit::Hit; }
     GETTERSETTER(float, Distance, distance)
