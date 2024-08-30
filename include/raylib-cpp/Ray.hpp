@@ -15,7 +15,7 @@ class Ray : public ::Ray {
         set(ray);
     }
 
-    explicit constexpr Ray(const ::Vector3& _position = {0.0f, 0.0f, 0.0f}, const ::Vector3& _direction = {0.0f, 0.0f, 0.0f}) :
+    explicit constexpr Ray(::Vector3 _position = {0.0f, 0.0f, 0.0f}, const ::Vector3& _direction = {0.0f, 0.0f, 0.0f}) :
             ::Ray{_position, _direction} {
         // Nothing.
     }
@@ -69,14 +69,14 @@ class Ray : public ::Ray {
     /**
      * Get collision info between ray and triangle
      */
-    [[nodiscard]] RayCollision GetCollision(const ::Vector3& p1, const ::Vector3& p2, const ::Vector3& p3) const noexcept {
+    [[nodiscard]] RayCollision GetCollision(::Vector3 p1, ::Vector3 p2, ::Vector3 p3) const noexcept {
         return RayCollision{::GetRayCollisionTriangle(*this, p1, p2, p3)};
     }
 
     /**
      * Get collision info between ray and quad
      */
-    [[nodiscard]] RayCollision GetCollision(const ::Vector3& p1, const ::Vector3& p2, const ::Vector3& p3, const ::Vector3& p4) const noexcept {
+    [[nodiscard]] RayCollision GetCollision(::Vector3 p1, ::Vector3 p2, ::Vector3 p3, ::Vector3 p4) const noexcept {
         return RayCollision{::GetRayCollisionQuad(*this, p1, p2, p3, p4)};
     }
 

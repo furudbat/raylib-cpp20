@@ -474,11 +474,11 @@ class Image {
     }
     [[nodiscard]] static raylib::Image LoadImageRaw(czstring fileName, LoadImageRawOptions options) {
         raylib::Image ret;
-        ret.LoadRaw(fileName, std::move(options));
+        ret.LoadRaw(fileName, options);
         return ret;
     }
     [[nodiscard]] static raylib::Image LoadImageRaw(const std::filesystem::path& fileName, LoadImageRawOptions options) {
-        return LoadImageRaw(fileName.c_str(), std::move(options));
+        return LoadImageRaw(fileName.c_str(), options);
     }
 #endif
 
@@ -796,7 +796,7 @@ class Image {
     /**
      * Create an image from another image piece
      */
-    [[nodiscard]] Image SubImage(const ::Rectangle& rec) const {
+    [[nodiscard]] Image SubImage(::Rectangle rec) const {
         return Image{::ImageFromImage(m_data, rec)};
     }
 
@@ -1093,11 +1093,11 @@ class Image {
         ::ImageDrawRectangleLines(&m_data, rec, thick, color);
     }
 
-    void Draw(const ::Image& src, const ::Rectangle& srcRec, const ::Rectangle& dstRec,
+    void Draw(const ::Image& src, ::Rectangle srcRec, ::Rectangle dstRec,
               ::Color tint = DefaultColor) {
         ::ImageDraw(&m_data, src, srcRec, dstRec, tint);
     }
-    void Draw(const raylib::Image& src, const ::Rectangle& srcRec, const ::Rectangle& dstRec,
+    void Draw(const raylib::Image& src, ::Rectangle srcRec, ::Rectangle dstRec,
               ::Color tint = DefaultColor) {
         Draw(src.c_raylib(), srcRec, dstRec, tint);
     }
@@ -1134,7 +1134,7 @@ class Image {
         ::ImageDrawTextEx(&m_data, font, text.c_str(), position, fontSize, spacing, tint);
     }
 
-    void DrawText(const ::Font& font, const char* text, ::Vector2 position,
+    void DrawText(const ::Font& font, czstring text, ::Vector2 position,
                   float fontSize, float spacing, ::Color tint = DefaultColor) {
         ::ImageDrawTextEx(&m_data, font, text, position, fontSize, spacing, tint);
     }

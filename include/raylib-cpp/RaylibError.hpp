@@ -24,11 +24,11 @@ class RaylibError {
      *
      * @param message The message to provide for the exception.
      */
-    explicit RaylibError(std::string msg) : message(std::move(msg)) {
+    explicit RaylibError(const std::string& msg) : message(msg) {
         // Nothing
     }
 
-    RaylibError(RaylibErrorCode _code, std::string msg) : code(_code), message(std::move(msg)) {
+    RaylibError(RaylibErrorCode _code, const std::string& msg) : code(_code), message(msg) {
         // Nothing
     }
 

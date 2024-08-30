@@ -91,7 +91,7 @@ class Vector4 : public ::Vector4 {
     */
 
 #ifndef RAYLIB_CPP_NO_MATH
-    [[nodiscard]] Vector4 Multiply(const ::Vector4& vector4) const noexcept {
+    [[nodiscard]] Vector4 Multiply(::Vector4 vector4) const noexcept {
         return Vector4{::QuaternionMultiply(*this, vector4)};
     }
 
@@ -99,15 +99,15 @@ class Vector4 : public ::Vector4 {
         return Vector4{::QuaternionMultiply(*this, vector4)};
     }
 
-    [[nodiscard]] Vector4 Lerp(const ::Vector4& vector4, float amount) const noexcept {
+    [[nodiscard]] Vector4 Lerp(::Vector4 vector4, float amount) const noexcept {
         return Vector4{::QuaternionLerp(*this, vector4, amount)};
     }
 
-    [[nodiscard]] Vector4 Nlerp(const ::Vector4& vector4, float amount) const noexcept {
+    [[nodiscard]] Vector4 Nlerp(::Vector4 vector4, float amount) const noexcept {
         return Vector4{::QuaternionNlerp(*this, vector4, amount)};
     }
 
-    [[nodiscard]] Vector4 Slerp(const ::Vector4& vector4, float amount) const noexcept {
+    [[nodiscard]] Vector4 Slerp(::Vector4 vector4, float amount) const noexcept {
         return Vector4{::QuaternionSlerp(*this, vector4, amount)};
     }
 
@@ -154,7 +154,7 @@ class Vector4 : public ::Vector4 {
         return Vector4{::QuaternionIdentity()};
     }
 
-    static Vector4 FromVector3ToVector3(const ::Vector3& from, const ::Vector3& to) noexcept {
+    static Vector4 FromVector3ToVector3(::Vector3 from, ::Vector3 to) noexcept {
         return Vector4{::QuaternionFromVector3ToVector3(from , to)};
     }
 
@@ -162,7 +162,7 @@ class Vector4 : public ::Vector4 {
         return Vector4{::QuaternionFromMatrix(matrix)};
     }
 
-    static Vector4 FromAxisAngle(const ::Vector3& axis, float angle) noexcept {
+    static Vector4 FromAxisAngle(::Vector3 axis, float angle) noexcept {
         return Vector4{::QuaternionFromAxisAngle(axis, angle)};
     }
 
@@ -170,7 +170,7 @@ class Vector4 : public ::Vector4 {
         return Vector4{::QuaternionFromEuler(pitch, yaw, roll)};
     }
 
-    static Vector4 FromEuler(const ::Vector3& vector3) noexcept {
+    static Vector4 FromEuler(::Vector3 vector3) noexcept {
         return Vector4{::QuaternionFromEuler(vector3.x, vector3.y, vector3.z)};
     }
 

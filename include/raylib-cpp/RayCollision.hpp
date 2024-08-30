@@ -16,13 +16,13 @@ class RayCollision : public ::RayCollision {
 
     [[deprecated("Use RayCollision(RayCollisionHit, ...)")]]
     constexpr RayCollision(bool _hit, float _distance,
-                 const ::Vector3& _point, const ::Vector3& _normal) : ::RayCollision{_hit, _distance, _point, _normal} {
+                 ::Vector3 _point, ::Vector3 _normal) : ::RayCollision{_hit, _distance, _point, _normal} {
         // Nothing.
     }
 
     enum class RayCollisionHit : bool { Miss = false, Hit = true };
     constexpr RayCollision(RayCollisionHit _hit, float _distance,
-        const ::Vector3& _point, const ::Vector3& _normal) : ::RayCollision{_hit == RayCollisionHit::Hit, _distance, _point, _normal} {
+        ::Vector3 _point, ::Vector3 _normal) : ::RayCollision{_hit == RayCollisionHit::Hit, _distance, _point, _normal} {
         // Nothing.
     }
 
@@ -43,21 +43,21 @@ class RayCollision : public ::RayCollision {
     /**
      * Get collision info between ray and quad
      */
-    RayCollision(const ::Ray& ray, const ::Vector3& p1, const ::Vector3& p2, const ::Vector3& p3, const ::Vector3& p4) noexcept {
+    RayCollision(const ::Ray& ray, ::Vector3 p1, ::Vector3 p2, ::Vector3 p3, ::Vector3 p4) noexcept {
         set(::GetRayCollisionQuad(ray, p1, p2, p3, p4));
     }
 
     /**
      * Get collision info between ray and sphere
      */
-    RayCollision(const ::Ray& ray, const ::Vector3& center, float radius) noexcept {
+    RayCollision(const ::Ray& ray, ::Vector3 center, float radius) noexcept {
         set(::GetRayCollisionSphere(ray, center, radius));
     }
 
     /**
      * Get collision info between ray and triangle
      */
-    RayCollision(const ::Ray& ray, const ::Vector3& p1, const ::Vector3& p2, const ::Vector3& p3) noexcept {
+    RayCollision(const ::Ray& ray, ::Vector3 p1, ::Vector3 p2, ::Vector3 p3) noexcept {
         set(::GetRayCollisionTriangle(ray, p1, p2, p3));
     }
 

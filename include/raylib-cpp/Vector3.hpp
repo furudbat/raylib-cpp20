@@ -73,7 +73,7 @@ class Vector3 : public ::Vector3 {
     /**
      * Add two vectors
      */
-    [[nodiscard]] Vector3 Add(const ::Vector3& vector3) const noexcept {
+    [[nodiscard]] Vector3 Add(::Vector3 vector3) const noexcept {
         return Vector3{::Vector3Add(*this, vector3)};
     }
 
@@ -150,21 +150,21 @@ class Vector3 : public ::Vector3 {
     /**
      * Multiply vector by scalar
      */
-    [[nodiscard]] Vector3 Scale(const float scaler) const noexcept {
+    [[nodiscard]] Vector3 Scale(float scaler) const noexcept {
         return Vector3{::Vector3Scale(*this, scaler)};
     }
 
     /**
      * Multiply vector by scalar
      */
-    Vector3 operator*(const float scaler) const noexcept {
+    Vector3 operator*(float scaler) const noexcept {
         return Vector3{::Vector3Scale(*this, scaler)};
     }
 
     /**
      * Multiply vector by scalar
      */
-    Vector3& operator*=(const float scaler) noexcept {
+    Vector3& operator*=(float scaler) noexcept {
         set(::Vector3Scale(*this, scaler));
 
         return *this;
@@ -180,14 +180,14 @@ class Vector3 : public ::Vector3 {
     /**
      * Divide vector by vector
      */
-    Vector3 operator/(::Vector3 vector3) const {
+    Vector3 operator/(const ::Vector3& vector3) const {
         return Vector3{::Vector3Divide(*this, vector3)};
     }
 
     /**
      * Divide vector by vector
      */
-    constexpr Vector3& operator/=(::Vector3 vector3) {
+    constexpr Vector3& operator/=(const ::Vector3& vector3) {
         x /= vector3.x;
         y /= vector3.y;
         z /= vector3.z;
@@ -198,21 +198,21 @@ class Vector3 : public ::Vector3 {
     /**
      * Divide a vector by a value.
      */
-    [[nodiscard]] constexpr Vector3 Divide(const float div) const {
+    [[nodiscard]] constexpr Vector3 Divide(float div) const {
         return Vector3{::Vector3{.x = x / div, .y = y / div, .z = z / div}};
     }
 
     /**
      * Divide a vector by a value.
      */
-    [[nodiscard]] constexpr Vector3 operator/(const float div) const {
+    [[nodiscard]] constexpr Vector3 operator/(float div) const {
         return Divide(div);
     }
 
     /**
      * Divide a vector by a value.
      */
-    constexpr Vector3& operator/=(const float div) {
+    constexpr Vector3& operator/=(float div) {
         x /= div;
         y /= div;
         z /= div;
@@ -258,11 +258,11 @@ class Vector3 : public ::Vector3 {
         return Vector3{Vector3Perpendicular(*this)};
     }
 
-    [[nodiscard]] Vector3 Project(const ::Vector3& vector3) const {
+    [[nodiscard]] Vector3 Project(::Vector3 vector3) const {
         return Vector3{Vector3Project(*this, vector3)};
     }
 
-    [[nodiscard]] Vector3 Reject(const ::Vector3& vector3) const {
+    [[nodiscard]] Vector3 Reject(::Vector3 vector3) const {
         return Vector3{Vector3Reject(*this, vector3)};
     }
 
@@ -303,7 +303,7 @@ class Vector3 : public ::Vector3 {
     }
 #endif
 
-    void DrawLine3D(const ::Vector3& endPos, ::Color color) const noexcept {
+    void DrawLine3D(::Vector3 endPos, ::Color color) const noexcept {
         ::DrawLine3D(*this, endPos, color);
     }
 
@@ -313,7 +313,7 @@ class Vector3 : public ::Vector3 {
 
     void DrawCircle3D(
             float radius,
-            const ::Vector3& rotationAxis,
+            ::Vector3 rotationAxis,
             float rotationAngle,
             Color color) const noexcept {
         ::DrawCircle3D(*this, radius, rotationAxis, rotationAngle, color);
@@ -323,7 +323,7 @@ class Vector3 : public ::Vector3 {
         ::DrawCube(*this, width, height, length, color);
     }
 
-    void DrawCube(const ::Vector3& size, ::Color color) const noexcept {
+    void DrawCube(::Vector3 size, ::Color color) const noexcept {
         ::DrawCubeV(*this, size, color);
     }
 
@@ -331,7 +331,7 @@ class Vector3 : public ::Vector3 {
         ::DrawCubeWires(*this, width, height, length, color);
     }
 
-    void DrawCubeWires(const ::Vector3& size, ::Color color) const noexcept {
+    void DrawCubeWires(::Vector3 size, ::Color color) const noexcept {
         ::DrawCubeWiresV(*this, size, color);
     }
 
@@ -364,7 +364,7 @@ class Vector3 : public ::Vector3 {
     /**
      * Detect collision between two spheres
      */
-    [[nodiscard]] bool CheckCollision(float radius1, const ::Vector3& center2, float radius2) const noexcept {
+    [[nodiscard]] bool CheckCollision(float radius1, ::Vector3 center2, float radius2) const noexcept {
         return ::CheckCollisionSpheres(*this, radius1, center2, radius2);
     }
 

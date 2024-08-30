@@ -20,7 +20,8 @@ class Camera2D : public ::Camera2D {
 
     constexpr Camera2D() = default;
     constexpr Camera2D(::Vector2 pOffset, ::Vector2 pTarget,
-                       float pRotation = DefaultRotation, float pZoom = DefaultZoom) : ::Camera2D{pOffset, pTarget, pRotation, pZoom} {}
+                       float pRotation = DefaultRotation,
+                       float pZoom = DefaultZoom) : ::Camera2D{pOffset, pTarget, pRotation, pZoom} {}
 
     /*
     explicit(false) operator ::Camera2D() const {

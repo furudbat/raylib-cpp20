@@ -264,7 +264,7 @@ class TextureUnmanaged {
     /**
      * Set texture and rectangle to be used on shapes drawing.
      */
-    TextureUnmanaged& SetShapes(const ::Rectangle& source) noexcept {
+    TextureUnmanaged& SetShapes(::Rectangle source) noexcept {
         ::SetShapesTexture(m_data, source);
         return *this;
     }

@@ -28,8 +28,8 @@ class Camera3D : public ::Camera3D {
      * @param projection Camera projection: CAMERA_PERSPECTIVE or CAMERA_ORTHOGRAPHIC
      */
     explicit constexpr Camera3D(const ::Vector3& _position,
-            const ::Vector3& _target = ::Vector3{0.0f, 0.0f, 0.0f},
-            const ::Vector3& _up = ::Vector3{0.0f, 1.0f, 0.0f},
+            ::Vector3 _target = ::Vector3{0.0f, 0.0f, 0.0f},
+            ::Vector3 _up = ::Vector3{0.0f, 1.0f, 0.0f},
             float _fovy = 0.0f,
             int _projection = CAMERA_PERSPECTIVE) : ::Camera3D{_position, _target, _up, _fovy, _projection} {}
 
@@ -86,7 +86,8 @@ class Camera3D : public ::Camera3D {
     /**
      * Update camera movement/rotation
      */
-    Camera3D& Update(const ::Vector3& movement, const ::Vector3& rotation, float zoom = DefaultUpdateZoom) noexcept {
+    Camera3D& Update(::Vector3 movement, ::Vector3 rotation,
+                     float zoom = DefaultUpdateZoom) noexcept {
         ::UpdateCameraPro(this, movement, rotation, zoom);
         return *this;
     }
@@ -101,7 +102,7 @@ class Camera3D : public ::Camera3D {
     /**
      * Returns the screen space position for a 3d world space position
      */
-    [[nodiscard]] raylib::Vector2 GetWorldToScreen(const ::Vector3& _position) const noexcept {
+    [[nodiscard]] raylib::Vector2 GetWorldToScreen(::Vector3 _position) const noexcept {
         return raylib::Vector2{::GetWorldToScreen(_position, *this)};
     }
 
@@ -110,7 +111,7 @@ class Camera3D : public ::Camera3D {
      */
     void DrawBillboard(
             const ::Texture2D& texture,
-            const ::Vector3& center,
+            ::Vector3 center,
             float size,
             ::Color tint = WHITE) const noexcept {
         ::DrawBillboard(*this, texture, center, size, tint);

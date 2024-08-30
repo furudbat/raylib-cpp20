@@ -9,6 +9,7 @@
 #include "RaylibError.hpp"
 
 #include <string>
+#include <utility>
 
 namespace raylib {
 /**
@@ -123,7 +124,7 @@ class Text {
     [[nodiscard]] std::string& GetText() & { return text; }
     [[nodiscard]] const std::string& GetText() const & { return text; }
     /** Sets the name value for the object. @param value The value of which to set name to. */
-    void SetText(std::string value) { text = value; }
+    void SetText(std::string value) { text = std::move(value); }
     GETTERSETTER(float, FontSize, fontSize)
     GETTERSETTER(::Font, Font, font)
     GETTERSETTER(raylib::Color, Color, color)

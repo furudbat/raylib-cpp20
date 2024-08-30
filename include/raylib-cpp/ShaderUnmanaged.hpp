@@ -90,8 +90,8 @@ class ShaderUnmanaged {
     }
 
     struct LoadFromMemoryOptionsC {
-        const char* vsCode;
-        const char* fsCode;
+        czstring vsCode;
+        czstring fsCode;
     };
     RAYLIB_CPP_EXPECTED_STATIC_RESULT(ShaderUnmanaged) LoadFromMemory(LoadFromMemoryOptionsC options) RAYLIB_CPP_THROWS {
         auto shader = ::LoadShaderFromMemory(options.vsCode, options.fsCode);

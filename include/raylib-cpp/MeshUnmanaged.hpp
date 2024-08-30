@@ -87,12 +87,11 @@ class MeshUnmanaged {
     void UpdateBuffer(int index, void *data, int dataSize, int offset = 0) {
         ::UpdateMeshBuffer(m_data, index, data, dataSize, offset);
     }
-    /// @FIXME: can't use std::span<void>
-    /*
-    void UpdateBuffer(int index, std::span<void> data, int offset = 0) {
-        ::UpdateMeshBuffer(*this, index, data.data(), data.size(), offset);
+    template<class T>
+    void UpdateBuffer(int index, std::span<T> data, int offset = 0) {
+        assert(data.size() <= std::numeric_limits<int>::max());
+        ::UpdateMeshBuffer(*this, index, data.data(), data.size()*sizeof(T), offset);
     }
-    */
 
     /**
      * Draw a 3d mesh with material and transform

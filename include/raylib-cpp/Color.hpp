@@ -7,6 +7,8 @@
 
 #include <string>
 #include <cstdint>
+#include <cassert>
+#include <span>
 
 namespace raylib {
 
@@ -41,7 +43,7 @@ class Color : public ::Color {
      * Returns a Color from HSV values
      */
     //[[deprecated("Use Color(ColorHSV) for better structured name")]]
-    explicit Color(const ::Vector3& hsv) noexcept {
+    explicit Color(::Vector3 hsv) noexcept {
         set(::ColorFromHSV(hsv.x, hsv.y, hsv.z));
     }
     explicit Color(ColorHSV hsv) noexcept {
@@ -56,10 +58,10 @@ class Color : public ::Color {
         return ::ColorFromHSV(hue, saturation, value);
     }
     //[[deprecated("Use FromHSV(ColorHSV) for better structured name")]]
-    static ::Color FromHSV(const ::Vector3& hsv) noexcept {
+    static ::Color FromHSV(::Vector3 hsv) noexcept {
         return ::ColorFromHSV(hsv.x, hsv.y, hsv.z);
     }
-    static ::Color FromHSV(const ColorHSV& hsv) noexcept {
+    static ::Color FromHSV(ColorHSV hsv) noexcept {
         return ::ColorFromHSV(hsv.hue, hsv.saturation, hsv.value);
     }
 
@@ -133,7 +135,7 @@ class Color : public ::Color {
     /**
      * Returns Color from normalized values [0..1]
      */
-    explicit Color(const ::Vector4& normalized) noexcept {
+    explicit Color(::Vector4 normalized) noexcept {
         set(::ColorFromNormalized(normalized));
     }
 
@@ -203,8 +205,13 @@ class Color : public ::Color {
         ::DrawLineBezier(startPos, endPos, thick, *this);
     }
 
+    [[deprecated("Use DrawLineStrip(span)")]]
     void DrawLineStrip(::Vector2 *points, int numPoints) const {
         ::DrawLineStrip(points, numPoints, *this);
+    }
+    void DrawLineStrip(std::span<::Vector2> points) const {
+        assert(points.size() <= std::numeric_limits<int>::max());
+        ::DrawLineStrip(points.data(), static_cast<int>(points.size()), *this);
     }
 
     void DrawText(czstring text, int posX = 0, int posY = 0, int fontSize = DefaultDrawTextFontSize) const noexcept {
@@ -214,8 +221,9 @@ class Color : public ::Color {
         ::DrawText(text.c_str(), posX, posY, fontSize, *this);
     }
 
-    void DrawText(const ::Font& font, czstring text, ::Vector2 position,
-            float fontSize, float spacing) const noexcept {
+    void DrawText(const ::Font& font, czstring text,
+                  ::Vector2 position,
+                  float fontSize, float spacing) const noexcept {
         ::DrawTextEx(font, text, position, fontSize, spacing, *this);
     }
     void DrawText(const ::Font& font, const std::string& text, ::Vector2 position,

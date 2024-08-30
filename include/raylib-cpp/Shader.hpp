@@ -38,7 +38,7 @@ public:
 
     constexpr Shader(unsigned int id, owner<int*> locs = nullptr) : m_shader(id, locs) {}
     explicit Shader(LoadShaderOptions options) : m_shader(std::move(options)) {}
-    explicit Shader(LoadShaderOptionsC options) : m_shader(std::move(options)) {}
+    explicit Shader(LoadShaderOptionsC options) : m_shader(options) {}
 
     [[deprecated("Use Shader(LoadShaderOptionsC), named and strong typed parameters")]]
     Shader(czstring vsFileName, czstring fsFileName) : m_shader(ShaderUnmanaged::LoadShaderOptionsC{ .vsFileName = vsFileName, .fsFileName = fsFileName }) {}

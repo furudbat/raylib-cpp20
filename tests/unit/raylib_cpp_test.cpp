@@ -6,6 +6,52 @@
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
 
+
+template <typename T>
+concept CanPassByValue = std::is_trivially_copyable_v<T> && (sizeof(T) <= 2U*sizeof(void*) || sizeof(T) <= 8);
+
+TEST_CASE("can pass raylib struct by value", "[core]") {
+    STATIC_REQUIRE(CanPassByValue<::Vector2>);
+    STATIC_REQUIRE(CanPassByValue<::Vector3>);
+    STATIC_REQUIRE(CanPassByValue<::Vector4>);
+    //STATIC_REQUIRE(CanPassByValue<::Matrix>);
+    STATIC_REQUIRE(CanPassByValue<::Color>);
+    STATIC_REQUIRE(CanPassByValue<::Rectangle>);
+
+    //STATIC_REQUIRE(CanPassByValue<::Image>);
+    //STATIC_REQUIRE(CanPassByValue<::Texture>);
+    //STATIC_REQUIRE(CanPassByValue<::Texture2D>);
+    //STATIC_REQUIRE(CanPassByValue<::Font>);
+
+    //STATIC_REQUIRE(CanPassByValue<::Camera3D>);
+    //STATIC_REQUIRE(CanPassByValue<::Camera>);
+
+    //STATIC_REQUIRE(CanPassByValue<::Camera2D>);
+    STATIC_REQUIRE(CanPassByValue<::Shader>);
+    //STATIC_REQUIRE(CanPassByValue<::MaterialMap>);
+    //STATIC_REQUIRE(CanPassByValue<::Material>);
+    //STATIC_REQUIRE(CanPassByValue<::Transform>);
+    //STATIC_REQUIRE(CanPassByValue<::BoneInfo>);
+    //STATIC_REQUIRE(CanPassByValue<::Model>);
+    //STATIC_REQUIRE(CanPassByValue<::ModelAnimation>);
+    //STATIC_REQUIRE(CanPassByValue<::Ray>);
+    //STATIC_REQUIRE(CanPassByValue<::RayCollision>);
+    //STATIC_REQUIRE(CanPassByValue<::BoundingBox>);
+
+    //STATIC_REQUIRE(CanPassByValue<::Wave>);
+    //STATIC_REQUIRE(CanPassByValue<::AudioStream>);
+    //STATIC_REQUIRE(CanPassByValue<::Sound>);
+    //STATIC_REQUIRE(CanPassByValue<::Music>);
+
+    //STATIC_REQUIRE(CanPassByValue<::VrDeviceInfo>);
+    //STATIC_REQUIRE(CanPassByValue<::VrStereoConfig>);
+
+    STATIC_REQUIRE(CanPassByValue<::FilePathList>);
+
+    //STATIC_REQUIRE(CanPassByValue<::AutomationEvent>);
+    //STATIC_REQUIRE(CanPassByValue<::AutomationEventList>);
+}
+
 /// @TODO: split into more test cases
 TEST_CASE( "Vector", "[core]" ) {
     raylib::Vector2 position({.x = 50, .y = 100});

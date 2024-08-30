@@ -248,7 +248,7 @@ class Material {
         }, value);
         return *this;
     }
-    Material& SetShaderValue(const char* uniformName, std::variant<float,
+    Material& SetShaderValue(czstring uniformName, std::variant<float,
             std::array<float, 2>, ///< vec2 (2 float)
             std::array<float, 3>, ///< vec3 (3 float)
             std::array<float, 4>, ///< vec4 (4 float)
@@ -362,10 +362,10 @@ class Material {
     /**
      * Draw a 3d mesh with material and transform
      */
-    void DrawMesh(const ::Mesh& mesh, ::Matrix transform) const noexcept {
+    void DrawMesh(const ::Mesh& mesh, const ::Matrix& transform) const noexcept {
         ::DrawMesh(mesh, m_data, transform);
     }
-    void DrawMesh(const raylib::Mesh& mesh, ::Matrix transform) const {
+    void DrawMesh(const raylib::Mesh& mesh, const ::Matrix& transform) const {
         ::DrawMesh(mesh.c_raylib(), m_data, transform);
     }
 

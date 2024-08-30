@@ -11,7 +11,7 @@ namespace raylib {
  */
 class Rectangle : public ::Rectangle {
  public:
-    explicit constexpr Rectangle(const ::Rectangle& rect = {
+    explicit constexpr Rectangle(::Rectangle rect = {
             .x = 0, .y = 0, .width = 0, .height = 0
     }) : ::Rectangle{rect.x, rect.y, rect.width, rect.height} {}
 
@@ -115,14 +115,14 @@ class Rectangle : public ::Rectangle {
     /**
      * Check collision between two rectangles
      */
-    [[nodiscard]] bool CheckCollision(const ::Rectangle& rec2) const noexcept {
+    [[nodiscard]] bool CheckCollision(::Rectangle rec2) const noexcept {
         return ::CheckCollisionRecs(*this, rec2);
     }
 
     /**
      * Get collision rectangle for two rectangles collision
      */
-    [[nodiscard]] Rectangle GetCollision(const ::Rectangle& rec2) const noexcept {
+    [[nodiscard]] Rectangle GetCollision(::Rectangle rec2) const noexcept {
         return Rectangle{::GetCollisionRec(*this, rec2)};
     }
 
@@ -149,7 +149,7 @@ class Rectangle : public ::Rectangle {
         height = newHeight;
         return *this;
     }
-    constexpr Rectangle& SetSize(const ::Vector2& size) noexcept {
+    constexpr Rectangle& SetSize(::Vector2 size) noexcept {
         return SetSize(size.x, size.y);
     }
     /*
@@ -168,7 +168,7 @@ class Rectangle : public ::Rectangle {
         y = newY;
         return *this;
     }
-    constexpr Rectangle& SetPosition(const ::Vector2& position) noexcept {
+    constexpr Rectangle& SetPosition(::Vector2 position) noexcept {
         return SetPosition(position.x, position.y);
     }
 

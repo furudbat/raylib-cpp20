@@ -394,14 +394,14 @@ class Vector2 : public ::Vector2 {
     /**
      * Check collision between circle and rectangle
      */
-    [[nodiscard]] bool CheckCollisionCircle(float radius, const ::Rectangle& rec) const noexcept {
+    [[nodiscard]] bool CheckCollisionCircle(float radius, ::Rectangle rec) const noexcept {
         return ::CheckCollisionCircleRec(*this, radius, rec);
     }
 
     /**
      * Check if point is inside rectangle
      */
-    [[nodiscard]] bool CheckCollision(const ::Rectangle& rec) const noexcept {
+    [[nodiscard]] bool CheckCollision(::Rectangle rec) const noexcept {
         return ::CheckCollisionPointRec(*this, rec);
     }
 
