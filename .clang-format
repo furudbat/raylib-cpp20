@@ -1,39 +1,42 @@
 ---
 Language:        Cpp
-BasedOnStyle:    LLVM
-AccessModifierOffset: -3
-AlignAfterOpenBracket: Align
+BasedOnStyle:    Google
+AccessModifierOffset: -4
+AlignAfterOpenBracket: AlwaysBreak
 AlignConsecutiveAssignments: false
 AlignConsecutiveDeclarations: false
 AlignEscapedNewlines: Left
 AlignOperands: true
-AlignTrailingComments: true
+AlignTrailingComments: false
 AllowAllParametersOfDeclarationOnNextLine: false
-AllowShortBlocksOnASingleLine: Empty
+AllowShortBlocksOnASingleLine: Never
 AllowShortCaseLabelsOnASingleLine: true
 AllowShortEnumsOnASingleLine: false
-AllowShortFunctionsOnASingleLine: None
-AllowShortIfStatementsOnASingleLine: false
-AllowShortLambdasOnASingleLine: Inline
-AllowShortLoopsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortIfStatementsOnASingleLine: true
+AllowShortLambdasOnASingleLine: All
+AllowShortLoopsOnASingleLine: true
+AllowAllArgumentsOnNextLine: false
 AlwaysBreakAfterDefinitionReturnType: None
 AlwaysBreakBeforeMultilineStrings: false
-AlwaysBreakTemplateDeclarations: No
 AlwaysBreakAfterReturnType: None
-BinPackArguments: true
-BinPackParameters: true
+AlwaysBreakTemplateDeclarations: true
+## @TODO: when update to clang-format 19, use BreakTemplateDeclarations
+#BreakTemplateDeclarations: Yes
+BinPackArguments: false
+BinPackParameters: false
 BraceWrapping:
   AfterCaseLabel:  true
   AfterClass:      false
-  AfterControlStatement: true
+  AfterControlStatement: false
   AfterEnum:       false
-  AfterFunction:   true
+  AfterFunction:   false
   AfterNamespace:  false
-  AfterObjCDeclaration: true
+  AfterObjCDeclaration: false
   AfterStruct:     false
   AfterUnion:      false
   AfterExternBlock: false
-  BeforeCatch:     true
+  BeforeCatch:     false
   BeforeElse:      true
   BeforeLambdaBody: true
   BeforeWhile:     true
@@ -46,7 +49,7 @@ BreakBeforeBraces: Custom
 BreakBeforeConceptDeclarations: false
 BreakBeforeInheritanceComma: false
 BreakBeforeTernaryOperators: true
-BreakConstructorInitializersBeforeComma: false
+BreakConstructorInitializersBeforeComma: true
 BreakConstructorInitializers: BeforeColon
 BreakStringLiterals: true
 ColumnLimit: 120
@@ -63,14 +66,14 @@ ExperimentalAutoDetectBinPacking: false
 IndentCaseLabels: true
 IndentGotoLabels: true
 IndentPPDirectives: None
-IndentWidth:     4
+IndentWidth: 4
 IndentWrappedFunctionNames: false
 InsertTrailingCommas: None
 KeepEmptyLinesAtTheStartOfBlocks: false
 LambdaBodyIndentation: Signature
 MacroBlockBegin: ''
 MacroBlockEnd:   ''
-MaxEmptyLinesToKeep: 1
+MaxEmptyLinesToKeep: 2
 NamespaceIndentation: None
 ObjCBinPackProtocolList: Auto
 ObjCBlockIndentWidth: 4
@@ -88,7 +91,7 @@ PointerAlignment: Left
 PPIndentWidth:   2
 QualifierAlignment: Leave
 ReferenceAlignment: Left
-ReflowComments: false
+ReflowComments: true
 SortUsingDeclarations: true
 SpaceAfterCStyleCast: false
 SpaceAfterLogicalNot: false
@@ -108,15 +111,18 @@ SpaceBeforeParensOptions:
   AfterIfMacros:       false
 SpaceBeforeRangeBasedForLoopColon: true
 SpaceInEmptyParentheses: false
-SpacesBeforeTrailingComments: 4
+SpacesBeforeTrailingComments: 1
 SpacesInAngles:  false
-SpacesInContainerLiterals: true
+SpacesInContainerLiterals: false
 SpacesInCStyleCastParentheses: false
 SpacesInParentheses: false
 SpacesInSquareBrackets: false
-TabWidth:        4
-UseCRLF:         false
-UseTab:          Never
+TabWidth: 4
+LineEnding: LF
+UseTab: Never
+CommentPragmas: "\/*(.*)*\/"
+PackConstructorInitializers: CurrentLine
+FixNamespaceComments: true
 # Include settings
 IncludeBlocks: Preserve
 IncludeCategories:
@@ -150,7 +156,6 @@ ForEachMacros:
   - foreach
   - Q_FOREACH
   - BOOST_FOREACH
-
 Standard: c++20
 ---
 Language: JavaScript
