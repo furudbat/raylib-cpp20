@@ -4,6 +4,8 @@
 
 #include "raylib.hpp"
 
+#include "raylib-cpp-utils.hpp"
+
 #include <string>
 #include <optional>
 

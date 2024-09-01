@@ -17,6 +17,10 @@
  */
 #ifndef RLCPPAPI
 #define RLCPPAPI static
+// no inline needed for static (header) function
+#define RLCPPAPI_INLINE static
+#else
+#define RLCPPAPI_INLINE RLCPPAPI inline
 #endif
 
 #ifndef GETTERSETTER

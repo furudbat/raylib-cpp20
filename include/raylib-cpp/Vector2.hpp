@@ -2,6 +2,7 @@
 #define RAYLIB_CPP_INCLUDE_VECTOR2_HPP_
 
 #include "raylib.hpp"
+
 #include "raymath.hpp"
 #include "raylib-cpp-utils.hpp"
 
@@ -16,12 +17,11 @@ namespace raylib {
  */
 class Vector2 : public ::Vector2 {
  public:
-    inline static constexpr ::Color DefaultDrawColor = BLACK;
-    inline static constexpr int DefaultCheckCollisionPointLineThreshold = 1;
+    static constexpr ::Color DefaultDrawColor = BLACK;
+    static constexpr int DefaultCheckCollisionPointLineThreshold = 1;
 
-    constexpr Vector2(const ::Vector2& vec = {
-            .x = 0, .y = 0,
-    }) : ::Vector2{vec.x, vec.y} {}
+    constexpr Vector2() : ::Vector2{0, 0} {}
+    constexpr Vector2(const ::Vector2& vec) : ::Vector2{vec.x, vec.y} {}
 
     [[deprecated("Use Vector2(vec)")]]
     constexpr Vector2(float _x, float _y) : ::Vector2{_x, _y} {}
@@ -34,7 +34,7 @@ class Vector2 : public ::Vector2 {
     /**
      * Set the Vector2 to the same as the given Vector2.
      */
-    constexpr Vector2& operator=(const ::Vector2& vector2) & noexcept {
+    constexpr Vector2& operator=(const ::Vector2& vector2) & {
         set(vector2);
         return *this;
     }
@@ -46,7 +46,7 @@ class Vector2 : public ::Vector2 {
     /**
      * Determine whether or not the vectors are equal.
      */
-    constexpr bool operator==(const ::Vector2& other) const noexcept {
+    constexpr bool operator==(const ::Vector2& other) const {
         return x == other.x
             && y == other.y;
     }
@@ -54,7 +54,7 @@ class Vector2 : public ::Vector2 {
     /**
      * Determines if the vectors are not equal.
      */
-    constexpr bool operator!=(const ::Vector2& other) const noexcept {
+    constexpr bool operator!=(const ::Vector2& other) const {
         return !(*this == other);
     }
 
@@ -76,21 +76,21 @@ class Vector2 : public ::Vector2 {
     /**
      * Add two vectors (v1 + v2)
      */
-    [[nodiscard]] Vector2 Add(::Vector2 vector2) const noexcept {
+    [[nodiscard]] Vector2 Add(::Vector2 vector2) const {
         return ::Vector2Add(*this, vector2);
     }
 
     /**
      * Add two vectors (v1 + v2)
      */
-    Vector2 operator+(const ::Vector2& vector2) const noexcept {
+    Vector2 operator+(const ::Vector2& vector2) const {
         return ::Vector2Add(*this, vector2);
     }
 
     /**
      * Add two vectors (v1 + v2)
      */
-    Vector2& operator+=(const ::Vector2& vector2) noexcept {
+    Vector2& operator+=(const ::Vector2& vector2) {
         set(::Vector2Add(*this, vector2));
 
         return *this;
@@ -99,21 +99,21 @@ class Vector2 : public ::Vector2 {
     /**
      * Subtract two vectors (v1 - v2)
      */
-    [[nodiscard]] Vector2 Subtract(::Vector2 vector2) const noexcept {
+    [[nodiscard]] Vector2 Subtract(::Vector2 vector2) const {
         return ::Vector2Subtract(*this, vector2);
     }
 
     /**
      * Subtract two vectors (v1 - v2)
      */
-    Vector2 operator-(const ::Vector2& vector2) const noexcept {
+    Vector2 operator-(const ::Vector2& vector2) const {
         return ::Vector2Subtract(*this, vector2);
     }
 
     /**
      * Subtract two vectors (v1 - v2)
      */
-    Vector2& operator-=(const ::Vector2& vector2) noexcept {
+    Vector2& operator-=(const ::Vector2& vector2) {
         set(::Vector2Subtract(*this, vector2));
 
         return *this;
@@ -122,35 +122,35 @@ class Vector2 : public ::Vector2 {
     /**
      * Negate vector
      */
-    [[nodiscard]] Vector2 Negate() const noexcept {
+    [[nodiscard]] Vector2 Negate() const {
         return ::Vector2Negate(*this);
     }
 
     /**
      * Negate vector
      */
-    Vector2 operator-() const noexcept {
+    Vector2 operator-() const {
         return ::Vector2Negate(*this);
     }
 
     /**
      * Multiply vector by vector
      */
-    [[nodiscard]] Vector2 Multiply(::Vector2 vector2) const noexcept {
+    [[nodiscard]] Vector2 Multiply(::Vector2 vector2) const {
         return ::Vector2Multiply(*this, vector2);
     }
 
     /**
      * Multiply vector by vector
      */
-    Vector2 operator*(const ::Vector2& vector2) const noexcept {
+    Vector2 operator*(const ::Vector2& vector2) const {
         return ::Vector2Multiply(*this, vector2);
     }
 
     /**
      * Multiply vector by vector
      */
-    Vector2& operator*=(const ::Vector2& vector2) noexcept {
+    Vector2& operator*=(const ::Vector2& vector2) {
         set(::Vector2Multiply(*this, vector2));
 
         return *this;
@@ -159,21 +159,21 @@ class Vector2 : public ::Vector2 {
     /**
      * Scale vector (multiply by value)
      */
-    [[nodiscard]] Vector2 Scale(float scale) const noexcept {
+    [[nodiscard]] Vector2 Scale(float scale) const {
         return ::Vector2Scale(*this, scale);
     }
 
     /**
      * Scale vector (multiply by value)
      */
-    Vector2 operator*(float scale) const noexcept {
+    Vector2 operator*(float scale) const {
         return ::Vector2Scale(*this, scale);
     }
 
     /**
      * Scale vector (multiply by value)
      */
-    Vector2& operator*=(float scale) noexcept {
+    Vector2& operator*=(float scale) {
         set(::Vector2Scale(*this, scale));
 
         return *this;
@@ -205,8 +205,8 @@ class Vector2 : public ::Vector2 {
     /**
      * Divide vector by value
      */
-    [[nodiscard]] constexpr raylib::Vector2 Divide(float div) const {
-        return raylib::Vector2{::Vector2{x / div, y / div}};
+    [[nodiscard]] constexpr Vector2 Divide(float div) const {
+        return Vector2{::Vector2{x / div, y / div}};
     }
 
     /**
@@ -229,98 +229,98 @@ class Vector2 : public ::Vector2 {
     /**
      * Normalize provided vector
      */
-    [[nodiscard]] Vector2 Normalize() const noexcept {
+    [[nodiscard]] Vector2 Normalize() const {
         return ::Vector2Normalize(*this);
     }
 
     /**
      * Transforms a Vector2 by a given Matrix
      */
-    [[nodiscard]] Vector2 Transform(const ::Matrix& mat) const noexcept {
+    [[nodiscard]] Vector2 Transform(const ::Matrix& mat) const {
         return ::Vector2Transform(*this, mat);
     }
 
     /**
      * Calculate linear interpolation between two vectors
      */
-    [[nodiscard]] Vector2 Lerp(::Vector2 vector2, float amount) const noexcept {
+    [[nodiscard]] Vector2 Lerp(::Vector2 vector2, float amount) const {
         return ::Vector2Lerp(*this, vector2, amount);
     }
 
     /**
      * Calculate reflected vector to normal
      */
-    [[nodiscard]] Vector2 Reflect(::Vector2 normal) const noexcept {
+    [[nodiscard]] Vector2 Reflect(::Vector2 normal) const {
         return ::Vector2Reflect(*this, normal);
     }
 
     /**
      * Rotate Vector by float in radians
      */
-    [[nodiscard]] Vector2 Rotate(float angle) const noexcept {
+    [[nodiscard]] Vector2 Rotate(float angle) const {
         return ::Vector2Rotate(*this, angle);
     }
 
     /**
      * Move Vector towards target
      */
-    [[nodiscard]] Vector2 MoveTowards(::Vector2 target, float maxDistance) const noexcept {
+    [[nodiscard]] Vector2 MoveTowards(::Vector2 target, float maxDistance) const {
         return ::Vector2MoveTowards(*this, target, maxDistance);
     }
 
     /**
      * Invert the given vector
      */
-    [[nodiscard]] Vector2 Invert() const noexcept {
+    [[nodiscard]] Vector2 Invert() const {
         return ::Vector2Invert(*this);
     }
 
     /**
      * Clamp the components of the vector between
      */
-    [[nodiscard]] Vector2 Clamp(::Vector2 min, ::Vector2 max) const noexcept {
+    [[nodiscard]] Vector2 Clamp(::Vector2 min, ::Vector2 max) const {
         return ::Vector2Clamp(*this, min, max);
     }
 
     /**
      * // Clamp the magnitude of the vector between two min and max values
      */
-    [[nodiscard]] Vector2 Clamp(float min, float max) const noexcept {
+    [[nodiscard]] Vector2 Clamp(float min, float max) const {
         return ::Vector2ClampValue(*this, min, max);
     }
 
     /**
      * Check whether two given vectors are almost equal
      */
-    [[nodiscard]] int Equals(::Vector2 q) const noexcept {
+    [[nodiscard]] int Equals(::Vector2 q) const {
         return ::Vector2Equals(*this, q);
     }
 
     /**
      * Calculate vector length
      */
-    [[nodiscard]] float Length() const noexcept {
+    [[nodiscard]] float Length() const {
         return ::Vector2Length(*this);
     }
 
     /**
      * Calculate vector square length
      */
-    [[nodiscard]] float LengthSqr() const noexcept {
+    [[nodiscard]] float LengthSqr() const {
         return ::Vector2LengthSqr(*this);
     }
 
     /**
      * Calculate two vectors dot product
      */
-    [[nodiscard]] float DotProduct(::Vector2 vector2) const noexcept {
+    [[nodiscard]] float DotProduct(::Vector2 vector2) const {
         return Vector2DotProduct(*this, vector2);
     }
 
     /**
      * Calculate distance between two vectors
      */
-    [[nodiscard]] float Distance(::Vector2 vector2) const noexcept {
+    [[nodiscard]] float Distance(::Vector2 vector2) const {
         return Vector2Distance(*this, vector2);
     }
 
@@ -334,88 +334,88 @@ class Vector2 : public ::Vector2 {
     /**
      * Calculate angle from two vectors in X-axis
      */
-    [[nodiscard]] float Angle(::Vector2 vector2) const noexcept {
+    [[nodiscard]] float Angle(::Vector2 vector2) const {
         return Vector2Angle(*this, vector2);
     }
 
     /**
      * Vector with components value 0.0f
      */
-    static Vector2 Zero() noexcept {
+    static Vector2 Zero() {
         return ::Vector2Zero();
     }
 
     /**
      * Vector with components value 1.0f
      */
-    static Vector2 One() noexcept {
+    static Vector2 One() {
         return ::Vector2One();
     }
 #endif
 
-    void DrawPixel(::Color color = DefaultDrawColor) const noexcept {
+    void DrawPixel(::Color color = DefaultDrawColor) const {
         ::DrawPixelV(*this, color);
     }
 
-    void DrawLine(::Vector2 endPos, ::Color color = DefaultDrawColor) const noexcept {
+    void DrawLine(::Vector2 endPos, ::Color color = DefaultDrawColor) const {
         ::DrawLineV(*this, endPos, color);
     }
 
-    void DrawLine(::Vector2 endPos, float thick, ::Color color = DefaultDrawColor) const noexcept {
+    void DrawLine(::Vector2 endPos, float thick, ::Color color = DefaultDrawColor) const {
         ::DrawLineEx(*this, endPos, thick, color);
     }
 
-    void DrawLineBezier(::Vector2 endPos, float thick, ::Color color = DefaultDrawColor) const noexcept {
+    void DrawLineBezier(::Vector2 endPos, float thick, ::Color color = DefaultDrawColor) const {
         ::DrawLineBezier(*this, endPos, thick, color);
     }
 
     /**
      * Draw a color-filled circle (Vector version)
      */
-    void DrawCircle(float radius, ::Color color = DefaultDrawColor) const noexcept {
+    void DrawCircle(float radius, ::Color color = DefaultDrawColor) const {
         ::DrawCircleV(*this, radius, color);
     }
 
-    void DrawRectangle(::Vector2 size, ::Color color = DefaultDrawColor) const noexcept {
+    void DrawRectangle(::Vector2 size, ::Color color = DefaultDrawColor) const {
         ::DrawRectangleV(*this, size, color);
     }
 
-    void DrawPoly(int sides, float radius, float rotation, ::Color color = DefaultDrawColor) const noexcept {
+    void DrawPoly(int sides, float radius, float rotation, ::Color color = DefaultDrawColor) const {
         ::DrawPoly(*this, sides, radius, rotation, color);
     }
 
     /**
      * Check collision between two circles
      */
-    [[nodiscard]] bool CheckCollisionCircle(float radius1, ::Vector2 center2, float radius2) const noexcept {
+    [[nodiscard]] bool CheckCollisionCircle(float radius1, ::Vector2 center2, float radius2) const {
         return ::CheckCollisionCircles(*this, radius1, center2, radius2);
     }
 
     /**
      * Check collision between circle and rectangle
      */
-    [[nodiscard]] bool CheckCollisionCircle(float radius, ::Rectangle rec) const noexcept {
+    [[nodiscard]] bool CheckCollisionCircle(float radius, ::Rectangle rec) const {
         return ::CheckCollisionCircleRec(*this, radius, rec);
     }
 
     /**
      * Check if point is inside rectangle
      */
-    [[nodiscard]] bool CheckCollision(::Rectangle rec) const noexcept {
+    [[nodiscard]] bool CheckCollision(::Rectangle rec) const {
         return ::CheckCollisionPointRec(*this, rec);
     }
 
     /**
      * Check if point is inside circle
      */
-    [[nodiscard]] bool CheckCollision(::Vector2 center, float radius) const noexcept {
+    [[nodiscard]] bool CheckCollision(::Vector2 center, float radius) const {
         return ::CheckCollisionPointCircle(*this, center, radius);
     }
 
     /**
      * Check if point is inside a triangle
      */
-    [[nodiscard]] bool CheckCollision(::Vector2 p1, ::Vector2 p2, ::Vector2 p3) const noexcept {
+    [[nodiscard]] bool CheckCollision(::Vector2 p1, ::Vector2 p2, ::Vector2 p3) const {
         return ::CheckCollisionPointTriangle(*this, p1, p2, p3);
     }
 
@@ -437,7 +437,7 @@ class Vector2 : public ::Vector2 {
     /**
      * Check if point belongs to line created between two points [p1] and [p2] with defined margin in pixels [threshold]
      */
-    [[nodiscard]] bool CheckCollisionPointLine(::Vector2 p1, ::Vector2 p2, int threshold = DefaultCheckCollisionPointLineThreshold) const noexcept {
+    [[nodiscard]] bool CheckCollisionPointLine(::Vector2 p1, ::Vector2 p2, int threshold = DefaultCheckCollisionPointLineThreshold) const {
         return ::CheckCollisionPointLine(*this, p1, p2, threshold);
     }
 

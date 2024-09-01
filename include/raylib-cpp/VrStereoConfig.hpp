@@ -2,7 +2,6 @@
 #define RAYLIB_CPP_INCLUDE_VRSTEREOCONFIG_HPP_
 
 #include "raylib.hpp"
-#include "raylib-cpp-utils.hpp"
 
 namespace raylib {
 /**
@@ -15,7 +14,7 @@ class VrStereoConfig {
     explicit VrStereoConfig(const ::VrDeviceInfo& info) {
         Load(info);
     }
-    explicit VrStereoConfig(::VrDeviceInfo&& info) {
+    explicit VrStereoConfig(::VrDeviceInfo&& info) noexcept {
         Load(info);
         info = {};
     }
@@ -30,14 +29,14 @@ class VrStereoConfig {
     /**
      * Unload VR stereo config
      */
-    ~VrStereoConfig() noexcept {
+    ~VrStereoConfig() {
         Unload();
     }
 
     /**
      * Begin stereo rendering
      */
-    VrStereoConfig& BeginMode() noexcept {
+    VrStereoConfig& BeginMode() {
         ::BeginVrStereoMode(m_data);
         return *this;
     }
@@ -45,7 +44,7 @@ class VrStereoConfig {
     /**
      * End stereo rendering
      */
-    VrStereoConfig& EndMode() noexcept {
+    VrStereoConfig& EndMode() {
         ::EndVrStereoMode();
         return *this;
     }
@@ -53,7 +52,7 @@ class VrStereoConfig {
     /**
      * Unload VR stereo config
      */
-    void Unload() noexcept {
+    void Unload() {
         ::UnloadVrStereoConfig(m_data);
     }
 

@@ -18,6 +18,8 @@ c/******************************************************************************
 
 #include "reasings.h"            // Required for easing functions
 
+#include <array>
+
 inline constexpr auto RECS_WIDTH  = 50;
 inline constexpr auto RECS_HEIGHT = 50;
 
@@ -38,8 +40,9 @@ int main()
 
     InitWindow(screenWidth, screenHeight, "raylib [shapes] example - easings rectangle array");
 
-    Rectangle recs[MAX_RECS_X*MAX_RECS_Y] = { 0 };
+    std::array<Rectangle, MAX_RECS_X*MAX_RECS_Y> recs;
 
+    /// @TODO: use mdspan for recs
     for (int y = 0; y < MAX_RECS_Y; y++)
     {
         for (int x = 0; x < MAX_RECS_X; x++)

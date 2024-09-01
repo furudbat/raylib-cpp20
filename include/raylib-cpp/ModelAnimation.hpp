@@ -24,7 +24,7 @@ namespace raylib {
 class ModelAnimation {
  public:
     constexpr ModelAnimation(const ::ModelAnimation&) = delete;
-    constexpr ModelAnimation(::ModelAnimation&& model) {
+    constexpr ModelAnimation(::ModelAnimation&& model) noexcept {
         set(model);
 
         model.boneCount = 0;
@@ -34,7 +34,7 @@ class ModelAnimation {
     }
 
     constexpr ModelAnimation(const ModelAnimation&) = delete;
-    constexpr ModelAnimation(ModelAnimation&& other) {
+    constexpr ModelAnimation(ModelAnimation&& other) noexcept {
         set(other.m_data);
 
         other.m_data.boneCount = 0;
@@ -48,7 +48,7 @@ class ModelAnimation {
     }
 
     constexpr ModelAnimation& operator=(const ::ModelAnimation& model) = delete;
-    constexpr ModelAnimation& operator=(::ModelAnimation&& model) {
+    constexpr ModelAnimation& operator=(::ModelAnimation&& model) noexcept {
         set(model);
         return *this;
     }
@@ -70,10 +70,10 @@ class ModelAnimation {
         return *this;
     }
 
-    explicit operator ::ModelAnimation() const noexcept {
+    explicit operator ::ModelAnimation() const {
         return m_data;
     }
-    [[nodiscard]] ::ModelAnimation c_raylib() const & noexcept {
+    [[nodiscard]] ::ModelAnimation c_raylib() const & {
         return m_data;
     }
 
@@ -161,11 +161,11 @@ public:
     /**
      * Check model animation skeleton match
      */
-    [[nodiscard]] bool IsValid(const ::Model& model) const noexcept {
+    [[nodiscard]] bool IsValid(const ::Model& model) const {
         return ::IsModelAnimationValid(model, m_data);
     }
     /*
-    [[nodiscard]] bool IsValid(const raylib::Model& model) const noexcept {
+    [[nodiscard]] bool IsValid(const raylib::Model& model) const {
         return IsValid(model.c_raylib());
     }
     */

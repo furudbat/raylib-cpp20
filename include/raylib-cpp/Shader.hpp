@@ -4,14 +4,11 @@
 
 #include "raylib.hpp"
 #include "raylib-cpp-utils.hpp"
-#include "Texture.hpp"
 #include "ShaderUnmanaged.hpp"
 
 #include <string>
-#include <filesystem>
-#include <optional>
+#include <string_view>
 #include <utility>
-#include <variant>
 
 namespace raylib {
 
@@ -122,17 +119,17 @@ public:
         Unload();
     }
 
-    explicit operator ::Shader() const noexcept {
+    explicit operator ::Shader() const {
         return m_shader.m_data;
     }
-    [[nodiscard]] ::Shader c_raylib() const & noexcept {
+    [[nodiscard]] ::Shader c_raylib() const & {
         return m_shader.m_data;
     }
 
     /**
      * Unload shader from GPU memory (VRAM)
      */
-    void Unload() noexcept {
+    void Unload() {
         if (m_shader.m_data.locs != nullptr) {
             if(m_shader.m_data.id != rlGetShaderIdDefault()) {
                 ::UnloadShader(m_shader.m_data);

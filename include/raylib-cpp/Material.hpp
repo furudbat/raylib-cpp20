@@ -57,7 +57,7 @@ struct RayMaterials {
     std::span<const ::Material> AsSpan() const { return {data, size}; }
 };
 
-[[maybe_unused]] RLCPPAPI inline ::Shader DefaultMaterialShader() {
+[[maybe_unused]] RLCPPAPI_INLINE ::Shader DefaultMaterialShader() {
     return ::Shader {
         .id = rlGetShaderIdDefault(),
         .locs = rlGetShaderLocsDefault(),
@@ -72,9 +72,7 @@ class Material {
     /**
      * Load default material (Supports: DIFFUSE, SPECULAR, NORMAL maps)
      */
-    Material() {
-        set(LoadMaterialDefault());
-    }
+    Material() : m_data(::LoadMaterialDefault()) {}
 
     explicit constexpr Material(const ::Material& material) = delete;
     explicit Material(::Material&& material) noexcept {
@@ -82,10 +80,10 @@ class Material {
 
         material.maps = nullptr;
         material.shader = NullShader;
-        material.params[0] = 0.0f;
-        material.params[1] = 0.0f;
-        material.params[2] = 0.0f;
-        material.params[3] = 0.0f;
+        material.params[0] = 0.0F;
+        material.params[1] = 0.0F;
+        material.params[2] = 0.0F;
+        material.params[3] = 0.0F;
     }
 
     Material(const Material&) = delete;
@@ -94,20 +92,20 @@ class Material {
 
         other.m_data.maps = nullptr;
         other.m_data.shader = NullShader;
-        other.m_data.params[0] = 0.0f;
-        other.m_data.params[1] = 0.0f;
-        other.m_data.params[2] = 0.0f;
-        other.m_data.params[3] = 0.0f;
+        other.m_data.params[0] = 0.0F;
+        other.m_data.params[1] = 0.0F;
+        other.m_data.params[2] = 0.0F;
+        other.m_data.params[3] = 0.0F;
     }
 
-    ~Material() noexcept {
+    ~Material() {
         Unload();
     }
 
-    explicit operator ::Material() const noexcept {
+    explicit operator ::Material() const {
         return m_data;
     }
-    [[nodiscard]] ::Material c_raylib() const & noexcept {
+    [[nodiscard]] ::Material c_raylib() const & {
         return m_data;
     }
 
@@ -320,7 +318,7 @@ class Material {
     /**
      * Unload material from memory
      */
-    void Unload() noexcept {
+    void Unload() {
         switch (m_trackShaderManagement) {
             case MaterialShaderOption::UnloadShaderWhenUnloadingMaterial:
                 break;
@@ -339,21 +337,21 @@ class Material {
     /**
      * Set texture for a material map type (MAP_DIFFUSE, MAP_SPECULAR...)
      */
-    Material& SetMaterialTexture(int mapType, const ::Texture2D& texture) noexcept {
+    Material& SetMaterialTexture(int mapType, const ::Texture2D& texture) {
         ::SetMaterialTexture(&m_data, mapType, texture);
         return *this;
     }
     [[deprecated("Use SetMaterialTexture(MaterialMapIndex, ...)")]]
-    Material& SetMaterialTexture(int mapType, const raylib::Texture2D& texture) {
+    Material& SetMaterialTexture(int mapType, const Texture2D& texture) {
         ::SetMaterialTexture(&m_data, mapType, texture.c_raylib());
         return *this;
     }
-    Material& SetMaterialTexture(MaterialMapIndexT mapType, const ::Texture2D& texture) noexcept {
+    Material& SetMaterialTexture(MaterialMapIndexT mapType, const ::Texture2D& texture) {
         // underlying type is size_t, but SetMaterialTexture needs int
         ::SetMaterialTexture(&m_data, static_cast<int>(static_cast<size_t>(mapType)), texture);
         return *this;
     }
-    Material& SetMaterialTexture(MaterialMapIndexT mapType, const raylib::Texture2D& texture) {
+    Material& SetMaterialTexture(MaterialMapIndexT mapType, const Texture2D& texture) {
         // underlying type is size_t, but SetMaterialTexture needs int
         ::SetMaterialTexture(&m_data, static_cast<int>(static_cast<size_t>(mapType)), texture.c_raylib());
         return *this;
@@ -362,27 +360,27 @@ class Material {
     /**
      * Draw a 3d mesh with material and transform
      */
-    void DrawMesh(const ::Mesh& mesh, const ::Matrix& transform) const noexcept {
+    void DrawMesh(const ::Mesh& mesh, const ::Matrix& transform) const {
         ::DrawMesh(mesh, m_data, transform);
     }
-    void DrawMesh(const raylib::Mesh& mesh, const ::Matrix& transform) const {
+    void DrawMesh(const Mesh& mesh, const ::Matrix& transform) const {
         ::DrawMesh(mesh.c_raylib(), m_data, transform);
     }
 
     /**
      * Draw multiple mesh instances with material and different transforms
      */
-    void DrawMesh(const ::Mesh& mesh, ::Matrix* transforms, int instances) const noexcept {
+    void DrawMesh(const ::Mesh& mesh, ::Matrix* transforms, int instances) const {
         ::DrawMeshInstanced(mesh, m_data, transforms, instances);
     }
-    void DrawMesh(const raylib::Mesh& mesh, ::Matrix* transforms, int instances) const {
+    void DrawMesh(const Mesh& mesh, ::Matrix* transforms, int instances) const {
         ::DrawMeshInstanced(mesh.c_raylib(), m_data, transforms, instances);
     }
 
     /**
      * Check if material is ready
      */
-    [[nodiscard]] bool IsReady() const noexcept {
+    [[nodiscard]] bool IsReady() const {
         return ::IsMaterialReady(m_data);
     }
 

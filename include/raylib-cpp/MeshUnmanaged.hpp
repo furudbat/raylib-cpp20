@@ -2,14 +2,11 @@
 #define RAYLIB_CPP_INCLUDE_MESHUNMANAGED_HPP_
 
 #include "raylib.hpp"
+
 #include "raylib-cpp-utils.hpp"
 #include "BoundingBox.hpp"
-#include "Image.hpp"
-#include "enums.hpp"
 
 #include <string>
-#include <vector>
-#include <filesystem>
 #include <cassert>
 
 namespace raylib {
@@ -134,14 +131,14 @@ class MeshUnmanaged {
     /**
      * Compute mesh bounding box limits
      */
-    [[nodiscard]] raylib::BoundingBox BoundingBox() const noexcept {
+    [[nodiscard]] raylib::BoundingBox BoundingBox() const {
         return raylib::BoundingBox{::GetMeshBoundingBox(m_data)};
     }
 
     /**
      * Compute mesh bounding box limits
      */
-    explicit operator raylib::BoundingBox() const noexcept {
+    explicit operator raylib::BoundingBox() const {
         return BoundingBox();
     }
 

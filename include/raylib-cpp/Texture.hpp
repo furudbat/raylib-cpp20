@@ -112,14 +112,14 @@ class Texture {
     /**
      * On destruction, unload the Texture.
      */
-    ~Texture() noexcept {
+    ~Texture() {
         Unload();
     }
 
-    explicit operator ::Texture() const noexcept {
+    explicit operator ::Texture() const {
         return m_texture.m_data;
     }
-    [[nodiscard]] ::Texture c_raylib() const & noexcept {
+    [[nodiscard]] ::Texture c_raylib() const & {
         return m_texture.c_raylib();
     }
 
@@ -174,7 +174,7 @@ class Texture {
     /**
      * Unload texture from GPU memory (VRAM)
      */
-    void Unload() noexcept {
+    void Unload() {
         // Protect against calling UnloadTexture() twice.
         if (m_texture.m_data.id != 0) {
             ::UnloadTexture(m_texture.m_data);
@@ -240,7 +240,7 @@ class Texture {
         }
         RAYLIB_CPP_RETURN_EXPECTED_VALUE(texture);
     }
-    RAYLIB_CPP_EXPECTED_STATIC_RESULT(Texture) LoadFromImage(const raylib::Image& image) RAYLIB_CPP_THROWS {
+    RAYLIB_CPP_EXPECTED_STATIC_RESULT(Texture) LoadFromImage(const Image& image) RAYLIB_CPP_THROWS {
         return LoadFromImage(image.c_raylib());
     }
     RAYLIB_CPP_EXPECTED_STATIC_RESULT(Texture) LoadCubemapFromImage(const ::Image& image, PixelFormat format) RAYLIB_CPP_THROWS {
@@ -250,7 +250,7 @@ class Texture {
         }
         RAYLIB_CPP_RETURN_EXPECTED_VALUE(texture);
     }
-    RAYLIB_CPP_EXPECTED_STATIC_RESULT(Texture) LoadCubemapFromImage(const raylib::Image& image, PixelFormat format) RAYLIB_CPP_THROWS {
+    RAYLIB_CPP_EXPECTED_STATIC_RESULT(Texture) LoadCubemapFromImage(const Image& image, PixelFormat format) RAYLIB_CPP_THROWS {
         return LoadCubemapFromImage(image.c_raylib(), format);
     }
 

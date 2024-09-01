@@ -4,10 +4,10 @@
 #include "raylib.hpp"
 #include "raylib-cpp-utils.hpp"
 #include "TextureUnmanaged.hpp"
+#include "RaylibError.hpp"
 #ifdef __cpp_exceptions
 #include "RaylibException.hpp"
 #endif
-#include "RaylibError.hpp"
 
 #include <rlgl.h>
 
@@ -158,10 +158,10 @@ class RenderTexture {
         Unload();
     }
 
-    explicit operator ::RenderTexture() const noexcept {
+    explicit operator ::RenderTexture() const {
         return m_data;
     }
-    [[nodiscard]] ::RenderTexture c_raylib() const & noexcept {
+    [[nodiscard]] ::RenderTexture c_raylib() const & {
         return m_data;
     }
 
@@ -198,7 +198,7 @@ class RenderTexture {
     /**
      * Initializes render texture for drawing
      */
-    RenderTexture& BeginMode() noexcept {
+    RenderTexture& BeginMode() {
         ::BeginTextureMode(m_data);
         return *this;
     }
@@ -206,7 +206,7 @@ class RenderTexture {
     /**
      * Ends drawing to render texture
      */
-    RenderTexture& EndMode() noexcept {
+    RenderTexture& EndMode() {
         ::EndTextureMode();
         return *this;
     }
@@ -225,7 +225,7 @@ class RenderTexture {
     /**
      * Retrieves whether or not the render texture is ready.
      */
-    [[nodiscard]] bool IsReady() const noexcept {
+    [[nodiscard]] bool IsReady() const {
         return ::IsRenderTextureReady(m_data);
     }
 

@@ -14,13 +14,16 @@ namespace raylib {
  * Matrix type (OpenGL style 4x4 - right handed, column major)
  */
 class Matrix : public ::Matrix {
- public:
-    constexpr Matrix(const ::Matrix& mat = {
-            .m0 = 0, .m4 = 0, .m8 = 0, .m12 = 0,
-            .m1 = 0, .m5 = 0, .m9 = 0, .m13 = 0,
-            .m2 = 0, .m6 = 0, .m10 = 0, .m14 = 0,
-            .m3 = 0, .m7 = 0, .m11 = 0, .m15 = 0
-    }) : ::Matrix{
+public:
+    constexpr Matrix() : ::Matrix{
+        0, 0, 0, 0,
+        0, 0, 0, 0,
+        0, 0, 0, 0,
+        0, 0, 0, 0} {
+        // Nothing.
+    }
+
+    constexpr Matrix(const ::Matrix& mat) : ::Matrix{
             mat.m0, mat.m4, mat.m8, mat.m12,
             mat.m1, mat.m5, mat.m9, mat.m13,
             mat.m2, mat.m6, mat.m10, mat.m14,
@@ -42,7 +45,7 @@ class Matrix : public ::Matrix {
         // Nothing.
     }
 
-    constexpr Matrix& operator=(const ::Matrix& matrix) noexcept {
+    constexpr Matrix& operator=(const ::Matrix& matrix) {
         set(matrix);
         return *this;
     }
@@ -51,7 +54,7 @@ class Matrix : public ::Matrix {
         return *this;
     }
 
-    constexpr bool operator==(const ::Matrix& other) noexcept {
+    constexpr bool operator==(const ::Matrix& other) {
         return m0 == other.m0
             && m1 == other.m1
             && m2 == other.m2
@@ -70,7 +73,7 @@ class Matrix : public ::Matrix {
             && m15 == other.m15;
     }
 
-    constexpr bool operator!=(const ::Matrix& other) noexcept {
+    constexpr bool operator!=(const ::Matrix& other) {
         return !(*this == other);
     }
 
@@ -101,100 +104,100 @@ class Matrix : public ::Matrix {
     /**
      * Returns the trace of the matrix (sum of the values along the diagonal)
      */
-    [[nodiscard]] float Trace() const noexcept {
+    [[nodiscard]] float Trace() const {
         return ::MatrixTrace(*this);
     }
 
     /**
      * Transposes provided matrix
      */
-    [[nodiscard]] Matrix Transpose() const noexcept {
+    [[nodiscard]] Matrix Transpose() const {
         return ::MatrixTranspose(*this);
     }
 
-    [[nodiscard]] Matrix Invert() const noexcept {
+    [[nodiscard]] Matrix Invert() const {
         return ::MatrixInvert(*this);
     }
 
-    static Matrix Identity() noexcept {
+    static Matrix Identity() {
         return ::MatrixIdentity();
     }
 
-    Matrix Add(const ::Matrix& right) noexcept {
+    Matrix Add(const ::Matrix& right) {
         return ::MatrixAdd(*this, right);
     }
 
-    Matrix operator+(const ::Matrix& matrix) noexcept {
+    Matrix operator+(const ::Matrix& matrix) {
             return ::MatrixAdd(*this, matrix);
     }
 
-    Matrix Subtract(const ::Matrix& right) noexcept {
+    Matrix Subtract(const ::Matrix& right) {
         return ::MatrixSubtract(*this, right);
     }
 
-    Matrix operator-(const ::Matrix& matrix) noexcept {
+    Matrix operator-(const ::Matrix& matrix) {
         return ::MatrixSubtract(*this, matrix);
     }
 
-    static Matrix Translate(float x, float y, float z) noexcept {
+    static Matrix Translate(float x, float y, float z) {
         return ::MatrixTranslate(x, y, z);
     }
 
-    static Matrix Rotate(::Vector3 axis, float angle) noexcept {
+    static Matrix Rotate(::Vector3 axis, float angle) {
         return ::MatrixRotate(axis, angle);
     }
 
-    static Matrix RotateXYZ(::Vector3 angle) noexcept {
+    static Matrix RotateXYZ(::Vector3 angle) {
         return ::MatrixRotateXYZ(angle);
     }
 
-    static Matrix RotateX(float angle) noexcept {
+    static Matrix RotateX(float angle) {
         return ::MatrixRotateX(angle);
     }
 
-    static Matrix RotateY(float angle) noexcept {
+    static Matrix RotateY(float angle) {
         return ::MatrixRotateY(angle);
     }
 
-    static Matrix RotateZ(float angle) noexcept {
+    static Matrix RotateZ(float angle) {
         return ::MatrixRotateZ(angle);
     }
 
-    static Matrix Scale(float x, float y, float z) noexcept {
+    static Matrix Scale(float x, float y, float z) {
         return ::MatrixScale(x, y, z);
     }
 
-    [[nodiscard]] Matrix Multiply(const ::Matrix& right) const noexcept {
+    [[nodiscard]] Matrix Multiply(const ::Matrix& right) const {
         return ::MatrixMultiply(*this, right);
     }
 
-    Matrix operator*(const ::Matrix& matrix) noexcept {
+    Matrix operator*(const ::Matrix& matrix) {
         return ::MatrixMultiply(*this, matrix);
     }
 
     static Matrix Frustum(double left, double right, double bottom, double top,
-            double near, double far) noexcept {
+            double near, double far) {
         return ::MatrixFrustum(left, right, bottom, top, near, far);
     }
 
-    static Matrix Perspective(double fovy, double aspect, double near, double far) noexcept {
+    static Matrix Perspective(double fovy, double aspect, double near, double far) {
         return ::MatrixPerspective(fovy, aspect, near, far);
     }
 
     static Matrix Ortho(double left, double right, double bottom, double top,
-            double near, double far) noexcept {
+            double near, double far) {
         return ::MatrixOrtho(left, right, bottom, top, near, far);
     }
 
-    static Matrix LookAt(::Vector3 eye, ::Vector3 target, ::Vector3 up) noexcept {
+    static Matrix LookAt(::Vector3 eye, ::Vector3 target, ::Vector3 up) {
         return ::MatrixLookAt(eye, target, up);
     }
 
-    [[nodiscard]] float16 ToFloatV() const noexcept {
+    [[nodiscard]] float16 ToFloatV() const {
         return ::MatrixToFloatV(*this);
     }
 
-    explicit operator float16() const noexcept {
+    explicit operator float16() const {
         return ToFloatV();
     }
 
@@ -212,11 +215,11 @@ class Matrix : public ::Matrix {
     }
     */
 
-    static Matrix FromCamera(const ::Camera& camera) noexcept {
+    static Matrix FromCamera(const ::Camera& camera) {
         return ::GetCameraMatrix(camera);
     }
 
-    static Matrix FromCamera(const ::Camera2D& camera) noexcept {
+    static Matrix FromCamera(const ::Camera2D& camera) {
         return ::GetCameraMatrix2D(camera);
     }
 

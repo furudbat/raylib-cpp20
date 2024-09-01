@@ -1,7 +1,6 @@
 #ifndef RAYLIB_CPP_ENUMS_HPP
 #define RAYLIB_CPP_ENUMS_HPP
 
-#include "raylib.hpp"
 #include "strong_types.h"
 
 #include <cstdint>
@@ -102,7 +101,7 @@ namespace ShaderLocationIndex {
 }
 
 // Shader uniform data type
-enum class ShaderUniformDataType {
+enum class ShaderUniformDataType : int {
     Float = 0,       // Shader uniform type: float
     Vec2,            // Shader uniform type: vec2 (2 float)
     Vec3,            // Shader uniform type: vec3 (3 float)
@@ -115,7 +114,7 @@ enum class ShaderUniformDataType {
 };
 
 // Shader attribute data types
-enum class ShaderAttributeDataType {
+enum class ShaderAttributeDataType : int {
     Float = 0,       // Shader attribute type: float
     Vec2,            // Shader attribute type: vec2 (2 float)
     Vec3,            // Shader attribute type: vec3 (3 float)
@@ -124,7 +123,7 @@ enum class ShaderAttributeDataType {
 
 // Pixel formats
 // NOTE: Support depends on OpenGL version and platform
-enum class PixelFormat {
+enum class PixelFormat : int {
     UncompressedGrayscale = 1, // 8 bit per pixel (no alpha)
     UncompressedGrayAlpha,     // 8*2 bpp (2 channels)
     UncompressedR5G6B5,        // 16 bpp
@@ -154,7 +153,7 @@ enum class PixelFormat {
 // Texture parameters: filter mode
 // NOTE 1: Filtering considers mipmaps if available in the texture
 // NOTE 2: Filter is accordingly set for minification and magnification
-enum class TextureFilter {
+enum class TextureFilter : int {
     Point = 0,               // No filter, just pixel approximation
     Bilinear,                // Linear filtering
     Trilinear,               // Trilinear filtering (linear with mipmaps)
@@ -164,7 +163,7 @@ enum class TextureFilter {
 };
 
 // Texture parameters: wrap mode
-enum class TextureWrap {
+enum class TextureWrap : int {
     Repeat = 0,              // Repeats texture in tiled mode
     Clamp,                   // Clamps texture to edge pixel in tiled mode
     MirrorRepeat,            // Mirrors and repeats the texture in tiled mode
@@ -172,7 +171,7 @@ enum class TextureWrap {
 };
 
 // Cubemap layouts
-enum class CubemapLayout {
+enum class CubemapLayout : int {
     AutoDetect = 0,          // Automatically detect layout type
     LineVertical,            // Layout is defined by a vertical line with faces
     LineHorizontal,          // Layout is defined by a horizontal line with faces
@@ -182,14 +181,14 @@ enum class CubemapLayout {
 };
 
 // Font type, defines generation method
-enum class FontType {
+enum class FontType : int {
     Default = 0,             // Default font generation, anti-aliased
     Bitmap,                  // Bitmap font generation, no anti-aliasing
     Sdf                      // SDF font generation, requires external shader
 };
 
 // Color blending modes (pre-defined)
-enum class BlendMode {
+enum class BlendMode : int {
     Alpha = 0,               // Blend textures considering alpha (default)
     Additive,                // Blend textures adding colors
     Multiplied,              // Blend textures multiplying colors
@@ -202,7 +201,7 @@ enum class BlendMode {
 
 // Gesture
 // NOTE: Provided as bit-wise flags to enable only desired gestures
-enum class Gesture {
+enum class Gesture : int {
     None        = 0,         // No gesture
     Tap         = 1,         // Tap gesture
     DoubleTap   = 2,         // Double tap gesture
@@ -217,7 +216,7 @@ enum class Gesture {
 };
 
 // Camera system modes
-enum class CameraMode {
+enum class CameraMode : int {
     Custom = 0,              // Camera custom, controlled by user (UpdateCamera() does nothing)
     Free,                    // Camera free mode
     Orbital,                 // Camera orbital, around target, zoom supported
@@ -226,13 +225,13 @@ enum class CameraMode {
 };
 
 // Camera projection
-enum class CameraProjection {
+enum class CameraProjection : int {
     Perspective = 0,         // Perspective projection
     Orthographic             // Orthographic projection
 };
 
 // N-patch layout
-enum class NPatchLayout {
+enum class NPatchLayout : int {
     NinePatch = 0,           // Npatch layout: 3x3 tiles
     ThreePatchVertical,      // Npatch layout: 1x3 tiles
     ThreePatchHorizontal     // Npatch layout: 3x1 tiles

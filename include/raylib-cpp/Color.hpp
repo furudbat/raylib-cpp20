@@ -2,13 +2,11 @@
 #define RAYLIB_CPP_INCLUDE_COLOR_HPP_
 
 #include "raylib.hpp"
-#include "Vector4.hpp"
+
+#include "Vector3.hpp"
 #include "raylib-cpp-utils.hpp"
 
-#include <string>
-#include <cstdint>
 #include <cassert>
-#include <span>
 
 namespace raylib {
 
@@ -23,8 +21,8 @@ struct ColorHSV {
  */
 class Color : public ::Color {
  public:
-    inline static constexpr float DefaultDrawLineBezierThick = 1.0f;
-    inline static constexpr int DefaultDrawTextFontSize = 10;
+    static constexpr float DefaultDrawLineBezierThick = 1.0F;
+    static constexpr int DefaultDrawTextFontSize = 10;
 
     /**
      * Black.
@@ -43,10 +41,10 @@ class Color : public ::Color {
      * Returns a Color from HSV values
      */
     //[[deprecated("Use Color(ColorHSV) for better structured name")]]
-    explicit Color(::Vector3 hsv) noexcept {
+    explicit Color(::Vector3 hsv) {
         set(::ColorFromHSV(hsv.x, hsv.y, hsv.z));
     }
-    explicit Color(ColorHSV hsv) noexcept {
+    explicit Color(ColorHSV hsv) {
         set(::ColorFromHSV(hsv.hue, hsv.saturation, hsv.value));
     }
 
@@ -54,39 +52,48 @@ class Color : public ::Color {
      * Returns a Color from HSV values
      */
     [[deprecated("Use FromHSV(ColorHSV)")]]
-    static ::Color FromHSV(float hue, float saturation, float value) noexcept {
+    static ::Color FromHSV(float hue, float saturation, float value) {
         return ::ColorFromHSV(hue, saturation, value);
     }
     //[[deprecated("Use FromHSV(ColorHSV) for better structured name")]]
-    static ::Color FromHSV(::Vector3 hsv) noexcept {
+    static ::Color FromHSV(::Vector3 hsv) {
         return ::ColorFromHSV(hsv.x, hsv.y, hsv.z);
     }
-    static ::Color FromHSV(ColorHSV hsv) noexcept {
+    static ::Color FromHSV(ColorHSV hsv) {
         return ::ColorFromHSV(hsv.hue, hsv.saturation, hsv.value);
     }
 
     /**
      * Get Color structure from hexadecimal value
      */
-    explicit Color(uint32_t hexValue) noexcept {
+    explicit Color(uint32_t hexValue) {
         set(::GetColor(hexValue));
     }
 
-    Color(void *srcPtr, int format) noexcept {
+    template<typename T>
+    [[deprecated("use Color(srcPtr, PixelFormat)")]]
+    Color(T *srcPtr, int format) {
+        assert(srcPtr != nullptr);
+        set(::GetPixelColor(srcPtr, format));
+    }
+    template<typename T>
+    requires std::is_same_v<T, unsigned char> || std::is_same_v<T, unsigned short> || std::is_same_v<T, float>
+    Color(T *srcPtr, PixelFormat format) {
+        assert(srcPtr != nullptr);
         set(::GetPixelColor(srcPtr, format));
     }
 
     /**
      * Returns hexadecimal value for a Color
      */
-    [[nodiscard]] int ToInt() const noexcept {
+    [[nodiscard]] int ToInt() const {
         return ::ColorToInt(*this);
     }
 
     /**
      * Returns hexadecimal value for a Color
      */
-    explicit operator int() const noexcept {
+    explicit operator int() const {
         return ::ColorToInt(*this);
     }
 
@@ -105,37 +112,37 @@ class Color : public ::Color {
     */
 
     /**
-     * Determine whether or not the color are equal.
+     * Determine whether the color are equal.
      */
-    constexpr bool operator==(const ::Color& other) const noexcept {
+    constexpr bool operator==(const ::Color& other) const {
         return ((r == other.r) && (g == other.g) && (b == other.b) && (a == other.a));
     }
 
     /**
      * Determines if the color are not equal.
      */
-    constexpr bool operator!=(const ::Color& other) const noexcept {
+    constexpr bool operator!=(const ::Color& other) const {
         return !(*this == other);
     }
 
     /**
      * Returns color with alpha applied, alpha goes from 0.0f to 1.0f
      */
-    [[nodiscard]] Color Fade(float alpha) const noexcept {
+    [[nodiscard]] Color Fade(float alpha) const {
         return Color{::Fade(*this, alpha)};
     }
 
     /**
      * Returns Color normalized as float [0..1]
      */
-    [[nodiscard]] raylib::Vector4 Normalize() const noexcept {
-        return raylib::Vector4{::ColorNormalize(*this)};
+    [[nodiscard]] Vector4 Normalize() const {
+        return Vector4{::ColorNormalize(*this)};
     }
 
     /**
      * Returns Color from normalized values [0..1]
      */
-    explicit Color(::Vector4 normalized) noexcept {
+    explicit Color(::Vector4 normalized) {
         set(::ColorFromNormalized(normalized));
     }
 
@@ -143,11 +150,12 @@ class Color : public ::Color {
      * Returns HSV values for a Color
      */
     [[deprecated("Use ToColorHSV() for better named struct")]]
-    [[nodiscard]] raylib::Vector3 ToHSV() const noexcept {
+    [[nodiscard]] raylib::Vector3 ToHSV() const {
         return raylib::Vector3{::ColorToHSV(*this)};
     }
-    [[nodiscard]] ColorHSV ToColorHSV() const noexcept {
+    [[nodiscard]] ColorHSV ToColorHSV() const {
         auto hsv = ::ColorToHSV(*this);
+
         return {.hue = hsv.x, .saturation = hsv.y, .value = hsv.z};
     }
 
@@ -156,7 +164,7 @@ class Color : public ::Color {
     GETTERSETTER(uint8_t, B, b)
     GETTERSETTER(uint8_t, A, a)
 
-    Color& operator=(const ::Color& color) noexcept {
+    Color& operator=(const ::Color& color) {
         set(color);
         return *this;
     }
@@ -164,19 +172,19 @@ class Color : public ::Color {
     /**
      * Set background color (framebuffer clear color)
      */
-    Color& ClearBackground() noexcept {
+    Color& ClearBackground() {
         ::ClearBackground(*this);
         return *this;
     }
 
-    void DrawPixel(int x, int y) const noexcept {
+    void DrawPixel(int x, int y) const {
         ::DrawPixel(x, y, *this);
     }
 
     /**
      * Draw a pixel
      */
-    void DrawPixel(::Vector2 pos) const noexcept {
+    void DrawPixel(::Vector2 pos) const {
         ::DrawPixelV(pos, *this);
     }
 
@@ -223,11 +231,11 @@ class Color : public ::Color {
 
     void DrawText(const ::Font& font, czstring text,
                   ::Vector2 position,
-                  float fontSize, float spacing) const noexcept {
+                  float fontSize, float spacing) const {
         ::DrawTextEx(font, text, position, fontSize, spacing, *this);
     }
     void DrawText(const ::Font& font, const std::string& text, ::Vector2 position,
-            float fontSize, float spacing) const noexcept {
+            float fontSize, float spacing) const {
         ::DrawTextEx(font, text.c_str(), position, fontSize, spacing, *this);
     }
 
@@ -238,7 +246,7 @@ class Color : public ::Color {
             ::Vector2 origin,
             float rotation,
             float fontSize,
-            float spacing) const noexcept {
+            float spacing) const {
         ::DrawTextPro(font, text, position, origin, rotation, fontSize, spacing, *this);
     }
     void DrawText(
@@ -248,95 +256,95 @@ class Color : public ::Color {
             ::Vector2 origin,
             float rotation,
             float fontSize,
-            float spacing) const noexcept {
+            float spacing) const {
         ::DrawTextPro(font, text.c_str(), position, origin, rotation, fontSize, spacing, *this);
     }
 
-    void DrawRectangle(int posX, int posY, int width, int height) const noexcept {
+    void DrawRectangle(int posX, int posY, int width, int height) const {
         ::DrawRectangle(posX, posY, width, height, *this);
     }
 
-    void DrawRectangle(::Vector2 position, ::Vector2 size) const noexcept {
+    void DrawRectangle(::Vector2 position, ::Vector2 size) const {
         ::DrawRectangleV(position, size, *this);
     }
 
-    void DrawRectangle(::Rectangle rec) const noexcept {
+    void DrawRectangle(::Rectangle rec) const {
         ::DrawRectangleRec(rec, *this);
     }
 
-    void DrawRectangle(::Rectangle rec, ::Vector2 origin, float rotation) const noexcept {
+    void DrawRectangle(::Rectangle rec, ::Vector2 origin, float rotation) const {
         ::DrawRectanglePro(rec, origin, rotation, *this);
     }
 
-    void DrawRectangleLines(int posX, int posY, int width, int height) const noexcept {
+    void DrawRectangleLines(int posX, int posY, int width, int height) const {
         ::DrawRectangleLines(posX, posY, width, height, *this);
     }
 
-    void DrawRectangleLines(::Rectangle rec, float lineThick) const noexcept {
+    void DrawRectangleLines(::Rectangle rec, float lineThick) const {
         ::DrawRectangleLinesEx(rec, lineThick, *this);
     }
 
     /**
      * Get color multiplied with another color
      */
-    [[nodiscard]] Color Tint(::Color tint) noexcept {
+    [[nodiscard]] Color Tint(::Color tint) {
         return Color{::ColorTint(*this, tint)};
     }
 
     /**
      * Get color with brightness correction, brightness factor goes from -1.0f to 1.0f
      */
-    [[nodiscard]] Color Brightness(float factor) noexcept {
+    [[nodiscard]] Color Brightness(float factor) {
         return Color{::ColorBrightness(*this, factor)};
     }
 
     /**
      * Get color with contrast correction, contrast values between -1.0f and 1.0f
      */
-    [[nodiscard]] Color Contrast(float contrast) noexcept {
+    [[nodiscard]] Color Contrast(float contrast) {
         return Color{::ColorContrast(*this, contrast)};
     }
 
     /**
      * Returns color with alpha applied, alpha goes from 0.0f to 1.0f
      */
-    [[nodiscard]] Color Alpha(float alpha) const noexcept {
+    [[nodiscard]] Color Alpha(float alpha) const {
         return Color{::ColorAlpha(*this, alpha)};
     }
 
     /**
      * Returns src alpha-blended into dst color with tint
      */
-    [[nodiscard]] Color AlphaBlend(::Color dst, ::Color tint) const noexcept {
+    [[nodiscard]] Color AlphaBlend(::Color dst, ::Color tint) const {
         return Color{::ColorAlphaBlend(dst, *this, tint)};
     }
 
-    inline static constexpr Color LightGray() { return Color{LIGHTGRAY}; }
-    inline static constexpr Color Gray() { return Color{GRAY}; }
-    inline static constexpr Color DarkGray() { return Color{DARKGRAY}; }
-    inline static constexpr Color Yellow() { return Color{YELLOW}; }
-    inline static constexpr Color Gold() { return Color{GOLD}; }
-    inline static constexpr Color Orange() { return Color{ORANGE}; }
-    inline static constexpr Color Pink() { return Color{PINK}; }
-    inline static constexpr Color Red() { return Color{RED}; }
-    inline static constexpr Color Maroon() { return Color{MAROON}; }
-    inline static constexpr Color Green() { return Color{GREEN}; }
-    inline static constexpr Color Lime() { return Color{LIME}; }
-    inline static constexpr Color DarkGreen() { return Color{DARKGREEN}; }
-    inline static constexpr Color SkyBlue() { return Color{SKYBLUE}; }
-    inline static constexpr Color Blue() { return Color{BLUE}; }
-    inline static constexpr Color DarkBlue() { return Color{DARKBLUE}; }
-    inline static constexpr Color Purple() { return Color{PURPLE}; }
-    inline static constexpr Color Violet() { return Color{VIOLET}; }
-    inline static constexpr Color DarkPurple() { return Color{DARKPURPLE}; }
-    inline static constexpr Color Beige() { return Color{BEIGE}; }
-    inline static constexpr Color Brown() { return Color{BROWN}; }
-    inline static constexpr Color DarkBrown() { return Color{DARKBROWN}; }
-    inline static constexpr Color White() { return Color{WHITE}; }
-    inline static constexpr Color Black() { return Color{BLACK}; }
-    inline static constexpr Color Blank() { return Color{BLANK}; }
-    inline static constexpr Color Magenta() { return Color{MAGENTA}; }
-    inline static constexpr Color RayWhite() { return Color{RAYWHITE}; }
+    static constexpr Color LightGray() { return Color{LIGHTGRAY}; }
+    static constexpr Color Gray() { return Color{GRAY}; }
+    static constexpr Color DarkGray() { return Color{DARKGRAY}; }
+    static constexpr Color Yellow() { return Color{YELLOW}; }
+    static constexpr Color Gold() { return Color{GOLD}; }
+    static constexpr Color Orange() { return Color{ORANGE}; }
+    static constexpr Color Pink() { return Color{PINK}; }
+    static constexpr Color Red() { return Color{RED}; }
+    static constexpr Color Maroon() { return Color{MAROON}; }
+    static constexpr Color Green() { return Color{GREEN}; }
+    static constexpr Color Lime() { return Color{LIME}; }
+    static constexpr Color DarkGreen() { return Color{DARKGREEN}; }
+    static constexpr Color SkyBlue() { return Color{SKYBLUE}; }
+    static constexpr Color Blue() { return Color{BLUE}; }
+    static constexpr Color DarkBlue() { return Color{DARKBLUE}; }
+    static constexpr Color Purple() { return Color{PURPLE}; }
+    static constexpr Color Violet() { return Color{VIOLET}; }
+    static constexpr Color DarkPurple() { return Color{DARKPURPLE}; }
+    static constexpr Color Beige() { return Color{BEIGE}; }
+    static constexpr Color Brown() { return Color{BROWN}; }
+    static constexpr Color DarkBrown() { return Color{DARKBROWN}; }
+    static constexpr Color White() { return Color{WHITE}; }
+    static constexpr Color Black() { return Color{BLACK}; }
+    static constexpr Color Blank() { return Color{BLANK}; }
+    static constexpr Color Magenta() { return Color{MAGENTA}; }
+    static constexpr Color RayWhite() { return Color{RAYWHITE}; }
 
  protected:
     constexpr void set(const ::Color& color) noexcept {

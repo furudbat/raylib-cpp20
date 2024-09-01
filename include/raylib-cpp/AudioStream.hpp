@@ -2,13 +2,12 @@
 #define RAYLIB_CPP_INCLUDE_AUDIOSTREAM_HPP_
 
 #include "raylib.hpp"
+
+#include "RaylibError.hpp"
 #include "raylib-cpp-utils.hpp"
 #ifdef __cpp_exceptions
 #include "RaylibException.hpp"
 #endif
-#include "RaylibError.hpp"
-
-#include <cstdint>
 
 namespace raylib {
 
@@ -17,18 +16,13 @@ namespace raylib {
  */
 class AudioStream {
  public:
-    inline static constexpr uint32_t LoadDefaultChannels = 2;
-    inline static constexpr float SetDefaultVolume = 1.0f;
-    inline static constexpr float SetDefaultPan = 0.5f;
+    static constexpr uint32_t LoadDefaultChannels = 2;
+    static constexpr float SetDefaultVolume = 1.0F;
+    static constexpr float SetDefaultPan = 0.5F;
 
+    explicit constexpr AudioStream() = default;
     explicit constexpr AudioStream(const ::AudioStream& music) = delete;
-    explicit constexpr AudioStream(::AudioStream&& music = {
-        .buffer = nullptr,
-        .processor = nullptr,
-        .sampleRate = 0,
-        .sampleSize = 0,
-        .channels = 0,
-    }) noexcept {
+    explicit constexpr AudioStream(::AudioStream&& music) noexcept {
         set(music);
 
         music.buffer = nullptr;
@@ -39,11 +33,11 @@ class AudioStream {
     }
 
     [[deprecated("Use AudioStream(music)")]]
-    explicit constexpr AudioStream(owner<rAudioBuffer*> _buffer,
-            owner<rAudioProcessor*> _processor = nullptr,
-            unsigned int _sampleRate = 0,
-            unsigned int _sampleSize = 0,
-            unsigned int _channels = 0) : m_data{_buffer, _processor, _sampleRate, _sampleSize, _channels} {
+    explicit constexpr AudioStream(owner<rAudioBuffer*> buffer,
+            owner<rAudioProcessor*> processor = nullptr,
+            unsigned int sampleRate = 0,
+            unsigned int sampleSize = 0,
+            unsigned int channels = 0) : m_data{buffer, processor, sampleRate, sampleSize, channels} {
         // Nothing.
     }
 
@@ -52,8 +46,8 @@ class AudioStream {
      *
      * @throws raylib::RaylibException Throws if the AudioStream failed to load.
      */
-    AudioStream(unsigned int _sampleRate, unsigned int _sampleSize, unsigned int _channels = LoadDefaultChannels) RAYLIB_CPP_THROWS {
-        Load(_sampleRate, _sampleSize, _channels);
+    AudioStream(unsigned int sampleRate, unsigned int sampleSize, unsigned int channels = LoadDefaultChannels) RAYLIB_CPP_THROWS {
+        Load(sampleRate, sampleSize, channels);
     }
 
     constexpr AudioStream(const AudioStream&) = delete;
@@ -84,7 +78,7 @@ class AudioStream {
     GETTER(unsigned int, Channels, m_data.channels)
 
     constexpr AudioStream& operator=(const ::AudioStream& stream) = delete;
-    constexpr AudioStream& operator=(::AudioStream&& stream) {
+    constexpr AudioStream& operator=(::AudioStream&& stream) noexcept {
         set(stream);
 
         stream.buffer = nullptr;
@@ -126,7 +120,7 @@ class AudioStream {
     /**
      * Unload audio stream and free memory
      */
-    void Unload() noexcept {
+    void Unload() {
         if (IsReady()) {
             ::UnloadAudioStream(m_data);
             m_data.buffer = nullptr;
@@ -136,105 +130,112 @@ class AudioStream {
     /**
      * Check if any audio stream buffers requires refill
      */
-    [[nodiscard]] bool IsProcessed() const noexcept {
+    [[nodiscard]] bool IsProcessed() const {
         return ::IsAudioStreamProcessed(m_data);
     }
 
     /**
      * Play audio stream
      */
-    AudioStream& Play() noexcept {
+    AudioStream& Play() {
         ::PlayAudioStream(m_data);
+
         return *this;
     }
 
     /**
      * Pause audio stream
      */
-    AudioStream& Pause() noexcept {
+    AudioStream& Pause() {
         ::PauseAudioStream(m_data);
+
         return *this;
     }
 
     /**
      * Resume audio stream
      */
-    AudioStream& Resume() noexcept {
+    AudioStream& Resume() {
         ::ResumeAudioStream(m_data);
+
         return *this;
     }
 
     /**
      * Check if audio stream is playing
      */
-    [[nodiscard]] bool IsPlaying() const noexcept {
+    [[nodiscard]] bool IsPlaying() const {
         return ::IsAudioStreamPlaying(m_data);
     }
 
     /**
      * Stop audio stream
      */
-    AudioStream& Stop() noexcept {
+    AudioStream& Stop() {
         ::StopAudioStream(m_data);
+
         return *this;
     }
 
     /**
      * Set volume for audio stream (1.0 is max level)
      */
-    AudioStream& SetVolume(float volume = SetDefaultVolume) noexcept {
+    AudioStream& SetVolume(float volume = SetDefaultVolume) {
         ::SetAudioStreamVolume(m_data, volume);
+
         return *this;
     }
 
     /**
      * Set pitch for audio stream (1.0 is base level)
      */
-    AudioStream& SetPitch(float pitch) noexcept {
+    AudioStream& SetPitch(float pitch) {
         ::SetAudioStreamPitch(m_data, pitch);
+
         return *this;
     }
 
     /**
      * Set pan for audio stream (0.5 is centered)
      */
-    AudioStream& SetPan(float pan = SetDefaultPan) noexcept {
+    AudioStream& SetPan(float pan = SetDefaultPan) {
         ::SetAudioStreamPan(m_data, pan);
+
         return *this;
     }
 
     /**
      * Default size for new audio streams
      */
-    static void SetBufferSizeDefault(int size) noexcept {
+    static void SetBufferSizeDefault(int size) {
         ::SetAudioStreamBufferSizeDefault(size);
     }
 
     /**
      * Audio thread callback to request new data
      */
-    void SetCallback(::AudioCallback callback) noexcept {
+    void SetCallback(::AudioCallback callback) {
         ::SetAudioStreamCallback(m_data, callback);
     }
 
     /**
      * Attach audio stream processor to stream
      */
-    void AttachProcessor(::AudioCallback pProcessor) noexcept {
-        ::AttachAudioStreamProcessor(m_data, pProcessor);
+    void AttachProcessor(::AudioCallback processor) {
+        ::AttachAudioStreamProcessor(m_data, processor);
     }
 
     /**
      * Detach audio stream processor from stream
      */
-    void DetachProcessor(::AudioCallback pProcessor) noexcept {
-        ::DetachAudioStreamProcessor(m_data, pProcessor);
+    void DetachProcessor(::AudioCallback processor) {
+        ::DetachAudioStreamProcessor(m_data, processor);
     }
 
     /**
      * Retrieve whether or not the audio stream is ready.
      */
-    [[nodiscard]] bool IsReady() const noexcept {
+    [[nodiscard]] bool IsReady() const {
         return ::IsAudioStreamReady(m_data);
     }
 
@@ -243,9 +244,9 @@ class AudioStream {
      *
      * @throws raylib::RaylibException Throws if the AudioStream failed to load.
      */
-    RAYLIB_CPP_EXPECTED_RESULT_VOID Load(unsigned int SampleRate, unsigned int SampleSize, unsigned int Channels = LoadDefaultChannels) {
+    RAYLIB_CPP_EXPECTED_RESULT_VOID Load(unsigned int sampleRate, unsigned int sampleSize, unsigned int channels = LoadDefaultChannels) {
         Unload();
-        set(::LoadAudioStream(SampleRate, SampleSize, Channels));
+        set(::LoadAudioStream(sampleRate, sampleSize, channels));
         if (!IsReady()) {
             RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load audio stream"));
         }
@@ -261,7 +262,13 @@ class AudioStream {
         m_data.channels = stream.channels;
     }
 
-    ::AudioStream m_data;
+    ::AudioStream m_data {
+        .buffer = nullptr,
+        .processor = nullptr,
+        .sampleRate = 0,
+        .sampleSize = 0,
+        .channels = 0,
+    };
 };
 }  // namespace raylib
 

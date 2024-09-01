@@ -2,9 +2,11 @@
 #define RAYLIB_CPP_INCLUDE_BOUNDINGBOX_HPP_
 
 #include "raylib.hpp"
+
 #include "raylib-cpp-utils.hpp"
 
 namespace raylib {
+
 /**
  * Bounding box type
  */
@@ -17,14 +19,15 @@ class BoundingBox : public ::BoundingBox {
         // Nothing.
     }
 
+    explicit constexpr BoundingBox() : BoundingBox{::Vector3{0.0f, 0.0f, 0.0f}, ::Vector3{0.0f, 0.0f, 0.0f}} {}
+
     /**
      * Compute mesh bounding box limits
      */
-    explicit BoundingBox(const ::Mesh& mesh) : BoundingBox() {
+    explicit BoundingBox(const ::Mesh& mesh) {
         set(::GetMeshBoundingBox(mesh));
     }
-
-    explicit constexpr BoundingBox(::Vector3 minMax = ::Vector3{0.0f, 0.0f, 0.0f}) : ::BoundingBox{minMax, minMax} {}
+    explicit constexpr BoundingBox(::Vector3 minMax) : ::BoundingBox{minMax, minMax} {}
     constexpr BoundingBox(::Vector3 pMin, ::Vector3 pMax) : ::BoundingBox{pMin, pMax} {}
 
     /*
@@ -44,46 +47,46 @@ class BoundingBox : public ::BoundingBox {
     /**
      * Draw a bounding box with wires
      */
-    void Draw(::Color color = WHITE) const noexcept {
+    void Draw(::Color color = WHITE) const {
         ::DrawBoundingBox(*this, color);
     }
 
     /**
      * Detect collision between two boxes
      */
-    [[nodiscard]] bool CheckCollision(const ::BoundingBox& box2) const noexcept {
+    [[nodiscard]] bool CheckCollision(const ::BoundingBox& box2) const {
         return ::CheckCollisionBoxes(*this, box2);
     }
 
     /**
      * Detect collision between box and sphere
      */
-    [[nodiscard]] bool CheckCollision(::Vector3 center, float radius) const noexcept {
+    [[nodiscard]] bool CheckCollision(::Vector3 center, float radius) const {
         return ::CheckCollisionBoxSphere(*this, center, radius);
     }
 
     /**
      * Detect collision between ray and bounding box
      */
-    [[nodiscard]] bool CheckCollision(const ::Ray& ray) const noexcept {
+    [[nodiscard]] bool CheckCollision(const ::Ray& ray) const {
         return ::GetRayCollisionBox(ray, *this).hit;
     }
 
     /**
      * Get collision information between ray and bounding box
      */
-    [[nodiscard]] RayCollision GetCollision(const ::Ray& ray) const noexcept {
+    [[nodiscard]] RayCollision GetCollision(const ::Ray& ray) const {
         return ::GetRayCollisionBox(ray, *this);
     }
 
  protected:
-    constexpr void set(const ::BoundingBox& box) noexcept {
+    constexpr void set(const ::BoundingBox& box) {
         this->min = box.min;
         this->max = box.max;
     }
-    constexpr void set(const ::Vector3& _min, const ::Vector3& _max) noexcept {
-        this->min = _min;
-        this->max = _max;
+    constexpr void set(::Vector3 pMin, ::Vector3 pMax) {
+        this->min = pMin;
+        this->max = pMax;
     }
 };
 }  // namespace raylib

@@ -3,10 +3,10 @@
 
 #include "raylib.hpp"
 #include "raylib-cpp-utils.hpp"
+#include "RaylibError.hpp"
 #ifdef __cpp_exceptions
 #include "RaylibException.hpp"
 #endif
-#include "RaylibError.hpp"
 
 #include <cstddef>
 #include <string>
@@ -29,16 +29,12 @@ using RayWaveSamples = RayArrayHolder<float, RayWaveSamplesDeleter>;
  */
 class Wave {
  public:
-    inline static constexpr int DefaultFormatChannels = 2;
+    static constexpr int DefaultFormatChannels = 2;
+
+    constexpr explicit Wave() = default;
 
     constexpr explicit Wave(const ::Wave& wave) = delete;
-    constexpr explicit Wave(::Wave&& wave = {
-            .frameCount = 0,
-            .sampleRate = 0,
-            .sampleSize = 0,
-            .channels = 0,
-            .data = nullptr,
-    }) noexcept {
+    constexpr explicit Wave(::Wave&& wave) noexcept {
         set(wave);
 
         wave.frameCount = 0;
@@ -199,14 +195,15 @@ class Wave {
      * Load samples data from wave as a floats array
      */
     RayWaveSamples LoadSamples() {
-        /// @Note: assume allocated size
+        /// @NOTE: assume allocated size
         return RayWaveSamples{::LoadWaveSamples(m_data), static_cast<unsigned long>(m_data.frameCount*m_data.channels)*sizeof(float)};
     }
 
     /**
      * Unload samples data loaded with LoadWaveSamples()
      */
-    static void UnloadSamples(float *samples) noexcept {
+    static void UnloadSamples(float *samples) {
+        assert(samples != nullptr);
         ::UnloadWaveSamples(samples);
     }
 
@@ -237,7 +234,7 @@ class Wave {
     /**
      * Unload wave data
      */
-    void Unload() noexcept {
+    void Unload() {
         // Protect against calling UnloadWave() twice.
         if (m_data.data != nullptr) {
             ::UnloadWave(m_data);
@@ -299,7 +296,7 @@ class Wave {
      *
      * @return True or false depending on whether the wave data has been loaded.
      */
-    [[nodiscard]] bool IsReady() const noexcept {
+    [[nodiscard]] bool IsReady() const {
         return ::IsWaveReady(m_data);
     }
 
@@ -312,7 +309,13 @@ class Wave {
         m_data.data = wave.data;
     }
 
-    ::Wave m_data;
+    ::Wave m_data{
+        .frameCount = 0,
+        .sampleRate = 0,
+        .sampleSize = 0,
+        .channels = 0,
+        .data = nullptr
+    };
 };
 
 }  // namespace raylib

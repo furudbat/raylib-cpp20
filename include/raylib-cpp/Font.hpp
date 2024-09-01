@@ -2,39 +2,43 @@
 #define RAYLIB_CPP_INCLUDE_FONT_HPP_
 
 #include "raylib.hpp"
-#include "raylib-cpp-utils.hpp"
+
+#include "RaylibError.hpp"
+#include "Image.hpp"
 #include "TextureUnmanaged.hpp"
+#include "raylib-cpp-utils.hpp"
 #ifdef __cpp_exceptions
 #include "RaylibException.hpp"
 #endif
-#include "RaylibError.hpp"
 
-#include <string>
+
 #include <span>
+#include <string>
+#include <string_view>
+#include <filesystem>
 
 namespace raylib {
+
 /**
  * Font type, includes texture and charSet array data
  */
 class Font {
  public:
-    inline static constexpr ::Color DefaultTintColor = WHITE;
+    static constexpr ::Color DefaultTintColor = WHITE;
 
-    constexpr Font(int _baseSize,
-            int _glyphCount,
-            int _glyphPadding,
-            ::Texture2D&& _texture,
-            owner<::Rectangle*> _recs = nullptr,
-            owner<::GlyphInfo*> _glyphs = nullptr) : m_data{_baseSize, _glyphCount, _glyphPadding, _texture, _recs, _glyphs} {
-        _texture = NullTexture;
+    constexpr Font(int baseSize,
+            int glyphCount,
+            int glyphPadding,
+            ::Texture2D&& texture,
+            owner<::Rectangle*> recs = nullptr,
+            owner<::GlyphInfo*> glyphs = nullptr) : m_data{baseSize, glyphCount, glyphPadding, texture, recs, glyphs} {
+        texture = NullTexture;
     }
 
     /**
      * Retrieves the default Font.
      */
-    Font() noexcept {
-        set(::GetFontDefault());
-    }
+    Font() : m_data(::GetFontDefault()) {}
 
     explicit constexpr Font(const ::Font& font) = delete;
     explicit constexpr Font(::Font&& font) noexcept {
@@ -87,7 +91,7 @@ class Font {
     Font(const ::Image& image, ::Color key, int firstChar) RAYLIB_CPP_THROWS {
         Load(image, key, firstChar);
     }
-    Font(const raylib::Image& image, ::Color key, int firstChar) RAYLIB_CPP_THROWS {
+    Font(const Image& image, ::Color key, int firstChar) RAYLIB_CPP_THROWS {
         Load(image.c_raylib(), key, firstChar);
     }
 
@@ -145,10 +149,10 @@ class Font {
         return *this;
     }
 
-    explicit operator ::Font() const noexcept {
+    explicit operator ::Font() const {
         return m_data;
     }
-    [[nodiscard]] ::Font c_raylib() const & noexcept {
+    [[nodiscard]] ::Font c_raylib() const & {
         return m_data;
     }
 
@@ -163,11 +167,11 @@ class Font {
         other.m_data.recs = nullptr;
         other.m_data.glyphs = nullptr;
     }
-    ~Font() noexcept {
+    ~Font() {
         Unload();
     }
 
-    void Unload() noexcept {
+    void Unload() {
         if (m_data.texture.id != 0 && m_data.texture.id != GetFontDefault().texture.id) {
             ::UnloadFont(m_data);
             m_data.texture.id = 0;
@@ -186,7 +190,7 @@ class Font {
     /**
      * Get the texture atlas containing the glyphs.
      */
-    [[nodiscard]] TextureUnmanaged GetTexture() const noexcept {
+    [[nodiscard]] TextureUnmanaged GetTexture() const {
         return TextureUnmanaged{m_data.texture};
     }
 
@@ -199,7 +203,7 @@ class Font {
         newTexture = NullTexture;
     }
 
-    Font& TextureGenMipmaps() noexcept {
+    Font& TextureGenMipmaps() {
         ::GenTextureMipmaps(&m_data.texture);
 
         return *this;
@@ -281,7 +285,7 @@ class Font {
     /**
      * Returns if the font is ready to be used.
      */
-    [[nodiscard]] bool IsReady() const noexcept {
+    [[nodiscard]] bool IsReady() const {
         return ::IsFontReady(m_data);
     }
 
@@ -309,7 +313,7 @@ class Font {
      * Draw text using font and additional parameters.
      */
     void DrawText(const char* text, int posX, int posY, float fontSize,
-                  float spacing, ::Color tint = DefaultTintColor) const noexcept {
+                  float spacing, ::Color tint = DefaultTintColor) const {
         ::DrawTextEx(m_data, text,
             { .x = static_cast<float>(posX), .y = static_cast<float>(posY) },
             fontSize, spacing, tint);
@@ -336,7 +340,7 @@ class Font {
             float rotation,
             float fontSize,
             float spacing,
-            ::Color tint = DefaultTintColor) const noexcept {
+            ::Color tint = DefaultTintColor) const {
         ::DrawTextPro(m_data, text,
             position, origin,
             rotation, fontSize,
@@ -362,7 +366,7 @@ class Font {
     void DrawText(int codepoint,
             ::Vector2 position,
             float fontSize,
-            ::Color tint = DefaultTintColor) const noexcept {
+            ::Color tint = DefaultTintColor) const {
         ::DrawTextCodepoint(m_data, codepoint, position, fontSize, tint);
     }
 
@@ -372,7 +376,7 @@ class Font {
     void DrawText(std::span<const int> codepoints,
             ::Vector2 position,
             float fontSize, float spacing,
-            ::Color tint = WHITE) const noexcept {
+            ::Color tint = WHITE) const {
         ::DrawTextCodepoints(m_data,
             codepoints.data(), static_cast<int>(codepoints.size()),
             position, fontSize,
@@ -382,7 +386,7 @@ class Font {
     /**
      * Measure string size for Font
      */
-    [[nodiscard]] Vector2 MeasureText(czstring text, float fontSize, float spacing) const noexcept {
+    [[nodiscard]] Vector2 MeasureText(czstring text, float fontSize, float spacing) const {
         return ::MeasureTextEx(m_data, text, fontSize, spacing);
     }
     [[nodiscard]] Vector2 MeasureText(const std::string& text, float fontSize, float spacing) const {
@@ -398,20 +402,20 @@ class Font {
     /**
      * Get index position for a unicode character on font
      */
-    [[nodiscard]] int GetGlyphIndex(int character) const noexcept {
+    [[nodiscard]] int GetGlyphIndex(int character) const {
         return ::GetGlyphIndex(m_data, character);
     }
 
     /**
      * Create an image from text (custom sprite font)
      */
-    raylib::Image ImageText(czstring text, float fontSize,
+    Image ImageText(czstring text, float fontSize,
                             float spacing, ::Color tint) const {
-        return raylib::Image{::ImageTextEx(m_data, text, fontSize, spacing, tint)};
+        return Image{::ImageTextEx(m_data, text, fontSize, spacing, tint)};
     }
-    [[nodiscard]] raylib::Image ImageText(const std::string& text, float fontSize,
+    [[nodiscard]] Image ImageText(const std::string& text, float fontSize,
                                           float spacing, ::Color tint) const {
-        return raylib::Image{::ImageTextEx(m_data, text.c_str(), fontSize, spacing, tint)};
+        return Image{::ImageTextEx(m_data, text.c_str(), fontSize, spacing, tint)};
     }
 
  protected:
@@ -424,7 +428,12 @@ class Font {
         m_data.glyphs = font.glyphs;
     }
 
-    ::Font m_data;
+    ::Font m_data {
+        0, 0, 0,
+        NullTexture,
+        nullptr,
+        nullptr
+    };
 };
 }  // namespace raylib
 

@@ -2,13 +2,14 @@
 #define RAYLIB_CPP_INCLUDE_MODEL_HPP_
 
 #include "raylib.hpp"
+
 #include "raylib-cpp-utils.hpp"
 #include "Mesh.hpp"
 #include "ModelAnimation.hpp"
+#include "RaylibError.hpp"
 #ifdef __cpp_exceptions
 #include "RaylibException.hpp"
 #endif
-#include "RaylibError.hpp"
 
 #include <string>
 #include <filesystem>
@@ -43,10 +44,10 @@ enum class ModelMaterialTextureOption : uint8_t {
  */
 class Model {
  public:
-    inline static constexpr float DefaultDrawScale = 1.0f;
-    inline static constexpr ::Color DefaultDrawTintColor = WHITE;
-    inline static constexpr float DefaultDrawRotationAngle = 0.0f;
-    inline static constexpr ::Vector3 DefaultDrawScaleVector = {1.0f, 1.0f, 1.0f};
+    static constexpr float DefaultDrawScale = 1.0f;
+    static constexpr ::Color DefaultDrawTintColor = WHITE;
+    static constexpr float DefaultDrawRotationAngle = 0.0f;
+    static constexpr ::Vector3 DefaultDrawScaleVector = {1.0f, 1.0f, 1.0f};
 
     Model() = default;
 
@@ -147,10 +148,10 @@ class Model {
         return *this;
     }
 
-    explicit operator ::Model() const noexcept {
+    explicit operator ::Model() const {
         return m_data;
     }
-    [[nodiscard]] ::Model c_raylib() const & noexcept {
+    [[nodiscard]] ::Model c_raylib() const & {
         return m_data;
     }
 
@@ -255,13 +256,13 @@ class Model {
                 break;
         }
     }
-    void SetMaterialShader(size_t material_index, const raylib::Shader& shader, ModelMaterialShaderOption option = ModelMaterialShaderOption::NoUnload) {
+    void SetMaterialShader(size_t material_index, const Shader& shader, ModelMaterialShaderOption option = ModelMaterialShaderOption::NoUnload) {
         assert(std::cmp_less(material_index, m_data.materialCount));
         m_data.materials[material_index].shader = shader.c_raylib();
         trackMaterialOwnership(material_index, option);
     }
     // move shader ownership into model/materials (Material also gets automatically unloaded when Unload)
-    void MoveMaterialShader(size_t material_index, raylib::Shader&& shader) {
+    void MoveMaterialShader(size_t material_index, Shader&& shader) {
         assert(std::cmp_less(material_index, m_data.materialCount));
         m_data.materials[material_index].shader = shader.c_raylib();
         trackMaterialOwnership(material_index, ModelMaterialShaderOption::UnloadMaterial);
@@ -287,12 +288,12 @@ class Model {
         m_data.materials[material_index].maps[map_index].texture = texture;
         trackMaterialOwnership(material_index, option);
     }
-    void SetMaterialMapTexture(size_t material_index, size_t map_index, const raylib::Texture& texture, ModelMaterialTextureOption option) {
+    void SetMaterialMapTexture(size_t material_index, size_t map_index, const Texture& texture, ModelMaterialTextureOption option) {
         assert(std::cmp_less(material_index, m_data.materialCount));
         m_data.materials[material_index].maps[map_index].texture = texture.c_raylib();
         trackMaterialOwnership(material_index, option);
     }
-    void SetMaterialMapTexture(size_t material_index, MaterialMapIndexT map_index, const raylib::Texture& texture, ModelMaterialTextureOption option = ModelMaterialTextureOption::NoUnload) {
+    void SetMaterialMapTexture(size_t material_index, MaterialMapIndexT map_index, const Texture& texture, ModelMaterialTextureOption option = ModelMaterialTextureOption::NoUnload) {
         SetMaterialMapTexture(material_index, static_cast<size_t>(map_index), texture, option);
     }
     void SetMaterialMapTexture(size_t material_index, size_t map_index, ::Texture&& texture, ModelMaterialTextureOption option) {
@@ -316,7 +317,7 @@ class Model {
                 break;
         }
     }
-    void SetMaterialMapTexture(size_t material_index, MaterialMapIndexT map_index, raylib::Texture&& texture) {
+    void SetMaterialMapTexture(size_t material_index, MaterialMapIndexT map_index, Texture&& texture) {
         assert(std::cmp_less(material_index, m_data.materialCount));
         m_data.materials[material_index].maps[static_cast<size_t>(map_index)].texture = texture.c_raylib();
         trackMaterialOwnership(material_index, ModelMaterialTextureOption::UnloadMaterial);
@@ -396,7 +397,7 @@ class Model {
     [[nodiscard]] bool IsModelAnimationValid(const ::ModelAnimation& anim) const noexcept {
         return ::IsModelAnimationValid(m_data, anim);
     }
-    [[nodiscard]] bool IsModelAnimationValid(const raylib::ModelAnimation& anim) const {
+    [[nodiscard]] bool IsModelAnimationValid(const ModelAnimation& anim) const {
         return ::IsModelAnimationValid(m_data, anim.c_raylib());
     }
 
@@ -445,15 +446,15 @@ class Model {
     /**
      * Compute model bounding box limits (considers all meshes)
      */
-    [[nodiscard]] raylib::BoundingBox GetBoundingBox() const noexcept {
-        return raylib::BoundingBox{::GetModelBoundingBox(m_data)};
+    [[nodiscard]] BoundingBox GetBoundingBox() const {
+        return BoundingBox{::GetModelBoundingBox(m_data)};
     }
 
     /**
      * Compute model bounding box limits (considers all meshes)
      */
-    explicit operator raylib::BoundingBox() const noexcept {
-        return raylib::BoundingBox{::GetModelBoundingBox(m_data)};
+    explicit operator BoundingBox() const {
+        return BoundingBox{::GetModelBoundingBox(m_data)};
     }
 
     /**
@@ -528,8 +529,8 @@ class Model {
         RAYLIB_CPP_RETURN_EXPECTED();
     }
 
-    RAYLIB_CPP_EXPECTED_RESULT_VOID Load(const raylib::Mesh& mesh) = delete;
-    RAYLIB_CPP_EXPECTED_RESULT_VOID Load(raylib::Mesh&& mesh) RAYLIB_CPP_THROWS {
+    RAYLIB_CPP_EXPECTED_RESULT_VOID Load(const Mesh& mesh) = delete;
+    RAYLIB_CPP_EXPECTED_RESULT_VOID Load(Mesh&& mesh) RAYLIB_CPP_THROWS {
         set(::LoadModelFromMesh(mesh.m_mesh.m_data));
         if (!IsReady()) {
             RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Model from Mesh"));

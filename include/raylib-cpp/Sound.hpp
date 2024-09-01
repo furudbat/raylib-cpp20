@@ -3,12 +3,13 @@
 
 #include "raylib.hpp"
 #include "raylib-cpp-utils.hpp"
+#include "RaylibError.hpp"
 #ifdef __cpp_exceptions
 #include "RaylibException.hpp"
 #endif
-#include "RaylibError.hpp"
 
 #include <string>
+#include <string_view>
 #include <filesystem>
 
 namespace raylib {
@@ -23,7 +24,7 @@ namespace raylib {
  */
 class Sound {
  public:
-    inline static constexpr float DefaultSetPan = 0.5f; ///< center
+    static constexpr float DefaultSetPan = 0.5f; ///< center
 
     constexpr Sound() {
         m_data.stream = { nullptr, nullptr, 0, 0, 0 };
@@ -75,10 +76,10 @@ class Sound {
         Unload();
     }
 
-    explicit operator ::Sound() const noexcept {
+    explicit operator ::Sound() const {
         return m_data;
     }
-    [[nodiscard]] ::Sound c_raylib() const & noexcept {
+    [[nodiscard]] ::Sound c_raylib() const & {
         return m_data;
     }
 
@@ -132,7 +133,7 @@ class Sound {
     /**
      * Play a sound
      */
-    Sound& Play() noexcept {
+    Sound& Play() {
         ::PlaySound(m_data);
         return *this;
     }
@@ -140,7 +141,7 @@ class Sound {
     /**
      * Stop playing a sound
      */
-    Sound& Stop() noexcept {
+    Sound& Stop() {
         ::StopSound(m_data);
         return *this;
     }
@@ -148,7 +149,7 @@ class Sound {
     /**
      * Pause a sound
      */
-    Sound& Pause() noexcept {
+    Sound& Pause() {
         ::PauseSound(m_data);
         return *this;
     }
@@ -156,7 +157,7 @@ class Sound {
     /**
      * Resume a paused sound
      */
-    Sound& Resume() noexcept {
+    Sound& Resume() {
         ::ResumeSound(m_data);
         return *this;
     }
@@ -164,14 +165,14 @@ class Sound {
     /**
      * Check if a sound is currently playing
      */
-    [[nodiscard]] bool IsPlaying() const noexcept {
+    [[nodiscard]] bool IsPlaying() const {
         return ::IsSoundPlaying(m_data);
     }
 
     /**
      * Set volume for a sound (1.0 is max level)
      */
-    Sound& SetVolume(float volume) noexcept {
+    Sound& SetVolume(float volume) {
         ::SetSoundVolume(m_data, volume);
         return *this;
     }
@@ -179,7 +180,7 @@ class Sound {
     /**
      * Set pitch for a sound (1.0 is base level)
      */
-    Sound& SetPitch(float pitch) noexcept {
+    Sound& SetPitch(float pitch) {
         ::SetSoundPitch(m_data, pitch);
         return *this;
     }
@@ -187,7 +188,7 @@ class Sound {
     /**
      * Set pan for a sound (0.5 is center)
      */
-    Sound& SetPan(float pan = DefaultSetPan) noexcept {
+    Sound& SetPan(float pan = DefaultSetPan) {
         ::SetSoundPan(m_data, pan);
         return *this;
     }
@@ -226,7 +227,7 @@ class Sound {
      *
      * @return True or false depending on whether the Sound buffer is loaded.
      */
-    [[nodiscard]] bool IsReady() const noexcept {
+    [[nodiscard]] bool IsReady() const {
         return ::IsSoundReady(m_data);
     }
 

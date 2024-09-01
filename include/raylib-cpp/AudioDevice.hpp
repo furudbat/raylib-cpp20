@@ -2,11 +2,12 @@
 #define RAYLIB_CPP_INCLUDE_AUDIODEVICE_HPP_
 
 #include "raylib.hpp"
+
+#include "RaylibError.hpp"
 #include "raylib-cpp-utils.hpp"
 #ifdef __cpp_exceptions
 #include "RaylibException.hpp"
 #endif
-#include "RaylibError.hpp"
 
 namespace raylib {
 
@@ -27,11 +28,18 @@ class AudioDevice {
      *
      * @throws raylib::RaylibException Throws if the AudioDevice failed to initialize.
      */
-    [[deprecated("Use AudioDevice(options)")]] explicit AudioDevice(bool lateInit) RAYLIB_CPP_THROWS {
+    [[deprecated("Use AudioDevice(options)")]]
+    explicit AudioDevice(bool lateInit) RAYLIB_CPP_THROWS {
         if (!lateInit) {
             Init();
         }
     }
+
+    AudioDevice() = default;
+    AudioDevice(const AudioDevice&) = delete;
+    AudioDevice(AudioDevice&&) = default;
+    AudioDevice& operator=(const AudioDevice&) = delete;
+    AudioDevice& operator=(AudioDevice&&) = default;
 
 #ifdef RAYLIB_CPP_EXPECTED
     [[deprecated("Use AudioDevice() and Init() to handle error")]]
@@ -41,8 +49,6 @@ class AudioDevice {
             Init();
         }
     }
-
-    constexpr AudioDevice() = default;
 
     /**
      * Close the audio device and context.
@@ -69,14 +75,14 @@ class AudioDevice {
     /**
      * Close the audio device and context.
      */
-    void Close() noexcept {
+    void Close() {
         ::CloseAudioDevice();
     }
 
     /**
      * Check if audio device has been initialized successfully.
      */
-    [[nodiscard]] bool IsReady() const noexcept {
+    [[nodiscard]] bool IsReady() const {
         return ::IsAudioDeviceReady();
     }
 
@@ -85,8 +91,9 @@ class AudioDevice {
      *
      * @param volume The desired volume to set.
      */
-    AudioDevice& SetVolume(float volume) noexcept {
+    AudioDevice& SetVolume(float volume) {
         ::SetMasterVolume(volume);
+
         return *this;
     }
 };

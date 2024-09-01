@@ -2,13 +2,13 @@
 #define RAYLIB_CPP_INCLUDE_AUTOMATIONEVENTLIST_HPP_
 
 #include "raylib.hpp"
+
+#include "RaylibError.hpp"
 #include "raylib-cpp-utils.hpp"
 #ifdef __cpp_exceptions
 #include "RaylibException.hpp"
 #endif
-#include "RaylibError.hpp"
 
-#include <cstdint>
 #include <filesystem>
 #include <utility>
 
@@ -19,21 +19,19 @@ namespace raylib {
  */
 class AutomationEventList {
  public:
-    inline static constexpr unsigned int DefaultCapacity = 16384U;
+    static constexpr unsigned int DefaultCapacity = 16384U;
+
+    constexpr AutomationEventList() = default;
 
     [[deprecated("Use AutomationEventList(automationEventList)")]]
-    explicit constexpr AutomationEventList(uint32_t _capacity,
-                                 uint32_t _count = 0,
-                                 owner<AutomationEvent*> _events = nullptr) : m_data{_capacity, _count, _events} {
+    explicit constexpr AutomationEventList(uint32_t capacity,
+                                           uint32_t count = 0,
+                                           owner<AutomationEvent*> events = nullptr) : m_data{capacity, count, events} {
         // Nothing.
     }
 
     constexpr AutomationEventList(const ::AutomationEventList& automationEventList) = delete;
-    constexpr AutomationEventList(::AutomationEventList&& automationEventList = {
-            .capacity = DefaultCapacity,
-            .count = 0,
-            .events = nullptr,
-    }) {
+    constexpr AutomationEventList(::AutomationEventList&& automationEventList) noexcept {
         set(automationEventList);
 
         automationEventList.capacity = 0;
@@ -42,13 +40,14 @@ class AutomationEventList {
     }
 
     constexpr AutomationEventList(const AutomationEventList&) = delete;
-    constexpr AutomationEventList(AutomationEventList&& other) {
+    constexpr AutomationEventList(AutomationEventList&& other) noexcept {
         set(other.m_data);
 
         other.m_data.capacity = 0;
         other.m_data.count = 0;
         other.m_data.events = nullptr;
     }
+
     ~AutomationEventList() {
         Unload();
     }
@@ -56,7 +55,7 @@ class AutomationEventList {
     explicit operator ::AutomationEventList() const {
         return m_data;
     }
-    [[nodiscard]] ::AutomationEventList c_raylib() const & noexcept {
+    [[nodiscard]] ::AutomationEventList c_raylib() const & {
         return m_data;
     }
 
@@ -65,7 +64,7 @@ class AutomationEventList {
     }
 
     constexpr AutomationEventList& operator=(const ::AutomationEventList& other) = delete;
-    constexpr AutomationEventList& operator=(::AutomationEventList&& other) {
+    constexpr AutomationEventList& operator=(::AutomationEventList&& other) noexcept {
         set(other);
 
         other.capacity = 0;
@@ -175,7 +174,11 @@ class AutomationEventList {
         m_data.events = other.events;
     }
 
-    ::AutomationEventList m_data;
+    ::AutomationEventList m_data {
+        .capacity = DefaultCapacity,
+        .count = 0,
+        .events = nullptr,
+    };
 };
 }  // namespace raylib
 

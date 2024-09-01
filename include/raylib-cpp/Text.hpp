@@ -3,10 +3,10 @@
 
 #include "raylib.hpp"
 #include "raylib-cpp-utils.hpp"
+#include "RaylibError.hpp"
 #ifdef __cpp_exceptions
 #include "RaylibException.hpp"
 #endif
-#include "RaylibError.hpp"
 
 #include <string>
 #include <utility>
@@ -17,9 +17,9 @@ namespace raylib {
  */
 class Text {
  public:
-    inline static constexpr float DefaultFontSize = 10.0f;
-    inline static constexpr float DefaultSpacing = 0.0f;
-    inline static constexpr ::Color DefaultColor = WHITE;
+    static constexpr float DefaultFontSize = 10.0f;
+    static constexpr float DefaultSpacing = 0.0f;
+    static constexpr ::Color DefaultColor = WHITE;
 
     /**
      * The internal text.

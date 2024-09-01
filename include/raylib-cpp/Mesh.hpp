@@ -3,14 +3,9 @@
 
 
 #include "raylib.hpp"
-#include "raylib-cpp-utils.hpp"
-#include "BoundingBox.hpp"
-#include "Image.hpp"
-#include "MeshUnmanaged.hpp"
 
-#include <string>
-#include <vector>
-#include <filesystem>
+#include "MeshUnmanaged.hpp"
+#include "raylib-cpp-utils.hpp"
 
 namespace raylib {
 
@@ -134,84 +129,84 @@ class Mesh {
     /**
      * Generate polygonal mesh
      */
-    static raylib::Mesh Poly(int sides, float radius) {
-        return raylib::Mesh{::GenMeshPoly(sides, radius)};
+    static Mesh Poly(int sides, float radius) {
+        return Mesh{::GenMeshPoly(sides, radius)};
     }
 
     /**
      * Generate plane mesh (with subdivisions)
      */
-    static raylib::Mesh Plane(float width, float length, int resX, int resZ) {
-        return raylib::Mesh{::GenMeshPlane(width, length, resX, resZ)};
+    static Mesh Plane(float width, float length, int resX, int resZ) {
+        return Mesh{::GenMeshPlane(width, length, resX, resZ)};
     }
 
     /**
      * Generate cuboid mesh
      */
-    static raylib::Mesh Cube(float width, float height, float length) {
-        return raylib::Mesh{::GenMeshCube(width, height, length)};
+    static Mesh Cube(float width, float height, float length) {
+        return Mesh{::GenMeshCube(width, height, length)};
     }
 
     /**
      * Generate sphere mesh (standard sphere)
      */
-    static raylib::Mesh Sphere(float radius, int rings, int slices) {
-        return raylib::Mesh{::GenMeshSphere(radius, rings, slices)};
+    static Mesh Sphere(float radius, int rings, int slices) {
+        return Mesh{::GenMeshSphere(radius, rings, slices)};
     }
 
     /**
      * Generate half-sphere mesh (no bottom cap)
      */
-    static raylib::Mesh HemiSphere(float radius, int rings, int slices) {
-        return raylib::Mesh{::GenMeshHemiSphere(radius, rings, slices)};
+    static Mesh HemiSphere(float radius, int rings, int slices) {
+        return Mesh{::GenMeshHemiSphere(radius, rings, slices)};
     }
 
     /**
      * Generate cylinder mesh
      */
-    static raylib::Mesh Cylinder(float radius, float height, int slices) {
-        return raylib::Mesh{::GenMeshCylinder(radius, height, slices)};
+    static Mesh Cylinder(float radius, float height, int slices) {
+        return Mesh{::GenMeshCylinder(radius, height, slices)};
     }
 
     /**
      * Generate cone/pyramid mesh
      */
-    static raylib::Mesh Cone(float radius, float height, int slices) {
-        return raylib::Mesh{::GenMeshCone(radius, height, slices)};
+    static Mesh Cone(float radius, float height, int slices) {
+        return Mesh{::GenMeshCone(radius, height, slices)};
     }
 
     /**
      * Generate torus mesh
      */
-    static raylib::Mesh Torus(float radius, float size, int radSeg, int sides) {
-        return raylib::Mesh{::GenMeshTorus(radius, size, radSeg, sides)};
+    static Mesh Torus(float radius, float size, int radSeg, int sides) {
+        return Mesh{::GenMeshTorus(radius, size, radSeg, sides)};
     }
 
     /**
      * Generate trefoil knot mesh
      */
-    static raylib::Mesh Knot(float radius, float size, int radSeg, int sides) {
-        return raylib::Mesh{::GenMeshKnot(radius, size, radSeg, sides)};
+    static Mesh Knot(float radius, float size, int radSeg, int sides) {
+        return Mesh{::GenMeshKnot(radius, size, radSeg, sides)};
     }
 
     /**
      * Generate heightmap mesh from image data
      */
-    static raylib::Mesh GenHeightmap(const ::Image& heightmap, ::Vector3 size) {
-        return raylib::Mesh{::GenMeshHeightmap(heightmap, size)};
+    static Mesh GenHeightmap(const ::Image& heightmap, ::Vector3 size) {
+        return Mesh{::GenMeshHeightmap(heightmap, size)};
     }
-    static raylib::Mesh GenHeightmap(const raylib::Image& heightmap, ::Vector3 size) {
-        return raylib::Mesh{::GenMeshHeightmap(heightmap.c_raylib(), size)};
+    static Mesh GenHeightmap(const Image& heightmap, ::Vector3 size) {
+        return Mesh{::GenMeshHeightmap(heightmap.c_raylib(), size)};
     }
 
     /**
      * Generate cubes-based map mesh from image data
      */
-    static raylib::Mesh GenCubicmap(const ::Image& cubicmap, ::Vector3 cubeSize) {
-        return raylib::Mesh{::GenMeshCubicmap(cubicmap, cubeSize)};
+    static Mesh GenCubicmap(const ::Image& cubicmap, ::Vector3 cubeSize) {
+        return Mesh{::GenMeshCubicmap(cubicmap, cubeSize)};
     }
-    static raylib::Mesh GenCubicmap(const raylib::Image& cubicmap, ::Vector3 cubeSize) {
-        return raylib::Mesh{::GenMeshCubicmap(cubicmap.c_raylib(), cubeSize)};
+    static Mesh GenCubicmap(const Image& cubicmap, ::Vector3 cubeSize) {
+        return Mesh{::GenMeshCubicmap(cubicmap.c_raylib(), cubeSize)};
     }
 
     constexpr Mesh& operator=(const ::Mesh& mesh) = delete;
@@ -265,14 +260,14 @@ class Mesh {
         return *this;
     }
 
-    ~Mesh() noexcept {
+    ~Mesh() {
         Unload();
     }
 
     /**
      * Unload mesh from memory (RAM and/or VRAM)
      */
-    void Unload() noexcept {
+    void Unload() {
         if (m_mesh.m_data.vboId != nullptr) {
             ::UnloadMesh(m_mesh.m_data);
             m_mesh.m_data.vboId = nullptr;

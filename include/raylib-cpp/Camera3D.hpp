@@ -1,19 +1,20 @@
 #ifndef RAYLIB_CPP_INCLUDE_CAMERA3D_HPP_
 #define RAYLIB_CPP_INCLUDE_CAMERA3D_HPP_
 
-#include "raylib.hpp"
-#include "Vector3.hpp"
 #include "Ray.hpp"
+
 #include "raylib-cpp-utils.hpp"
 
 namespace raylib {
+
 /**
  * Camera type, defines a camera position/orientation in 3d space
  */
 class Camera3D : public ::Camera3D {
  public:
-    inline static float constexpr DefaultUpdateZoom = 1.0f;
+    static float constexpr DefaultUpdateZoom = 1.0F;
 
+    constexpr Camera3D() : ::Camera3D{::Vector3{0.0f, 0.0f, 0.0f}, ::Vector3{0.0f, 0.0f, 0.0f}, ::Vector3{0.0f, 0.0f, 0.0f}, 0, 0} {}
     explicit constexpr Camera3D(const ::Camera3D& camera) {
         set(camera);
     }
@@ -27,13 +28,11 @@ class Camera3D : public ::Camera3D {
      * @param fovy Camera field-of-view apperture in Y (degrees) in perspective, used as near plane width in orthographic
      * @param projection Camera projection: CAMERA_PERSPECTIVE or CAMERA_ORTHOGRAPHIC
      */
-    explicit constexpr Camera3D(const ::Vector3& _position,
-            ::Vector3 _target = ::Vector3{0.0f, 0.0f, 0.0f},
-            ::Vector3 _up = ::Vector3{0.0f, 1.0f, 0.0f},
-            float _fovy = 0.0f,
-            int _projection = CAMERA_PERSPECTIVE) : ::Camera3D{_position, _target, _up, _fovy, _projection} {}
-
-    Camera3D() = default;
+    explicit constexpr Camera3D(const ::Vector3& pPosition,
+            ::Vector3 pTarget = ::Vector3{0.0f, 0.0f, 0.0f},
+            ::Vector3 pUp = ::Vector3{0.0f, 1.0f, 0.0f},
+            float pFovy = 0.0f,
+            int pProjection = CAMERA_PERSPECTIVE) : ::Camera3D{pPosition, pTarget, pUp, pFovy, pProjection} {}
 
     /*
     explicit(false) operator ::Camera3D() const {
@@ -57,6 +56,7 @@ class Camera3D : public ::Camera3D {
      */
     Camera3D& BeginMode() noexcept {
         ::BeginMode3D(*this);
+
         return *this;
     }
 
@@ -65,6 +65,7 @@ class Camera3D : public ::Camera3D {
      */
     Camera3D& EndMode() {
         ::EndMode3D();
+
         return *this;
     }
 
@@ -87,7 +88,7 @@ class Camera3D : public ::Camera3D {
      * Update camera movement/rotation
      */
     Camera3D& Update(::Vector3 movement, ::Vector3 rotation,
-                     float zoom = DefaultUpdateZoom) noexcept {
+                     float zoom = DefaultUpdateZoom) {
         ::UpdateCameraPro(this, movement, rotation, zoom);
         return *this;
     }
@@ -95,15 +96,15 @@ class Camera3D : public ::Camera3D {
     /**
      * Returns a ray trace from mouse position
      */
-    [[nodiscard]] raylib::Ray GetMouseRay(::Vector2 mousePosition) const noexcept {
-        return raylib::Ray{::GetMouseRay(mousePosition, *this)};
+    [[nodiscard]] Ray GetMouseRay(::Vector2 mousePosition) const {
+        return Ray{::GetMouseRay(mousePosition, *this)};
     }
 
     /**
      * Returns the screen space position for a 3d world space position
      */
-    [[nodiscard]] raylib::Vector2 GetWorldToScreen(::Vector3 _position) const noexcept {
-        return raylib::Vector2{::GetWorldToScreen(_position, *this)};
+    [[nodiscard]] Vector2 GetWorldToScreen(::Vector3 _position) const noexcept {
+        return Vector2{::GetWorldToScreen(_position, *this)};
     }
 
     /**
@@ -130,7 +131,7 @@ class Camera3D : public ::Camera3D {
     }
 
  protected:
-    constexpr void set(const ::Camera3D& camera) noexcept {
+    constexpr void set(const ::Camera3D& camera) {
         position = camera.position;
         target = camera.target;
         up = camera.up;

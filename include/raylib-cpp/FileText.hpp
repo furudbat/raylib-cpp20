@@ -2,14 +2,11 @@
 #define RAYLIB_CPP_INCLUDE_FILETEXT_HPP_
 
 #include "raylib.hpp"
-#include "raylib-cpp-utils.hpp"
-#ifdef __cpp_exceptions
-#include "RaylibException.hpp"
-#endif
-#include "RaylibError.hpp"
 
-#include <bit>
+#include "raylib-cpp-utils.hpp"
+
 #include <string>
+#include <string_view>
 #include <filesystem>
 
 namespace raylib {
@@ -28,7 +25,7 @@ public:
         std::exchange(m_length, other.m_length);
         return *this;
     }
-    ~FileText() noexcept { Unload(); }
+    ~FileText() { Unload(); }
 
     explicit FileText(const std::filesystem::path& fileName) {
         Load(fileName);
@@ -40,10 +37,10 @@ public:
     GETTER(const char*, Data, m_data)
     GETTER(unsigned int, Length, m_length)
 
-    [[nodiscard]] const char* c_str() const noexcept { return m_data; }
+    [[nodiscard]] const char* c_str() const { return m_data; }
 
-    [[nodiscard]] std::string_view ToStringView() const noexcept { return std::string_view(m_data, m_length); }
-    explicit operator std::string_view() const noexcept {
+    [[nodiscard]] std::string_view ToStringView() const { return std::string_view(m_data, m_length); }
+    explicit operator std::string_view() const {
         return std::string_view(m_data, m_length);
     }
 
@@ -52,13 +49,14 @@ public:
         return m_data;
     }
 
-    void Load(czstring fileName) noexcept {
+    void Load(czstring fileName) {
         m_data = ::LoadFileText(fileName);
         m_length = ::TextLength(m_data);
     }
     void Load(const std::filesystem::path& fileName) { Load(fileName.c_str()); }
+    /// @TODO: add LoadFileText error handling exception AND expected
 
-    void Unload() noexcept {
+    void Unload() {
         if (m_data != nullptr) {
             ::UnloadFileText(m_data);
             m_data = nullptr;

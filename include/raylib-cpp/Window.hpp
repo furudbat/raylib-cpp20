@@ -3,18 +3,21 @@
 
 
 #include "raylib.hpp"
+
 #include "Vector2.hpp"
+#include "RaylibError.hpp"
 #ifdef __cpp_exceptions
 #include "RaylibException.hpp"
 #endif
-#include "RaylibError.hpp"
-#include "enums.hpp"
 
 #include <string>
 #include <chrono>
 #include <cstdint>
 
 namespace raylib {
+
+enum class WindowFullscreenOption : bool { Fullscreen = true, Windowed = false };
+
 /**
  * Window and Graphics Device Functions.
  */
@@ -40,7 +43,8 @@ class Window {
      *
      * @throws raylib::RaylibException Thrown if the window failed to initiate.
      */
-    Window(int width, int height, czstring title = "raylib", uint32_t flags = 0) {
+    static constexpr czstring DefaultTitle = "raylib";
+    Window(int width, int height, czstring title = DefaultTitle, uint32_t flags = 0) {
         Init(width, height, title, flags);
     }
     Window(int width, int height, const std::string& title, uint32_t flags = 0) {
@@ -50,7 +54,7 @@ class Window {
     /**
      * Close window and unload OpenGL context
      */
-    ~Window() noexcept {
+    ~Window() {
         Close();
     }
 
@@ -67,7 +71,9 @@ class Window {
      *
      * @throws raylib::RaylibException Thrown if the window failed to initiate.
      */
-    static RAYLIB_CPP_EXPECTED_RESULT_VOID Init(int width = 800, int height = 450, czstring title = "raylib", uint32_t flags = 0) {
+    static constexpr int DefaultWidth = 800;
+    static constexpr int DefaultHeight = 450;
+    static RAYLIB_CPP_EXPECTED_RESULT_VOID Init(int width = DefaultWidth, int height = DefaultHeight, czstring title = DefaultTitle, uint32_t flags = 0) {
         if (flags != 0) {
             ::SetConfigFlags(flags);
         }
@@ -84,21 +90,21 @@ class Window {
     /**
      * Check if KEY_ESCAPE pressed or Close icon pressed
      */
-    static bool ShouldClose() noexcept {
+    static bool ShouldClose() {
         return ::WindowShouldClose();
     }
 
     /**
      * Set a custom key to exit program (default is ESC)
      */
-    static void SetExitKey(int key) noexcept {
+    static void SetExitKey(int key) {
         ::SetExitKey(key);
     }
 
     /**
      * Close window and unload OpenGL context
      */
-    static void Close() noexcept {
+    static void Close() {
         if (::IsWindowReady()) {
             ::CloseWindow();
         }
@@ -107,63 +113,63 @@ class Window {
     /**
      * Check if cursor is on the current screen
      */
-    [[nodiscard]] static bool IsCursorOnScreen() noexcept {
+    [[nodiscard]] static bool IsCursorOnScreen() {
         return ::IsCursorOnScreen();
     }
 
     /**
      * Check if window is currently fullscreen
      */
-    [[nodiscard]] static bool IsFullscreen() noexcept {
+    [[nodiscard]] static bool IsFullscreen() {
         return ::IsWindowFullscreen();
     }
 
     /**
      * Check if window is currently hidden
      */
-    [[nodiscard]] static bool IsHidden() noexcept {
+    [[nodiscard]] static bool IsHidden() {
         return ::IsWindowHidden();
     }
 
     /**
      * Check if window is currently minimized
      */
-    [[nodiscard]] static bool IsMinimized() noexcept {
+    [[nodiscard]] static bool IsMinimized() {
         return ::IsWindowMinimized();
     }
 
     /**
      * Check if window is currently minimized
      */
-    [[nodiscard]] static bool IsMaximized() noexcept {
+    [[nodiscard]] static bool IsMaximized() {
         return ::IsWindowMaximized();
     }
 
     /**
      * Check if window is currently focused
      */
-    [[nodiscard]] static bool IsFocused() noexcept {
+    [[nodiscard]] static bool IsFocused() {
         return ::IsWindowFocused();
     }
 
     /**
      * Check if window has been resized last frame
      */
-    [[nodiscard]] static bool IsResized() noexcept {
+    [[nodiscard]] static bool IsResized() {
         return ::IsWindowResized();
     }
 
     /**
      * Check if one specific window flag is enabled
      */
-    [[nodiscard]] static bool IsState(uint32_t flag) noexcept {
+    [[nodiscard]] static bool IsState(uint32_t flag) {
         return ::IsWindowState(flag);
     }
 
     /**
      * Set window configuration state using flags
      */
-    Window& SetState(uint32_t flag) noexcept {
+    Window& SetState(uint32_t flag) {
         ::SetWindowState(flag);
         return *this;
     }
@@ -171,7 +177,7 @@ class Window {
     /**
      * Clear window configuration state flags
      */
-    Window& ClearState(uint32_t flag) noexcept {
+    Window& ClearState(uint32_t flag) {
         ::ClearWindowState(flag);
         return *this;
     }
@@ -179,7 +185,7 @@ class Window {
     /**
      * Clear window with given color.
      */
-    Window& ClearBackground(const ::Color& color = BLACK) noexcept {
+    Window& ClearBackground(::Color color = BLACK) {
         ::ClearBackground(color);
         return *this;
     }
@@ -187,7 +193,7 @@ class Window {
     /**
      * Toggle window state: fullscreen/windowed
      */
-    Window& ToggleFullscreen() noexcept {
+    Window& ToggleFullscreen() {
         ::ToggleFullscreen();
         return *this;
     }
@@ -195,7 +201,7 @@ class Window {
     /**
      * Set whether or not the application should be fullscreen.
      */
-    Window& SetFullscreen(bool fullscreen) noexcept {
+    Window& SetFullscreen(bool fullscreen) {
         if (fullscreen) {
             if (!IsFullscreen()) {
                 ToggleFullscreen();
@@ -209,10 +215,27 @@ class Window {
         return *this;
     }
 
+    Window& SetFullscreen(WindowFullscreenOption fullscreen) {
+      switch (fullscreen) {
+        case WindowFullscreenOption::Fullscreen:
+        if (!IsFullscreen()) {
+          ToggleFullscreen();
+        }
+        break;
+        case WindowFullscreenOption::Windowed:
+        if (IsFullscreen()) {
+          ToggleFullscreen();
+        }
+        break;
+      }
+
+      return *this;
+    }
+
     /**
      * Toggle window state: borderless/windowed
     */
-    Window& ToggleBorderless() noexcept {
+    Window& ToggleBorderless() {
         ::ToggleBorderlessWindowed();
         return *this;
     }
@@ -220,7 +243,7 @@ class Window {
     /**
      * Set window state: maximized, if resizable (only PLATFORM_DESKTOP)
      */
-    Window& Maximize() noexcept {
+    Window& Maximize() {
         ::MaximizeWindow();
         return *this;
     }
@@ -228,7 +251,7 @@ class Window {
     /**
      * Set window state: minimized, if resizable (only PLATFORM_DESKTOP)
      */
-    Window& Minimize() noexcept {
+    Window& Minimize() {
         ::MinimizeWindow();
         return *this;
     }
@@ -236,7 +259,7 @@ class Window {
     /**
      * Set window state: not minimized/maximized (only PLATFORM_DESKTOP)
      */
-    Window& Restore() noexcept {
+    Window& Restore() {
         ::RestoreWindow();
         return *this;
     }
@@ -244,7 +267,7 @@ class Window {
     /**
      * Set icon for window
      */
-    Window& SetIcon(const ::Image& image) noexcept {
+    Window& SetIcon(const ::Image& image) {
         ::SetWindowIcon(image);
         return *this;
     }
@@ -253,7 +276,7 @@ class Window {
      * Set icon for window (multiple images, RGBA 32bit, only PLATFORM_DESKTOP)
      */
     [[deprecated("Use SetIcons(span)")]]
-    Window& SetIcons(::Image* images, int count) noexcept {
+    Window& SetIcons(::Image* images, int count) {
         ::SetWindowIcons(images, count);
         return *this;
     }
@@ -278,7 +301,7 @@ class Window {
     /**
      * Set window position on screen
      */
-    Window& SetPosition(int x, int y) noexcept {
+    Window& SetPosition(int x, int y) {
         ::SetWindowPosition(x, y);
         return *this;
     }
@@ -286,14 +309,14 @@ class Window {
     /**
      * Set window position on screen
      */
-    Window& SetPosition(::Vector2 position) noexcept {
+    Window& SetPosition(::Vector2 position) {
         return SetPosition(static_cast<int>(position.x), static_cast<int>(position.y));
     }
 
     /**
      * Set monitor for the current window
      */
-    Window& SetMonitor(int monitor) noexcept {
+    Window& SetMonitor(int monitor) {
         ::SetWindowMonitor(monitor);
         return *this;
     }
@@ -301,7 +324,7 @@ class Window {
     /**
      * Set window minimum dimensions
      */
-    Window& SetMinSize(int width, int height) noexcept {
+    Window& SetMinSize(int width, int height) {
         ::SetWindowMinSize(width, height);
         return *this;
     }
@@ -309,7 +332,7 @@ class Window {
     /**
      * Set window minimum dimensions
      */
-    Window& SetMinSize(::Vector2 size) noexcept {
+    Window& SetMinSize(::Vector2 size) {
         ::SetWindowMinSize(static_cast<int>(size.x), static_cast<int>(size.y));
         return *this;
     }
@@ -317,7 +340,7 @@ class Window {
     /**
      * Set window dimensions
      */
-    Window& SetSize(int width, int height) noexcept {
+    Window& SetSize(int width, int height) {
         ::SetWindowSize(width, height);
         return *this;
     }
@@ -325,7 +348,7 @@ class Window {
     /**
      * Set window opacity [0.0f..1.0f] (only PLATFORM_DESKTOP)
      */
-    Window& SetOpacity(float opacity) noexcept {
+    Window& SetOpacity(float opacity) {
         ::SetWindowOpacity(opacity);
         return *this;
     }
@@ -333,7 +356,7 @@ class Window {
     /**
      * Set window focused (only PLATFORM_DESKTOP)
      */
-    Window& SetFocused() noexcept {
+    Window& SetFocused() {
         ::SetWindowFocused();
         return *this;
     }
@@ -341,28 +364,28 @@ class Window {
     /**
      * Set window dimensions
      */
-    Window& SetSize(::Vector2 size) noexcept {
+    Window& SetSize(::Vector2 size) {
         return SetSize(static_cast<int>(size.x), static_cast<int>(size.y));
     }
 
     /**
      * Get the screen's width and height.
      */
-    [[nodiscard]] raylib::Vector2 GetSize() noexcept {
-        return raylib::Vector2{{.x = static_cast<float>(GetWidth()), .y = static_cast<float>(GetHeight())}};
+    [[nodiscard]] Vector2 GetSize() {
+        return Vector2{{.x = static_cast<float>(GetWidth()), .y = static_cast<float>(GetHeight())}};
     }
 
     /**
      * Get native window handle
      */
-    [[nodiscard]] static void* GetHandle() noexcept {
+    [[nodiscard]] static void* GetHandle() {
         return ::GetWindowHandle();
     }
 
     /**
      * Setup canvas (framebuffer) to start drawing
      */
-    Window& BeginDrawing() noexcept {
+    Window& BeginDrawing() {
         ::BeginDrawing();
         return *this;
     }
@@ -370,7 +393,7 @@ class Window {
     /**
      * End canvas drawing and swap buffers (double buffering)
      */
-    Window& EndDrawing() noexcept {
+    Window& EndDrawing() {
         ::EndDrawing();
         return *this;
     }
@@ -378,42 +401,42 @@ class Window {
     /**
      * Get current screen width
      */
-    [[nodiscard]] static int GetWidth() noexcept {
+    [[nodiscard]] static int GetWidth() {
         return ::GetScreenWidth();
     }
 
     /**
      * Get current screen height
      */
-    [[nodiscard]] static int GetHeight() noexcept {
+    [[nodiscard]] static int GetHeight() {
         return ::GetScreenHeight();
     }
 
     /**
      * Get current render width (it considers HiDPI)
      */
-    [[nodiscard]] static int GetRenderWidth() noexcept {
+    [[nodiscard]] static int GetRenderWidth() {
         return ::GetRenderWidth();
     }
 
     /**
      * Get current render height (it considers HiDPI)
      */
-    [[nodiscard]] static int GetRenderHeight() noexcept {
+    [[nodiscard]] static int GetRenderHeight() {
         return ::GetRenderHeight();
     }
 
     /**
      * Get window position XY on monitor
      */
-    [[nodiscard]] static ::Vector2 GetPosition() noexcept {
+    [[nodiscard]] static ::Vector2 GetPosition() {
         return ::GetWindowPosition();
     }
 
     /**
      * Get window scale DPI factor
      */
-    [[nodiscard]] static ::Vector2 GetScaleDPI() noexcept {
+    [[nodiscard]] static ::Vector2 GetScaleDPI() {
         return ::GetWindowScaleDPI();
     }
 
@@ -437,7 +460,7 @@ class Window {
     /**
      * Set target FPS (maximum)
      */
-    Window& SetTargetFPS(int fps) noexcept {
+    Window& SetTargetFPS(int fps) {
         ::SetTargetFPS(fps);
         return *this;
     }
@@ -445,23 +468,23 @@ class Window {
     /**
      * Returns current FPS
      */
-    [[nodiscard]] static int GetFPS() noexcept {
+    [[nodiscard]] static int GetFPS() {
         return ::GetFPS();
     }
 
     /**
      * Draw current FPS
      */
-    inline static constexpr int DefaultDrawFPSPosX = 10;
-    inline static constexpr int DefaultDrawFPSPosY = 10;
-    void DrawFPS(int posX = DefaultDrawFPSPosX, int posY = DefaultDrawFPSPosY) const noexcept {
+    static constexpr int DefaultDrawFPSPosX = 10;
+    static constexpr int DefaultDrawFPSPosY = 10;
+    void DrawFPS(int posX = DefaultDrawFPSPosX, int posY = DefaultDrawFPSPosY) const {
         ::DrawFPS(posX, posY);
     }
 
     /**
      * Returns time in seconds for last frame drawn
      */
-    [[nodiscard]] static float GetFrameTime() noexcept {
+    [[nodiscard]] static float GetFrameTime() {
         return ::GetFrameTime();
     }
     [[nodiscard]] static std::chrono::milliseconds GetFrameTimeMs() {
@@ -471,7 +494,7 @@ class Window {
     /**
      * Returns elapsed time in seconds since InitWindow()
      */
-    [[nodiscard]] static double GetTime() noexcept {
+    [[nodiscard]] static double GetTime() {
         return ::GetTime();
     }
     [[nodiscard]] static std::chrono::milliseconds GetTimeMs() {
@@ -481,7 +504,7 @@ class Window {
     /**
      * Check if window has been initialized successfully
      */
-    [[nodiscard]] static bool IsReady() noexcept {
+    [[nodiscard]] static bool IsReady() {
         return ::IsWindowReady();
     }
 
@@ -492,7 +515,7 @@ class Window {
      *
      * @see ::SetConfigFlags
      */
-    static void SetConfigFlags(uint32_t flags) noexcept {
+    static void SetConfigFlags(uint32_t flags) {
         ::SetConfigFlags(flags);
     }
 };

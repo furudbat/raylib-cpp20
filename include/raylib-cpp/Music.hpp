@@ -3,10 +3,10 @@
 
 #include "raylib.hpp"
 #include "raylib-cpp-utils.hpp"
+#include "RaylibError.hpp"
 #ifdef __cpp_exceptions
 #include "RaylibException.hpp"
 #endif
-#include "RaylibError.hpp"
 
 #include <string>
 #include <filesystem>
@@ -18,7 +18,9 @@ namespace raylib {
  */
 class Music {
  public:
-    inline static constexpr float DefaultSetPan = 0.5f; ///< center
+    static constexpr float DefaultSetPan = 0.5F; ///< center
+
+    explicit Music() = default;
 
     //[[deprecated("Use Music(music)")]]
     explicit Music(::AudioStream stream,
@@ -82,7 +84,7 @@ class Music {
     /**
      * Unload music stream
      */
-    ~Music() noexcept {
+    ~Music() {
         Unload();
     }
 
@@ -117,10 +119,10 @@ class Music {
         return *this;
     }
 
-    explicit operator ::Music() const noexcept {
+    explicit operator ::Music() const {
         return m_data;
     }
-    [[nodiscard]] ::Music c_raylib() const & noexcept {
+    [[nodiscard]] ::Music c_raylib() const & {
         return m_data;
     }
 
@@ -133,14 +135,14 @@ class Music {
     /**
      * Unload music stream
      */
-    void Unload() noexcept {
+    void Unload() {
         ::UnloadMusicStream(m_data);
     }
 
     /**
      * Start music playing
      */
-    Music& Play() noexcept {
+    Music& Play() {
         ::PlayMusicStream(m_data);
         return *this;
     }
@@ -148,7 +150,7 @@ class Music {
     /**
      * Updates buffers for music streaming
      */
-    Music& Update() noexcept {
+    Music& Update() {
         ::UpdateMusicStream(m_data);
         return *this;
     }
@@ -156,7 +158,7 @@ class Music {
     /**
      * Stop music playing
      */
-    Music& Stop() noexcept {
+    Music& Stop() {
         ::StopMusicStream(m_data);
         return *this;
     }
@@ -164,7 +166,7 @@ class Music {
     /**
      * Pause music playing
      */
-    Music& Pause() noexcept {
+    Music& Pause() {
         ::PauseMusicStream(m_data);
         return *this;
     }
@@ -172,7 +174,7 @@ class Music {
     /**
      * Resume music playing
      */
-    Music& Resume() noexcept {
+    Music& Resume() {
         ::ResumeMusicStream(m_data);
         return *this;
     }
@@ -180,7 +182,7 @@ class Music {
     /**
      * Seek music to a position (in seconds)
      */
-    Music& Seek(float position) noexcept {
+    Music& Seek(float position) {
         ::SeekMusicStream(m_data, position);
         return *this;
     }
@@ -192,14 +194,14 @@ class Music {
     /**
      * Check if music is playing
      */
-    [[nodiscard]] bool IsPlaying() const noexcept {
+    [[nodiscard]] bool IsPlaying() const {
         return ::IsMusicStreamPlaying(m_data);
     }
 
     /**
      * Set volume for music
      */
-    Music& SetVolume(float volume) noexcept {
+    Music& SetVolume(float volume) {
         ::SetMusicVolume(m_data, volume);
         return *this;
     }
@@ -207,7 +209,7 @@ class Music {
     /**
      * Set pitch for music
      */
-    Music& SetPitch(float pitch) noexcept {
+    Music& SetPitch(float pitch) {
         ::SetMusicPitch(m_data, pitch);
         return *this;
     }
@@ -215,7 +217,7 @@ class Music {
     /**
      * Set pan for a music (0.5 is center)
      */
-    Music& SetPan(float pan = DefaultSetPan) noexcept {
+    Music& SetPan(float pan = DefaultSetPan) {
         ::SetMusicPan(m_data, pan);
         return *this;
     }
@@ -223,7 +225,7 @@ class Music {
     /**
      * Get music time length (in seconds)
      */
-    [[nodiscard]] float GetTimeLength() const noexcept {
+    [[nodiscard]] float GetTimeLength() const {
         return ::GetMusicTimeLength(m_data);
     }
     [[nodiscard]] std::chrono::milliseconds GetTimeLengthMs() const {
@@ -233,7 +235,7 @@ class Music {
     /**
      * Get current music time played (in seconds)
      */
-    [[nodiscard]] float GetTimePlayed() const noexcept {
+    [[nodiscard]] float GetTimePlayed() const {
         return ::GetMusicTimePlayed(m_data);
     }
     [[nodiscard]] std::chrono::milliseconds GetTimePlayedMs() const {
@@ -277,7 +279,7 @@ class Music {
      *
      * @return True or false depending on whether the Music has been loaded.
      */
-    [[nodiscard]] bool IsReady() const noexcept {
+    [[nodiscard]] bool IsReady() const {
         return ::IsMusicReady(m_data);
     }
 
@@ -290,7 +292,19 @@ class Music {
         m_data.ctxData = music.ctxData;
     }
 
-    ::Music m_data;
+    ::Music m_data {
+        .stream = {
+            .buffer = nullptr,
+            .processor = nullptr,
+            .sampleRate = 0,
+            .sampleSize = 0,
+            .channels = 0,
+        },
+        .frameCount = 0,
+        .looping = false,
+        .ctxType = 0,
+        .ctxData = nullptr
+    };
 };
 }  // namespace raylib
 

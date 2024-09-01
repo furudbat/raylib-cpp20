@@ -1,16 +1,12 @@
 #ifndef RAYLIB_CPP_INCLUDE_FILEDATA_HPP_
 #define RAYLIB_CPP_INCLUDE_FILEDATA_HPP_
 
-
 #include "raylib.hpp"
-#include "raylib-cpp-utils.hpp"
-#ifdef __cpp_exceptions
-#include "RaylibException.hpp"
-#endif
-#include "RaylibError.hpp"
 
-#include <bit>
+#include "raylib-cpp-utils.hpp"
+
 #include <string>
+#include <span>
 #include <filesystem>
 
 namespace raylib {
@@ -45,11 +41,11 @@ public:
         return std::span<const unsigned char>{m_data, static_cast<size_t>(m_bytesRead)};
     }
     [[nodiscard]] std::span<unsigned char> AsSpan() noexcept {
-        return std::span<unsigned char>{m_data, static_cast<size_t>(m_bytesRead)};
+        return std::span{m_data, static_cast<size_t>(m_bytesRead)};
     }
 
     [[nodiscard]] std::span<std::byte> AsSpanBytes() noexcept {
-        return std::as_writable_bytes(std::span<unsigned char>{m_data, static_cast<size_t>(m_bytesRead)});
+        return std::as_writable_bytes(std::span{m_data, static_cast<size_t>(m_bytesRead)});
     }
     [[nodiscard]] std::span<const std::byte> AsSpanBytes() const noexcept {
         return std::as_bytes(std::span<const unsigned char>{m_data, static_cast<size_t>(m_bytesRead)});
@@ -59,8 +55,9 @@ public:
         m_data = ::LoadFileData(fileName, &m_bytesRead);
     }
     void Load(const std::filesystem::path& fileName) { Load(fileName.c_str()); }
+    /// @TODO: add LoadFileData error handling exception AND expected
 
-    void Unload() noexcept {
+    void Unload() {
         if (m_data != nullptr) {
             ::UnloadFileData(m_data);
             m_data = nullptr;

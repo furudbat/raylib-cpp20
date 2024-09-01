@@ -2,17 +2,19 @@
 #define RAYLIB_CPP_INCLUDE_CAMERA2D_HPP_
 
 #include "raylib.hpp"
+
 #include "Vector2.hpp"
 #include "raylib-cpp-utils.hpp"
 
 namespace raylib {
+
 /**
  * Camera2D type, defines a 2d camera
  */
 class Camera2D : public ::Camera2D {
  public:
-    inline static constexpr float DefaultRotation = 0.0f;
-    inline static constexpr float DefaultZoom = 1.0f;
+    static constexpr float DefaultRotation = 0.0F;
+    static constexpr float DefaultZoom = 1.0F;
 
     explicit constexpr Camera2D(const ::Camera2D& camera) {
         set(camera);
@@ -31,6 +33,7 @@ class Camera2D : public ::Camera2D {
 
     constexpr Camera2D& operator=(const ::Camera2D& camera) noexcept {
         set(camera);
+
         return *this;
     }
 
@@ -40,13 +43,15 @@ class Camera2D : public ::Camera2D {
     GETTERSETTER(float, Rotation, rotation)
     GETTERSETTER(float, Zoom, zoom)
 
-    Camera2D& BeginMode() noexcept {
+    Camera2D& BeginMode() {
         ::BeginMode2D(*this);
+
         return *this;
     }
 
-    Camera2D& EndMode() noexcept {
+    Camera2D& EndMode() {
         ::EndMode2D();
+
         return *this;
     }
 
