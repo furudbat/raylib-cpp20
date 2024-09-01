@@ -1,29 +1,28 @@
 /*******************************************************************************************
-*
-*   raylib [models] example - Load models M3D
-*
-*   Example originally created with raylib 4.5, last time updated with raylib 4.5
-*
-*   Example contributed by bzt (@bztsrc) and reviewed by Ramon Santamaria (@raysan5)
-*
-*   NOTES:
-*     - Model3D (M3D) fileformat specs: https://gitlab.com/bztsrc/model3d
-*     - Bender M3D exported: https://gitlab.com/bztsrc/model3d/-/tree/master/blender
-*
-*   Example licensed under an unmodified zlib/libpng license, which is an OSI-certified,
-*   BSD-like license that allows static linking with closed source software
-*
-*   Copyright (c) 2022-2024 bzt (@bztsrc)
-*
-********************************************************************************************/
+ *
+ *   raylib [models] example - Load models M3D
+ *
+ *   Example originally created with raylib 4.5, last time updated with raylib 4.5
+ *
+ *   Example contributed by bzt (@bztsrc) and reviewed by Ramon Santamaria (@raysan5)
+ *
+ *   NOTES:
+ *     - Model3D (M3D) fileformat specs: https://gitlab.com/bztsrc/model3d
+ *     - Bender M3D exported: https://gitlab.com/bztsrc/model3d/-/tree/master/blender
+ *
+ *   Example licensed under an unmodified zlib/libpng license, which is an OSI-certified,
+ *   BSD-like license that allows static linking with closed source software
+ *
+ *   Copyright (c) 2022-2024 bzt (@bztsrc)
+ *
+ ********************************************************************************************/
 
 #include "raylib-cpp.hpp"
 
 //------------------------------------------------------------------------------------
 // Program main entry point
 //------------------------------------------------------------------------------------
-int main()
-{
+int main() {
     // Initialization
     //--------------------------------------------------------------------------------------
     constexpr int screenWidth = 800;
@@ -33,44 +32,42 @@ int main()
 
     // Define the camera to look into our 3d world
     raylib::Camera camera;
-    camera.position = Vector3{ 1.5f, 1.5f, 1.5f };    // Camera position
-    camera.target = Vector3{ 0.0f, 0.4f, 0.0f };      // Camera looking at point
-    camera.up = Vector3{ 0.0f, 1.0f, 0.0f };          // Camera up vector (rotation towards target)
-    camera.fovy = 45.0f;                                // Camera field-of-view Y
-    camera.projection = CAMERA_PERSPECTIVE;             // Camera projection type
+    camera.position = Vector3{1.5f, 1.5f, 1.5f}; // Camera position
+    camera.target = Vector3{0.0f, 0.4f, 0.0f}; // Camera looking at point
+    camera.up = Vector3{0.0f, 1.0f, 0.0f}; // Camera up vector (rotation towards target)
+    camera.fovy = 45.0f; // Camera field-of-view Y
+    camera.projection = CAMERA_PERSPECTIVE; // Camera projection type
 
-    Vector3 position = { 0.0f, 0.0f, 0.0f };            // Set model position
+    Vector3 position = {0.0f, 0.0f, 0.0f}; // Set model position
 
     std::string modelFileName = "resources/models/m3d/cesium_man.m3d";
     bool drawMesh = true;
     bool drawSkeleton = true;
-    bool animPlaying = false;   // Store anim state, what to draw
+    bool animPlaying = false; // Store anim state, what to draw
 
     // Load model
-    raylib::Model model (modelFileName); // Load the bind-pose model mesh and basic data
+    raylib::Model model(modelFileName); // Load the bind-pose model mesh and basic data
 
     // Load animations
     int animFrameCounter = 0;
     size_t animId = 0;
     auto anims = raylib::ModelAnimation::Load(modelFileName); // Load skeletal animation data
 
-    DisableCursor();                    // Limit cursor to relative movement inside the window
+    DisableCursor(); // Limit cursor to relative movement inside the window
 
-    SetTargetFPS(60);                   // Set our game to run at 60 frames-per-second
+    SetTargetFPS(60); // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
 
     // Main game loop
-    while (!WindowShouldClose())        // Detect window close button or ESC key
+    while (!WindowShouldClose()) // Detect window close button or ESC key
     {
         // Update
         //----------------------------------------------------------------------------------
         camera.Update(CAMERA_FIRST_PERSON);
 
-        if (!anims.empty())
-        {
+        if (!anims.empty()) {
             // Play animation when spacebar is held down (or step one frame with N)
-            if (IsKeyDown(KEY_SPACE) || IsKeyPressed(KEY_N))
-            {
+            if (IsKeyDown(KEY_SPACE) || IsKeyPressed(KEY_N)) {
                 animFrameCounter++;
 
                 if (animFrameCounter >= anims[animId].GetFrameCount()) animFrameCounter = 0;
@@ -80,8 +77,7 @@ int main()
             }
 
             // Select animation by pressing C
-            if (IsKeyPressed(KEY_C))
-            {
+            if (IsKeyPressed(KEY_C)) {
                 animFrameCounter = 0;
                 animId++;
 
@@ -110,42 +106,40 @@ int main()
         if (drawMesh) model.Draw(position, 1.0f, WHITE);
 
         // Draw the animated skeleton
-        if (drawSkeleton)
-        {
+        if (drawSkeleton) {
             // Loop to (boneCount - 1) because the last one is a special "no bone" bone,
             // needed to workaround buggy models
             // without a -1, we would always draw a cube at the origin
-            for (size_t i = 0; model.GetBoneCount() > 0 && std::cmp_less(i, model.GetBoneCount() - 1); i++)
-            {
+            for (size_t i = 0; model.GetBoneCount() > 0 && std::cmp_less(i, model.GetBoneCount() - 1); i++) {
                 // By default the model is loaded in bind-pose by LoadModel().
                 // But if UpdateModelAnimation() has been called at least once
                 // then the model is already in animation pose, so we need the animated skeleton
-                if (!animPlaying || anims.empty())
-                {
+                if (!animPlaying || anims.empty()) {
                     // Display the bind-pose skeleton
                     DrawCube(model.GetBindPose(i).translation, 0.04f, 0.04f, 0.04f, RED);
 
-                    if (model.GetBones()[i].parent >= 0)
-                    {
-                        DrawLine3D(model.GetBindPose(i).translation,
-                                   model.GetBindPose(model.GetBone(i).parent).translation, RED);
+                    if (model.GetBones()[i].parent >= 0) {
+                        DrawLine3D(
+                            model.GetBindPose(i).translation,
+                            model.GetBindPose(model.GetBone(i).parent).translation,
+                            RED);
                     }
                 }
-                else
-                {
+                else {
                     // Display the frame-pose skeleton
                     DrawCube(anims[animId].GetFramePose(animFrameCounter)[i].translation, 0.05f, 0.05f, 0.05f, RED);
 
-                    if (anims[animId].GetBone(i).parent >= 0)
-                    {
-                        DrawLine3D(anims[animId].GetFramePose(animFrameCounter)[i].translation,
-                                   anims[animId].GetFramePose(animFrameCounter)[anims[animId].GetBone(i).parent].translation, RED);
+                    if (anims[animId].GetBone(i).parent >= 0) {
+                        DrawLine3D(
+                            anims[animId].GetFramePose(animFrameCounter)[i].translation,
+                            anims[animId].GetFramePose(animFrameCounter)[anims[animId].GetBone(i).parent].translation,
+                            RED);
                     }
                 }
             }
         }
 
-        DrawGrid(10, 1.0f);         // Draw a grid
+        DrawGrid(10, 1.0f); // Draw a grid
 
         EndMode3D();
 
@@ -163,11 +157,11 @@ int main()
     //--------------------------------------------------------------------------------------
 
     // Unload model animations data
-    //UnloadModelAnimations(anims, animsCount);
+    // UnloadModelAnimations(anims, animsCount);
 
     //UnloadModel(model);         // Unload model
 
-    CloseWindow();              // Close window and OpenGL context
+    CloseWindow(); // Close window and OpenGL context
     //--------------------------------------------------------------------------------------
 
     return 0;

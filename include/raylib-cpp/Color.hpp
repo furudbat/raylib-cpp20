@@ -20,7 +20,7 @@ struct ColorHSV {
  * Color type, RGBA (32bit)
  */
 class Color : public ::Color {
- public:
+public:
     static constexpr float DefaultDrawLineBezierThick = 1.0F;
     static constexpr int DefaultDrawTextFontSize = 10;
 
@@ -31,22 +31,14 @@ class Color : public ::Color {
 
     explicit constexpr Color(::Color color) : ::Color{color.r, color.g, color.b, color.a} {}
 
-    constexpr Color(
-            uint8_t red,
-            uint8_t green,
-            uint8_t blue,
-            uint8_t alpha = 255) : ::Color{red, green, blue, alpha} {}
+    constexpr Color(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha = 255) : ::Color{red, green, blue, alpha} {}
 
     /**
      * Returns a Color from HSV values
      */
     //[[deprecated("Use Color(ColorHSV) for better structured name")]]
-    explicit Color(::Vector3 hsv) {
-        set(::ColorFromHSV(hsv.x, hsv.y, hsv.z));
-    }
-    explicit Color(ColorHSV hsv) {
-        set(::ColorFromHSV(hsv.hue, hsv.saturation, hsv.value));
-    }
+    explicit Color(::Vector3 hsv) { set(::ColorFromHSV(hsv.x, hsv.y, hsv.z)); }
+    explicit Color(ColorHSV hsv) { set(::ColorFromHSV(hsv.hue, hsv.saturation, hsv.value)); }
 
     /**
      * Returns a Color from HSV values
@@ -56,29 +48,23 @@ class Color : public ::Color {
         return ::ColorFromHSV(hue, saturation, value);
     }
     //[[deprecated("Use FromHSV(ColorHSV) for better structured name")]]
-    static ::Color FromHSV(::Vector3 hsv) {
-        return ::ColorFromHSV(hsv.x, hsv.y, hsv.z);
-    }
-    static ::Color FromHSV(ColorHSV hsv) {
-        return ::ColorFromHSV(hsv.hue, hsv.saturation, hsv.value);
-    }
+    static ::Color FromHSV(::Vector3 hsv) { return ::ColorFromHSV(hsv.x, hsv.y, hsv.z); }
+    static ::Color FromHSV(ColorHSV hsv) { return ::ColorFromHSV(hsv.hue, hsv.saturation, hsv.value); }
 
     /**
      * Get Color structure from hexadecimal value
      */
-    explicit Color(uint32_t hexValue) {
-        set(::GetColor(hexValue));
-    }
+    explicit Color(uint32_t hexValue) { set(::GetColor(hexValue)); }
 
     template<typename T>
     [[deprecated("use Color(srcPtr, PixelFormat)")]]
-    Color(T *srcPtr, int format) {
+    Color(T* srcPtr, int format) {
         assert(srcPtr != nullptr);
         set(::GetPixelColor(srcPtr, format));
     }
     template<typename T>
-    requires std::is_same_v<T, unsigned char> || std::is_same_v<T, unsigned short> || std::is_same_v<T, float>
-    Color(T *srcPtr, PixelFormat format) {
+        requires std::is_same_v<T, unsigned char> || std::is_same_v<T, unsigned short> || std::is_same_v<T, float>
+    Color(T* srcPtr, PixelFormat format) {
         assert(srcPtr != nullptr);
         set(::GetPixelColor(srcPtr, format));
     }
@@ -86,24 +72,16 @@ class Color : public ::Color {
     /**
      * Returns hexadecimal value for a Color
      */
-    [[nodiscard]] int ToInt() const {
-        return ::ColorToInt(*this);
-    }
+    [[nodiscard]] int ToInt() const { return ::ColorToInt(*this); }
 
     /**
      * Returns hexadecimal value for a Color
      */
-    explicit operator int() const {
-        return ::ColorToInt(*this);
-    }
+    explicit operator int() const { return ::ColorToInt(*this); }
 
-    [[nodiscard]] std::string ToString() const {
-        return TextFormat("Color(%d, %d, %d, %d)", r, g, b, a);
-    }
+    [[nodiscard]] std::string ToString() const { return TextFormat("Color(%d, %d, %d, %d)", r, g, b, a); }
 
-    explicit operator std::string() const {
-        return ToString();
-    }
+    explicit operator std::string() const { return ToString(); }
 
     /*
     explicit(false) operator ::Color() const {
@@ -121,36 +99,27 @@ class Color : public ::Color {
     /**
      * Determines if the color are not equal.
      */
-    constexpr bool operator!=(const ::Color& other) const {
-        return !(*this == other);
-    }
+    constexpr bool operator!=(const ::Color& other) const { return !(*this == other); }
 
     /**
      * Returns color with alpha applied, alpha goes from 0.0f to 1.0f
      */
-    [[nodiscard]] Color Fade(float alpha) const {
-        return Color{::Fade(*this, alpha)};
-    }
+    [[nodiscard]] Color Fade(float alpha) const { return Color{::Fade(*this, alpha)}; }
 
     /**
      * Returns Color normalized as float [0..1]
      */
-    [[nodiscard]] Vector4 Normalize() const {
-        return Vector4{::ColorNormalize(*this)};
-    }
+    [[nodiscard]] Vector4 Normalize() const { return Vector4{::ColorNormalize(*this)}; }
 
     /**
      * Returns Color from normalized values [0..1]
      */
-    explicit Color(::Vector4 normalized) {
-        set(::ColorFromNormalized(normalized));
-    }
+    explicit Color(::Vector4 normalized) { set(::ColorFromNormalized(normalized)); }
 
     /**
      * Returns HSV values for a Color
      */
-    [[deprecated("Use ToColorHSV() for better named struct")]]
-    [[nodiscard]] raylib::Vector3 ToHSV() const {
+    [[deprecated("Use ToColorHSV() for better named struct")]] [[nodiscard]] raylib::Vector3 ToHSV() const {
         return raylib::Vector3{::ColorToHSV(*this)};
     }
     [[nodiscard]] ColorHSV ToColorHSV() const {
@@ -177,16 +146,12 @@ class Color : public ::Color {
         return *this;
     }
 
-    void DrawPixel(int x, int y) const {
-        ::DrawPixel(x, y, *this);
-    }
+    void DrawPixel(int x, int y) const { ::DrawPixel(x, y, *this); }
 
     /**
      * Draw a pixel
      */
-    void DrawPixel(::Vector2 pos) const {
-        ::DrawPixelV(pos, *this);
-    }
+    void DrawPixel(::Vector2 pos) const { ::DrawPixelV(pos, *this); }
 
     /**
      * Draw a line
@@ -198,9 +163,7 @@ class Color : public ::Color {
     /**
      * Draw a line using Vector points
      */
-    void DrawLine(::Vector2 startPos, ::Vector2 endPos) const noexcept {
-        ::DrawLineV(startPos, endPos, *this);
-    }
+    void DrawLine(::Vector2 startPos, ::Vector2 endPos) const noexcept { ::DrawLineV(startPos, endPos, *this); }
 
     /**
      * Draw a line using Vector points, with a given thickness
@@ -214,7 +177,7 @@ class Color : public ::Color {
     }
 
     [[deprecated("Use DrawLineStrip(span)")]]
-    void DrawLineStrip(::Vector2 *points, int numPoints) const {
+    void DrawLineStrip(::Vector2* points, int numPoints) const {
         ::DrawLineStrip(points, numPoints, *this);
     }
     void DrawLineStrip(std::span<::Vector2> points) const {
@@ -225,38 +188,37 @@ class Color : public ::Color {
     void DrawText(czstring text, int posX = 0, int posY = 0, int fontSize = DefaultDrawTextFontSize) const noexcept {
         ::DrawText(text, posX, posY, fontSize, *this);
     }
-    void DrawText(const std::string& text, int posX = 0, int posY = 0, int fontSize = DefaultDrawTextFontSize) const noexcept {
+    void DrawText(const std::string& text, int posX = 0, int posY = 0, int fontSize = DefaultDrawTextFontSize)
+        const noexcept {
         ::DrawText(text.c_str(), posX, posY, fontSize, *this);
     }
 
-    void DrawText(const ::Font& font, czstring text,
-                  ::Vector2 position,
-                  float fontSize, float spacing) const {
+    void DrawText(const ::Font& font, czstring text, ::Vector2 position, float fontSize, float spacing) const {
         ::DrawTextEx(font, text, position, fontSize, spacing, *this);
     }
-    void DrawText(const ::Font& font, const std::string& text, ::Vector2 position,
-            float fontSize, float spacing) const {
+    void
+    DrawText(const ::Font& font, const std::string& text, ::Vector2 position, float fontSize, float spacing) const {
         ::DrawTextEx(font, text.c_str(), position, fontSize, spacing, *this);
     }
 
     void DrawText(
-            const ::Font& font,
-            czstring text,
-            ::Vector2 position,
-            ::Vector2 origin,
-            float rotation,
-            float fontSize,
-            float spacing) const {
+        const ::Font& font,
+        czstring text,
+        ::Vector2 position,
+        ::Vector2 origin,
+        float rotation,
+        float fontSize,
+        float spacing) const {
         ::DrawTextPro(font, text, position, origin, rotation, fontSize, spacing, *this);
     }
     void DrawText(
-            const ::Font& font,
-            const std::string& text,
-            ::Vector2 position,
-            ::Vector2 origin,
-            float rotation,
-            float fontSize,
-            float spacing) const {
+        const ::Font& font,
+        const std::string& text,
+        ::Vector2 position,
+        ::Vector2 origin,
+        float rotation,
+        float fontSize,
+        float spacing) const {
         ::DrawTextPro(font, text.c_str(), position, origin, rotation, fontSize, spacing, *this);
     }
 
@@ -264,13 +226,9 @@ class Color : public ::Color {
         ::DrawRectangle(posX, posY, width, height, *this);
     }
 
-    void DrawRectangle(::Vector2 position, ::Vector2 size) const {
-        ::DrawRectangleV(position, size, *this);
-    }
+    void DrawRectangle(::Vector2 position, ::Vector2 size) const { ::DrawRectangleV(position, size, *this); }
 
-    void DrawRectangle(::Rectangle rec) const {
-        ::DrawRectangleRec(rec, *this);
-    }
+    void DrawRectangle(::Rectangle rec) const { ::DrawRectangleRec(rec, *this); }
 
     void DrawRectangle(::Rectangle rec, ::Vector2 origin, float rotation) const {
         ::DrawRectanglePro(rec, origin, rotation, *this);
@@ -280,37 +238,27 @@ class Color : public ::Color {
         ::DrawRectangleLines(posX, posY, width, height, *this);
     }
 
-    void DrawRectangleLines(::Rectangle rec, float lineThick) const {
-        ::DrawRectangleLinesEx(rec, lineThick, *this);
-    }
+    void DrawRectangleLines(::Rectangle rec, float lineThick) const { ::DrawRectangleLinesEx(rec, lineThick, *this); }
 
     /**
      * Get color multiplied with another color
      */
-    [[nodiscard]] Color Tint(::Color tint) {
-        return Color{::ColorTint(*this, tint)};
-    }
+    [[nodiscard]] Color Tint(::Color tint) { return Color{::ColorTint(*this, tint)}; }
 
     /**
      * Get color with brightness correction, brightness factor goes from -1.0f to 1.0f
      */
-    [[nodiscard]] Color Brightness(float factor) {
-        return Color{::ColorBrightness(*this, factor)};
-    }
+    [[nodiscard]] Color Brightness(float factor) { return Color{::ColorBrightness(*this, factor)}; }
 
     /**
      * Get color with contrast correction, contrast values between -1.0f and 1.0f
      */
-    [[nodiscard]] Color Contrast(float contrast) {
-        return Color{::ColorContrast(*this, contrast)};
-    }
+    [[nodiscard]] Color Contrast(float contrast) { return Color{::ColorContrast(*this, contrast)}; }
 
     /**
      * Returns color with alpha applied, alpha goes from 0.0f to 1.0f
      */
-    [[nodiscard]] Color Alpha(float alpha) const {
-        return Color{::ColorAlpha(*this, alpha)};
-    }
+    [[nodiscard]] Color Alpha(float alpha) const { return Color{::ColorAlpha(*this, alpha)}; }
 
     /**
      * Returns src alpha-blended into dst color with tint
@@ -345,8 +293,7 @@ class Color : public ::Color {
     static constexpr Color Blank() { return Color{BLANK}; }
     static constexpr Color Magenta() { return Color{MAGENTA}; }
     static constexpr Color RayWhite() { return Color{RAYWHITE}; }
-
- protected:
+protected:
     constexpr void set(const ::Color& color) noexcept {
         r = color.r;
         g = color.g;
@@ -355,8 +302,8 @@ class Color : public ::Color {
     }
 };
 
-}  // namespace raylib
+} // namespace raylib
 
 using RColor = raylib::Color;
 
-#endif  // RAYLIB_CPP_INCLUDE_COLOR_HPP_
+#endif // RAYLIB_CPP_INCLUDE_COLOR_HPP_

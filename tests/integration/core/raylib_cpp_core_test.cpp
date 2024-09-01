@@ -1,14 +1,14 @@
 #include <tl/expected.hpp>
 
-#include "raylib-cpp.hpp"
 #include "raylib-assert.h"
-#include <string>
-#include <vector>
-#include <filesystem>
+#include "raylib-cpp.hpp"
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
+#include <filesystem>
+#include <string>
+#include <vector>
 
-TEST_CASE( "basic window", "[core]" ) {
+TEST_CASE("basic window", "[core]") {
     // Initialization
     //--------------------------------------------------------------------------------------
     constexpr int ScreenWidth = 800;

@@ -20,7 +20,7 @@ enum class AudioDeviceInitOption : bool {
  * Audio device management functions.
  */
 class AudioDevice {
- public:
+public:
     /**
      * Initialize audio device and context.
      *
@@ -75,16 +75,12 @@ class AudioDevice {
     /**
      * Close the audio device and context.
      */
-    void Close() {
-        ::CloseAudioDevice();
-    }
+    void Close() { ::CloseAudioDevice(); }
 
     /**
      * Check if audio device has been initialized successfully.
      */
-    [[nodiscard]] bool IsReady() const {
-        return ::IsAudioDeviceReady();
-    }
+    [[nodiscard]] bool IsReady() const { return ::IsAudioDeviceReady(); }
 
     /**
      * Set master volume (listener).
@@ -98,8 +94,8 @@ class AudioDevice {
     }
 };
 
-}  // namespace raylib
+} // namespace raylib
 
 using RAudioDevice = raylib::AudioDevice;
 
-#endif  // RAYLIB_CPP_INCLUDE_AUDIODEVICE_HPP_
+#endif // RAYLIB_CPP_INCLUDE_AUDIODEVICE_HPP_

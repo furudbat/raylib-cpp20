@@ -12,14 +12,17 @@
 namespace raylib {
 
 class DrawingGuard {
-  public:
+public:
     DrawingGuard() { ::BeginDrawing(); }
-    explicit DrawingGuard(::Color clearBackground) { ::BeginDrawing(); ::ClearBackground(clearBackground); }
+    explicit DrawingGuard(::Color clearBackground) {
+        ::BeginDrawing();
+        ::ClearBackground(clearBackground);
+    }
     ~DrawingGuard() { ::EndDrawing(); }
 };
 
 class Camera3DDrawingGuard {
-  public:
+public:
     explicit Camera3DDrawingGuard(const ::Camera3D& camera) { ::BeginMode3D(camera); }
     ~Camera3DDrawingGuard() { ::EndMode3D(); }
 };
@@ -31,19 +34,21 @@ public:
 };
 
 class RenderTextureDrawingGuard {
-  public:
+public:
     explicit RenderTextureDrawingGuard(const ::RenderTexture& renderTexture) { ::BeginTextureMode(renderTexture); }
-    explicit RenderTextureDrawingGuard(const RenderTexture& renderTexture) { ::BeginTextureMode(renderTexture.c_raylib()); }
+    explicit RenderTextureDrawingGuard(const RenderTexture& renderTexture) {
+        ::BeginTextureMode(renderTexture.c_raylib());
+    }
     ~RenderTextureDrawingGuard() noexcept { ::EndTextureMode(); }
 };
 
 class ShaderDrawingGuard {
-  public:
+public:
     explicit ShaderDrawingGuard(const ::Shader& shader) { ::BeginShaderMode(shader); }
     explicit ShaderDrawingGuard(const Shader& shader) { ::BeginShaderMode(shader.c_raylib()); }
     ~ShaderDrawingGuard() noexcept { ::EndShaderMode(); }
 };
 
-}  // namespace raylib
+} // namespace raylib
 
-#endif  // RAYLIB_CPP_INCLUDE_GUARDS_HPP_
+#endif // RAYLIB_CPP_INCLUDE_GUARDS_HPP_

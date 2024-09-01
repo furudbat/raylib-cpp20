@@ -18,7 +18,7 @@ class Model;
  * @see raylib::TextureUnmanaged
  */
 class Texture {
- public:
+public:
     /**
      * Default texture constructor.
      */
@@ -39,18 +39,22 @@ class Texture {
      * Move/Create a texture structure manually.
      */
     [[deprecated("Use Texture(..., PixelFormat)")]]
-    constexpr Texture(unsigned int id,
-                       int width, int height,
-                       int mipmaps = 1,
-                       int format = PIXELFORMAT_UNCOMPRESSED_R8G8B8A8)
-            : m_texture{id, width, height, mipmaps, format} {
+    constexpr Texture(
+        unsigned int id,
+        int width,
+        int height,
+        int mipmaps = 1,
+        int format = PIXELFORMAT_UNCOMPRESSED_R8G8B8A8)
+        : m_texture{id, width, height, mipmaps, format} {
         // Nothing.
     }
-    constexpr Texture(unsigned int id,
-                      int width, int height,
-                      int mipmaps = 1,
-                      PixelFormat format = PixelFormat::UncompressedR8G8B8A8)
-            : m_texture{id, width, height, mipmaps, static_cast<int>(format)} {
+    constexpr Texture(
+        unsigned int id,
+        int width,
+        int height,
+        int mipmaps = 1,
+        PixelFormat format = PixelFormat::UncompressedR8G8B8A8)
+        : m_texture{id, width, height, mipmaps, static_cast<int>(format)} {
         // Nothing.
     }
 
@@ -112,16 +116,10 @@ class Texture {
     /**
      * On destruction, unload the Texture.
      */
-    ~Texture() {
-        Unload();
-    }
+    ~Texture() { Unload(); }
 
-    explicit operator ::Texture() const {
-        return m_texture.m_data;
-    }
-    [[nodiscard]] ::Texture c_raylib() const & {
-        return m_texture.c_raylib();
-    }
+    explicit operator ::Texture() const { return m_texture.m_data; }
+    [[nodiscard]] ::Texture c_raylib() const& { return m_texture.c_raylib(); }
 
     GETTER(unsigned int, Id, m_texture.m_data.id)
     GETTER(int, Width, m_texture.m_data.width)
@@ -138,12 +136,8 @@ class Texture {
      *
      * @throws raylib::RaylibException Throws if failed to create the texture from the given image.
      */
-    Texture(const ::Image& image) RAYLIB_CPP_THROWS {
-        Load(image);
-    }
-    Texture(const raylib::Image& image) RAYLIB_CPP_THROWS {
-        Load(image);
-    }
+    Texture(const ::Image& image) RAYLIB_CPP_THROWS { Load(image); }
+    Texture(const raylib::Image& image) RAYLIB_CPP_THROWS { Load(image); }
 
     /**
      * Load cubemap from image, multiple image cubemap layouts supported.
@@ -152,24 +146,16 @@ class Texture {
      *
      * @see LoadTextureCubemap()
      */
-    Texture(const ::Image& image, CubemapLayout layout) RAYLIB_CPP_THROWS {
-        Load(image, layout);
-    }
-    Texture(const raylib::Image& image, CubemapLayout layout) RAYLIB_CPP_THROWS {
-        Load(image, layout);
-    }
+    Texture(const ::Image& image, CubemapLayout layout) RAYLIB_CPP_THROWS { Load(image, layout); }
+    Texture(const raylib::Image& image, CubemapLayout layout) RAYLIB_CPP_THROWS { Load(image, layout); }
 
     /**
      * Load texture from file into GPU memory (VRAM)
      *
      * @throws raylib::RaylibException Throws if failed to create the texture from the given file.
      */
-    explicit Texture(czstring fileName) RAYLIB_CPP_THROWS {
-        Load(fileName);
-    }
-    explicit Texture(const std::filesystem::path& fileName) RAYLIB_CPP_THROWS {
-        Load(fileName);
-    }
+    explicit Texture(czstring fileName) RAYLIB_CPP_THROWS { Load(fileName); }
+    explicit Texture(const std::filesystem::path& fileName) RAYLIB_CPP_THROWS { Load(fileName); }
 
     /**
      * Unload texture from GPU memory (VRAM)
@@ -205,7 +191,8 @@ class Texture {
             RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Texture from Cubemap"));
         }
     }
-    inline RAYLIB_CPP_EXPECTED_RESULT_VOID Load(const raylib::Image& image, CubemapLayout layoutType) RAYLIB_CPP_THROWS {
+    inline RAYLIB_CPP_EXPECTED_RESULT_VOID
+    Load(const raylib::Image& image, CubemapLayout layoutType) RAYLIB_CPP_THROWS {
         RAYLIB_CPP_RETURN_EXPECTED_VALUE(Load(image.c_raylib(), layoutType));
     }
 
@@ -215,26 +202,27 @@ class Texture {
     RAYLIB_CPP_EXPECTED_RESULT_VOID Load(czstring fileName) RAYLIB_CPP_THROWS {
         m_texture.set(::LoadTexture(fileName));
         if (!m_texture.IsReady()) {
-            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError(::TextFormat("Failed to load Texture from file: %s", fileName)));
+            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(
+                RaylibError(::TextFormat("Failed to load Texture from file: %s", fileName)));
         }
         RAYLIB_CPP_RETURN_EXPECTED();
     }
-    RAYLIB_CPP_EXPECTED_RESULT_VOID Load(const std::filesystem::path& fileName) RAYLIB_CPP_THROWS {
-        RAYLIB_CPP_RETURN_EXPECTED_VOID_VALUE(Load(fileName.c_str()))
-    }
+    RAYLIB_CPP_EXPECTED_RESULT_VOID Load(const std::filesystem::path& fileName) RAYLIB_CPP_THROWS{
+        RAYLIB_CPP_RETURN_EXPECTED_VOID_VALUE(Load(fileName.c_str()))}
 
     RAYLIB_CPP_EXPECTED_STATIC_RESULT(Texture) LoadFromFile(czstring fileName) RAYLIB_CPP_THROWS {
-        Texture texture (::LoadTexture(fileName));
+        Texture texture(::LoadTexture(fileName));
         if (!texture.m_texture.IsReady()) {
-            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError(::TextFormat("Failed to load Texture from file: %s", fileName)));
+            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(
+                RaylibError(::TextFormat("Failed to load Texture from file: %s", fileName)));
         }
         RAYLIB_CPP_RETURN_EXPECTED_VALUE(texture);
     }
-    RAYLIB_CPP_EXPECTED_STATIC_RESULT(Texture) LoadFromFile(const std::filesystem::path& fileName) RAYLIB_CPP_THROWS {
-        RAYLIB_CPP_RETURN_EXPECTED_VOID_VALUE(LoadFromFile(fileName.c_str()))
-    }
-    RAYLIB_CPP_EXPECTED_STATIC_RESULT(Texture) LoadFromImage(const ::Image& image) RAYLIB_CPP_THROWS {
-        Texture texture (::LoadTextureFromImage(image));
+    RAYLIB_CPP_EXPECTED_STATIC_RESULT(Texture)
+    LoadFromFile(const std::filesystem::path& fileName) RAYLIB_CPP_THROWS{RAYLIB_CPP_RETURN_EXPECTED_VOID_VALUE(
+        LoadFromFile(fileName.c_str()))} RAYLIB_CPP_EXPECTED_STATIC_RESULT(Texture)
+        LoadFromImage(const ::Image& image) RAYLIB_CPP_THROWS {
+        Texture texture(::LoadTextureFromImage(image));
         if (!texture.m_texture.IsReady()) {
             RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Texture from Image"));
         }
@@ -243,14 +231,16 @@ class Texture {
     RAYLIB_CPP_EXPECTED_STATIC_RESULT(Texture) LoadFromImage(const Image& image) RAYLIB_CPP_THROWS {
         return LoadFromImage(image.c_raylib());
     }
-    RAYLIB_CPP_EXPECTED_STATIC_RESULT(Texture) LoadCubemapFromImage(const ::Image& image, PixelFormat format) RAYLIB_CPP_THROWS {
-        Texture texture (::LoadTextureCubemap(image, static_cast<int>(format)));
+    RAYLIB_CPP_EXPECTED_STATIC_RESULT(Texture)
+    LoadCubemapFromImage(const ::Image& image, PixelFormat format) RAYLIB_CPP_THROWS {
+        Texture texture(::LoadTextureCubemap(image, static_cast<int>(format)));
         if (!texture.m_texture.IsReady()) {
             RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Texture from Image"));
         }
         RAYLIB_CPP_RETURN_EXPECTED_VALUE(texture);
     }
-    RAYLIB_CPP_EXPECTED_STATIC_RESULT(Texture) LoadCubemapFromImage(const Image& image, PixelFormat format) RAYLIB_CPP_THROWS {
+    RAYLIB_CPP_EXPECTED_STATIC_RESULT(Texture)
+    LoadCubemapFromImage(const Image& image, PixelFormat format) RAYLIB_CPP_THROWS {
         return LoadCubemapFromImage(image.c_raylib(), format);
     }
 
@@ -269,9 +259,7 @@ class Texture {
     /**
      * Get pixel data from GPU texture and return an Image
      */
-    explicit operator raylib::Image() const {
-        return m_texture.GetData();
-    }
+    explicit operator raylib::Image() const { return m_texture.GetData(); }
 
     COMPOSITION_METHODE_CALL_RETURN_THIS(SetFilter, m_texture)
     COMPOSITION_METHODE_CALL_RETURN_THIS(SetWrap, m_texture)
@@ -283,7 +271,6 @@ class Texture {
     COMPOSITION_METHODE_CALL_RETURN_THIS(SetShaderValue, m_texture)
 
     CONST_COMPOSITION_METHODE_CALL(IsReady, m_texture)
-
 private:
     TextureUnmanaged m_texture;
 
@@ -294,10 +281,10 @@ private:
 using Texture2D = Texture;
 using TextureCubemap = Texture;
 
-}  // namespace raylib
+} // namespace raylib
 
 using RTexture = raylib::Texture;
 using RTexture2D = raylib::Texture2D;
 using RTextureCubemap = raylib::TextureCubemap;
 
-#endif  // RAYLIB_CPP_INCLUDE_TEXTURE_HPP_
+#endif // RAYLIB_CPP_INCLUDE_TEXTURE_HPP_

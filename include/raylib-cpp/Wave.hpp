@@ -1,17 +1,17 @@
 #ifndef RAYLIB_CPP_INCLUDE_WAVE_HPP_
 #define RAYLIB_CPP_INCLUDE_WAVE_HPP_
 
-#include "raylib.hpp"
-#include "raylib-cpp-utils.hpp"
 #include "RaylibError.hpp"
+#include "raylib-cpp-utils.hpp"
+#include "raylib.hpp"
 #ifdef __cpp_exceptions
 #include "RaylibException.hpp"
 #endif
 
 #include <cstddef>
-#include <string>
 #include <filesystem>
 #include <span>
+#include <string>
 
 namespace raylib {
 
@@ -28,7 +28,7 @@ using RayWaveSamples = RayArrayHolder<float, RayWaveSamplesDeleter>;
  * Wave type, defines audio wave data
  */
 class Wave {
- public:
+public:
     static constexpr int DefaultFormatChannels = 2;
 
     constexpr explicit Wave() = default;
@@ -46,11 +46,12 @@ class Wave {
 
     [[deprecated("Use Wave(wave)")]]
     constexpr explicit Wave(
-            unsigned int frameCount,
-            unsigned int sampleRate = 0,
-            unsigned int sampleSize = 0,
-            unsigned int channels = 0,
-            owner<void*> data = nullptr) : m_data{frameCount, sampleRate, sampleSize, channels, data} {
+        unsigned int frameCount,
+        unsigned int sampleRate = 0,
+        unsigned int sampleSize = 0,
+        unsigned int channels = 0,
+        owner<void*> data = nullptr)
+        : m_data{frameCount, sampleRate, sampleSize, channels, data} {
         // Nothing.
     }
 
@@ -59,21 +60,15 @@ class Wave {
      *
      * @throws raylib::RaylibException Throws if the Wave failed to load.
      */
-    Wave(czstring fileName) RAYLIB_CPP_THROWS {
-        Load(fileName);
-    }
-    Wave(const std::filesystem::path& fileName) RAYLIB_CPP_THROWS {
-        Load(fileName);
-    }
+    Wave(czstring fileName) RAYLIB_CPP_THROWS { Load(fileName); }
+    Wave(const std::filesystem::path& fileName) RAYLIB_CPP_THROWS { Load(fileName); }
 
     /**
      * Load wave from memory buffer, fileType refers to extension: i.e. "wav"
      *
      * @throws raylib::RaylibException Throws if the Wave failed to load.
      */
-    Wave(czstring fileType, std::span<const unsigned char> fileData) RAYLIB_CPP_THROWS {
-        Load(fileType, fileData);
-    }
+    Wave(czstring fileType, std::span<const unsigned char> fileData) RAYLIB_CPP_THROWS { Load(fileType, fileData); }
     Wave(const std::string& fileType, std::span<const unsigned char> fileData) RAYLIB_CPP_THROWS {
         Load(fileType, fileData);
     }
@@ -104,9 +99,7 @@ class Wave {
     /**
      * Unload wave data
      */
-    ~Wave() noexcept {
-        Unload();
-    }
+    ~Wave() noexcept { Unload(); }
 
     Wave& operator=(const ::Wave& wave) = delete;
     Wave& operator=(::Wave&& wave) noexcept {
@@ -155,25 +148,19 @@ class Wave {
         return *this;
     }
 
-    explicit operator ::Wave() const noexcept {
-        return m_data;
-    }
-    [[nodiscard]] ::Wave c_raylib() const & noexcept {
-        return m_data;
-    }
+    explicit operator ::Wave() const noexcept { return m_data; }
+    [[nodiscard]] ::Wave c_raylib() const& noexcept { return m_data; }
 
     GETTER(unsigned int, FrameCount, m_data.frameCount)
     GETTER(unsigned int, SampleRate, m_data.sampleRate)
     GETTER(unsigned int, SampleSize, m_data.sampleSize)
     GETTER(unsigned int, Channels, m_data.channels)
-    CONST_GETTER(void *, Data, m_data.data)
+    CONST_GETTER(void*, Data, m_data.data)
 
     /**
      * Copy a wave to a new wave
      */
-    [[nodiscard]] Wave Copy() const {
-        return Wave{::WaveCopy(m_data)};
-    }
+    [[nodiscard]] Wave Copy() const { return Wave{::WaveCopy(m_data)}; }
 
     /**
      * Crop a wave to defined samples range
@@ -196,13 +183,15 @@ class Wave {
      */
     RayWaveSamples LoadSamples() {
         /// @NOTE: assume allocated size
-        return RayWaveSamples{::LoadWaveSamples(m_data), static_cast<unsigned long>(m_data.frameCount*m_data.channels)*sizeof(float)};
+        return RayWaveSamples{
+            ::LoadWaveSamples(m_data),
+            static_cast<unsigned long>(m_data.frameCount * m_data.channels) * sizeof(float)};
     }
 
     /**
      * Unload samples data loaded with LoadWaveSamples()
      */
-    static void UnloadSamples(float *samples) {
+    static void UnloadSamples(float* samples) {
         assert(samples != nullptr);
         ::UnloadWaveSamples(samples);
     }
@@ -245,9 +234,7 @@ class Wave {
     /**
      * Load sound from wave data
      */
-    [[nodiscard]] raylib::Sound LoadSound() const {
-        return raylib::Sound{::LoadSoundFromWave(m_data)};
-    }
+    [[nodiscard]] raylib::Sound LoadSound() const { return raylib::Sound{::LoadSoundFromWave(m_data)}; }
 
     /**
      * Load sound from wave data
@@ -266,7 +253,8 @@ class Wave {
     RAYLIB_CPP_EXPECTED_RESULT_VOID Load(czstring fileName) RAYLIB_CPP_THROWS {
         set(::LoadWave(fileName));
         if (!IsReady()) {
-            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError(::TextFormat("Failed to load Wave from file: %s", fileName)));
+            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(
+                RaylibError(::TextFormat("Failed to load Wave from file: %s", fileName)));
         }
         RAYLIB_CPP_RETURN_EXPECTED();
     }
@@ -283,7 +271,8 @@ class Wave {
         assert(std::cmp_less_equal(fileData.size(), std::numeric_limits<int>::max()));
         set(::LoadWaveFromMemory(fileType, fileData.data(), static_cast<int>(fileData.size())));
         if (!IsReady()) {
-            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError(::TextFormat("Failed to load Wave from file data of type: %s", fileType)));
+            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(
+                RaylibError(::TextFormat("Failed to load Wave from file data of type: %s", fileType)));
         }
         RAYLIB_CPP_RETURN_EXPECTED();
     }
@@ -296,11 +285,8 @@ class Wave {
      *
      * @return True or false depending on whether the wave data has been loaded.
      */
-    [[nodiscard]] bool IsReady() const {
-        return ::IsWaveReady(m_data);
-    }
-
- protected:
+    [[nodiscard]] bool IsReady() const { return ::IsWaveReady(m_data); }
+protected:
     constexpr void set(const ::Wave& wave) noexcept {
         m_data.frameCount = wave.frameCount;
         m_data.sampleRate = wave.sampleRate;
@@ -309,17 +295,11 @@ class Wave {
         m_data.data = wave.data;
     }
 
-    ::Wave m_data{
-        .frameCount = 0,
-        .sampleRate = 0,
-        .sampleSize = 0,
-        .channels = 0,
-        .data = nullptr
-    };
+    ::Wave m_data{.frameCount = 0, .sampleRate = 0, .sampleSize = 0, .channels = 0, .data = nullptr};
 };
 
-}  // namespace raylib
+} // namespace raylib
 
 using RWave = raylib::Wave;
 
-#endif  // RAYLIB_CPP_INCLUDE_WAVE_HPP_
+#endif // RAYLIB_CPP_INCLUDE_WAVE_HPP_

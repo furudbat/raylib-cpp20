@@ -1,59 +1,59 @@
-#include "raylib-cpp.hpp"
 #include "raylib-assert.h"
-#include <string>
-#include <vector>
-#include <filesystem>
+#include "raylib-cpp.hpp"
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
+#include <filesystem>
+#include <string>
+#include <vector>
 
 
-template <typename T>
-concept CanPassByValue = std::is_trivially_copyable_v<T> && (sizeof(T) <= 2U*sizeof(void*) || sizeof(T) <= 8);
+template<typename T>
+concept CanPassByValue = std::is_trivially_copyable_v<T> && (sizeof(T) <= 2U * sizeof(void*) || sizeof(T) <= 8);
 
 TEST_CASE("can pass raylib struct by value", "[core]") {
     STATIC_REQUIRE(CanPassByValue<::Vector2>);
     STATIC_REQUIRE(CanPassByValue<::Vector3>);
     STATIC_REQUIRE(CanPassByValue<::Vector4>);
-    //STATIC_REQUIRE(CanPassByValue<::Matrix>);
+    // STATIC_REQUIRE(CanPassByValue<::Matrix>);
     STATIC_REQUIRE(CanPassByValue<::Color>);
     STATIC_REQUIRE(CanPassByValue<::Rectangle>);
 
-    //STATIC_REQUIRE(CanPassByValue<::Image>);
-    //STATIC_REQUIRE(CanPassByValue<::Texture>);
-    //STATIC_REQUIRE(CanPassByValue<::Texture2D>);
-    //STATIC_REQUIRE(CanPassByValue<::Font>);
+    // STATIC_REQUIRE(CanPassByValue<::Image>);
+    // STATIC_REQUIRE(CanPassByValue<::Texture>);
+    // STATIC_REQUIRE(CanPassByValue<::Texture2D>);
+    // STATIC_REQUIRE(CanPassByValue<::Font>);
 
-    //STATIC_REQUIRE(CanPassByValue<::Camera3D>);
-    //STATIC_REQUIRE(CanPassByValue<::Camera>);
+    // STATIC_REQUIRE(CanPassByValue<::Camera3D>);
+    // STATIC_REQUIRE(CanPassByValue<::Camera>);
 
-    //STATIC_REQUIRE(CanPassByValue<::Camera2D>);
+    // STATIC_REQUIRE(CanPassByValue<::Camera2D>);
     STATIC_REQUIRE(CanPassByValue<::Shader>);
-    //STATIC_REQUIRE(CanPassByValue<::MaterialMap>);
-    //STATIC_REQUIRE(CanPassByValue<::Material>);
-    //STATIC_REQUIRE(CanPassByValue<::Transform>);
-    //STATIC_REQUIRE(CanPassByValue<::BoneInfo>);
-    //STATIC_REQUIRE(CanPassByValue<::Model>);
-    //STATIC_REQUIRE(CanPassByValue<::ModelAnimation>);
-    //STATIC_REQUIRE(CanPassByValue<::Ray>);
-    //STATIC_REQUIRE(CanPassByValue<::RayCollision>);
-    //STATIC_REQUIRE(CanPassByValue<::BoundingBox>);
+    // STATIC_REQUIRE(CanPassByValue<::MaterialMap>);
+    // STATIC_REQUIRE(CanPassByValue<::Material>);
+    // STATIC_REQUIRE(CanPassByValue<::Transform>);
+    // STATIC_REQUIRE(CanPassByValue<::BoneInfo>);
+    // STATIC_REQUIRE(CanPassByValue<::Model>);
+    // STATIC_REQUIRE(CanPassByValue<::ModelAnimation>);
+    // STATIC_REQUIRE(CanPassByValue<::Ray>);
+    // STATIC_REQUIRE(CanPassByValue<::RayCollision>);
+    // STATIC_REQUIRE(CanPassByValue<::BoundingBox>);
 
-    //STATIC_REQUIRE(CanPassByValue<::Wave>);
-    //STATIC_REQUIRE(CanPassByValue<::AudioStream>);
-    //STATIC_REQUIRE(CanPassByValue<::Sound>);
-    //STATIC_REQUIRE(CanPassByValue<::Music>);
+    // STATIC_REQUIRE(CanPassByValue<::Wave>);
+    // STATIC_REQUIRE(CanPassByValue<::AudioStream>);
+    // STATIC_REQUIRE(CanPassByValue<::Sound>);
+    // STATIC_REQUIRE(CanPassByValue<::Music>);
 
-    //STATIC_REQUIRE(CanPassByValue<::VrDeviceInfo>);
-    //STATIC_REQUIRE(CanPassByValue<::VrStereoConfig>);
+    // STATIC_REQUIRE(CanPassByValue<::VrDeviceInfo>);
+    // STATIC_REQUIRE(CanPassByValue<::VrStereoConfig>);
 
     STATIC_REQUIRE(CanPassByValue<::FilePathList>);
 
-    //STATIC_REQUIRE(CanPassByValue<::AutomationEvent>);
-    //STATIC_REQUIRE(CanPassByValue<::AutomationEventList>);
+    // STATIC_REQUIRE(CanPassByValue<::AutomationEvent>);
+    // STATIC_REQUIRE(CanPassByValue<::AutomationEventList>);
 }
 
 /// @TODO: split into more test cases
-TEST_CASE( "Vector", "[core]" ) {
+TEST_CASE("Vector", "[core]") {
     raylib::Vector2 position({.x = 50, .y = 100});
     REQUIRE(position.GetX() == position.x);
     position.x = 150;
@@ -79,8 +79,8 @@ TEST_CASE( "Vector", "[core]" ) {
     REQUIRE(doublesize.x == 100);
 }
 
-TEST_CASE( "Color", "[core]" ) {
-    raylib::Color color {RED};
+TEST_CASE("Color", "[core]") {
+    raylib::Color color{RED};
     REQUIRE(color.ToInt() == ::ColorToInt(RED));
 
     color = RAYWHITE;
@@ -88,106 +88,103 @@ TEST_CASE( "Color", "[core]" ) {
     REQUIRE(color.r == raylibColor.r);
 }
 
-TEST_CASE( "Math", "[core]" ) {
+TEST_CASE("Math", "[core]") {
     raylib::Vector2 direction({.x = 50, .y = 50});
     raylib::Vector2 newDirection = direction.Rotate(30);
     REQUIRE(static_cast<int>(newDirection.x) == 57);
 }
 
-TEST_CASE( "Image", "[image]" ) {
+TEST_CASE("Image", "[image]") {
     // Get a path to where the executable is so file loading is relative.
-    //std::string path = (argc > 0) ? GetDirectoryPath(argv[0]) : 0;
+    // std::string path = (argc > 0) ? GetDirectoryPath(argv[0]) : 0;
 
     SECTION("Loading") {
         raylib::Image image("resources/feynman.png");
         REQUIRE(image.IsReady());
 
         SECTION("Chaining") {
-            image.Crop(100, 100)
-                .Resize(50, 50);
+            image.Crop(100, 100).Resize(50, 50);
             REQUIRE(image.GetWidth() == 50);
             REQUIRE(image.GetHeight() == 50);
         }
     }
 }
 
-TEST_CASE( "Keyboard", "[core]" ) {
+TEST_CASE("Keyboard", "[core]") {
     REQUIRE(!raylib::Keyboard::IsKeyPressed(KEY_MINUS));
 }
 
 
-TEST_CASE( "raylib::LoadDirectoryFiles", "[core][raylib-cpp]" ) {
+TEST_CASE("raylib::LoadDirectoryFiles", "[core][raylib-cpp]") {
     auto files = raylib::LoadDirectoryFiles(::GetWorkingDirectory());
     REQUIRE(files.size() > 3);
 }
 
-TEST_CASE( "raylib::TextReplace", "[core][raylib-cpp]" ) {
+TEST_CASE("raylib::TextReplace", "[core][raylib-cpp]") {
     std::string input = "Hello World!";
     std::string output = raylib::TextReplace(input, "World", "Moon");
     REQUIRE(output == "Hello Moon!");
 }
 
-TEST_CASE( "raylib::TextInsert", "[core][raylib-cpp]" ) {
+TEST_CASE("raylib::TextInsert", "[core][raylib-cpp]") {
     std::string input = "Hello World!";
     std::string output = raylib::TextInsert(input, "Good!", 0);
     REQUIRE(output == "Good! World!");
 }
 
-TEST_CASE( "raylib::TextSubtext", "[core][raylib-cpp]" ) {
+TEST_CASE("raylib::TextSubtext", "[core][raylib-cpp]") {
     std::string input = "Hello World!";
     std::string output = raylib::TextSubtext(input, 6, 5);
     REQUIRE(output == "World");
 }
 
-TEST_CASE( "raylib::TextSplit", "[core][raylib-cpp]" ) {
+TEST_CASE("raylib::TextSplit", "[core][raylib-cpp]") {
     std::vector<std::string> output = raylib::TextSplit("Hello|How|Are|You", '|');
     REQUIRE(output.size() == 4);
     REQUIRE(output[1] == "How");
 }
 
-TEST_CASE( "Wave", "[audio]" ) {
+TEST_CASE("Wave", "[audio]") {
     // Get a path to where the executable is so file loading is relative.
-    //std::string path = (argc > 0) ? GetDirectoryPath(argv[0]) : 0;
+    // std::string path = (argc > 0) ? GetDirectoryPath(argv[0]) : 0;
 
     raylib::Wave wave("resources/weird.wav");
     REQUIRE(wave.IsReady()); // "Expected wave to be loaded correctly"
 }
 
-TEST_CASE( "Texture", "[texture]" ) {
-    REQUIRE_THROWS([](){
-        raylib::Texture texture("notfound.png");
-    }());
+TEST_CASE("Texture", "[texture]") {
+    REQUIRE_THROWS([]() { raylib::Texture texture("notfound.png"); }());
 }
 
-TEST_CASE( "FileData", "[file]" ) {
+TEST_CASE("FileData", "[file]") {
     // Get a path to where the executable is so file loading is relative.
-    //std::string path = (argc > 0) ? GetDirectoryPath(argv[0]) : 0;
+    // std::string path = (argc > 0) ? GetDirectoryPath(argv[0]) : 0;
 
-    SECTION ("load file") {
+    SECTION("load file") {
         raylib::FileData file("resources/weird.wav");
         REQUIRE(file.GetBytesRead() > 0); // "Expected wave to be loaded correctly"
         REQUIRE(file.GetData() != nullptr);
     }
 
-    SECTION ("file not found") {
+    SECTION("file not found") {
         raylib::FileData file("notfound.png");
         REQUIRE(file.GetBytesRead() == 0);
         REQUIRE(file.GetData() == nullptr);
     }
 }
 
-TEST_CASE( "FileText", "[file]" ) {
+TEST_CASE("FileText", "[file]") {
     // Get a path to where the executable is so file loading is relative.
-    //std::string path = (argc > 0) ? GetDirectoryPath(argv[0]) : 0;
+    // std::string path = (argc > 0) ? GetDirectoryPath(argv[0]) : 0;
 
-    SECTION ("load file") {
+    SECTION("load file") {
         raylib::FileText file("resources/lorem.txt");
         REQUIRE(file.GetLength() > 0); // "Expected wave to be loaded correctly"
         REQUIRE(file.GetData() != nullptr);
         REQUIRE(file.ToStringView().substr(0, 5) == "Lorem");
     }
 
-    SECTION ("file not found") {
+    SECTION("file not found") {
         raylib::FileText file("notfound.png");
         REQUIRE(file.GetLength() == 0);
         REQUIRE(file.GetData() == nullptr);

@@ -1,25 +1,24 @@
 /*******************************************************************************************
-*
-*   raylib [textures] example - Load textures from raw data
-*
-*   NOTE: Images are loaded in CPU memory (RAM); textures are loaded in GPU memory (VRAM)
-*
-*   Example originally created with raylib 1.3, last time updated with raylib 3.5
-*
-*   Example licensed under an unmodified zlib/libpng license, which is an OSI-certified,
-*   BSD-like license that allows static linking with closed source software
-*
-*   Copyright (c) 2015-2024 Ramon Santamaria (@raysan5)
-*
-********************************************************************************************/
+ *
+ *   raylib [textures] example - Load textures from raw data
+ *
+ *   NOTE: Images are loaded in CPU memory (RAM); textures are loaded in GPU memory (VRAM)
+ *
+ *   Example originally created with raylib 1.3, last time updated with raylib 3.5
+ *
+ *   Example licensed under an unmodified zlib/libpng license, which is an OSI-certified,
+ *   BSD-like license that allows static linking with closed source software
+ *
+ *   Copyright (c) 2015-2024 Ramon Santamaria (@raysan5)
+ *
+ ********************************************************************************************/
 
 #include "raylib-cpp.hpp"
 
 //------------------------------------------------------------------------------------
 // Program main entry point
 //------------------------------------------------------------------------------------
-int main()
-{
+int main() {
     // Initialization
     //--------------------------------------------------------------------------------------
     constexpr int screenWidth = 800;
@@ -30,45 +29,49 @@ int main()
     // NOTE: Textures MUST be loaded after Window initialization (OpenGL context is required)
 
     // Load RAW image data (512x512, 32bit RGBA, no file header)
-    raylib::Texture2D fudesumi = [](){
+    raylib::Texture2D fudesumi = []()
+    {
         //raylib::Image fudesumiRaw ("resources/fudesumi.raw", 384, 512, raylib::PixelFormat::UncompressedR8G8B8A8, 0);
-        raylib::Image fudesumiRaw ("resources/fudesumi.raw", { .width = 384, .height = 512, .format = raylib::PixelFormat::UncompressedR8G8B8A8, .headerSize = 0 });
-        return raylib::Texture2D(fudesumiRaw);  // Upload CPU (RAM) image to GPU (VRAM)
+        raylib::Image fudesumiRaw(
+            "resources/fudesumi.raw",
+            {.width = 384, .height = 512, .format = raylib::PixelFormat::UncompressedR8G8B8A8, .headerSize = 0});
+        return raylib::Texture2D(fudesumiRaw); // Upload CPU (RAM) image to GPU (VRAM)
     }();
 
-    raylib::Texture2D checked = [](){
+    raylib::Texture2D checked = []()
+    {
         // Generate a checked texture by code
         const size_t width = 960;
         const size_t height = 480;
         // Dynamic memory allocation to store pixels data (Color type)
-        auto pixels = raylib::make_RayUniquePtrArray<::Color>(width*height);
+        auto pixels = raylib::make_RayUniquePtrArray<::Color>(width * height);
 
-        for (size_t y = 0; y < height; y++)
-        {
-            for (size_t x = 0; x < width; x++)
-            {
-                if (((x/32+y/32)/1)%2 == 0) pixels[y*width + x] = ORANGE;
-                else pixels[y*width + x] = GOLD;
+        for (size_t y = 0; y < height; y++) {
+            for (size_t x = 0; x < width; x++) {
+                if (((x / 32 + y / 32) / 1) % 2 == 0)
+                    pixels[y * width + x] = ORANGE;
+                else
+                    pixels[y * width + x] = GOLD;
             }
         }
 
         // Load pixels data into an image structure and create texture
-        raylib::Image checkedIm (::Image{
-                .data = pixels.release(),             // We can assign pixels directly to data
-                .width = width,
-                .height = height,
-                .mipmaps = 1,
-                .format = PIXELFORMAT_UNCOMPRESSED_R8G8B8A8,
+        raylib::Image checkedIm(::Image{
+            .data = pixels.release(), // We can assign pixels directly to data
+            .width = width,
+            .height = height,
+            .mipmaps = 1,
+            .format = PIXELFORMAT_UNCOMPRESSED_R8G8B8A8,
         });
         // pixels has been moved into image
 
         return raylib::Texture2D(checkedIm);
     }();
     //---------------------------------------------------------------------------------------
-    //assert(checked.IsReady());
+    // assert(checked.IsReady());
 
     // Main game loop
-    while (!WindowShouldClose())    // Detect window close button or ESC key
+    while (!WindowShouldClose()) // Detect window close button or ESC key
     {
         // Update
         //----------------------------------------------------------------------------------
@@ -81,7 +84,10 @@ int main()
 
         ClearBackground(RAYWHITE);
 
-        checked.Draw(screenWidth/2 - checked.GetWidth()/2, screenHeight/2 - checked.GetHeight()/2, Fade(WHITE, 0.5f));
+        checked.Draw(
+            screenWidth / 2 - checked.GetWidth() / 2,
+            screenHeight / 2 - checked.GetHeight() / 2,
+            Fade(WHITE, 0.5f));
         fudesumi.Draw(430, -30, WHITE);
 
         DrawText("CHECKED TEXTURE ", 84, 85, 30, BROWN);
@@ -99,7 +105,7 @@ int main()
     //UnloadTexture(fudesumi);    // Texture unloading
     //UnloadTexture(checked);     // Texture unloading
 
-    CloseWindow();              // Close window and OpenGL context
+    CloseWindow(); // Close window and OpenGL context
     //--------------------------------------------------------------------------------------
 
     return 0;

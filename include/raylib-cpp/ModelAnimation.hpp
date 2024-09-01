@@ -2,18 +2,18 @@
 #define RAYLIB_CPP_INCLUDE_MODELANIMATION_HPP_
 
 
-#include "raylib.hpp"
-#include "raylib-cpp-utils.hpp"
 #include "Mesh.hpp"
+#include "raylib-cpp-utils.hpp"
+#include "raylib.hpp"
 
-#include <vector>
-#include <string>
 #include <filesystem>
+#include <string>
+#include <vector>
 #if defined(__has_include) && __has_include(<version>)
 #include <version>
 #ifdef __cpp_lib_mdspan
-#include <mdspan>
 #include <bit>
+#include <mdspan>
 #endif
 #endif
 
@@ -22,7 +22,7 @@ namespace raylib {
  * Model animation
  */
 class ModelAnimation {
- public:
+public:
     constexpr ModelAnimation(const ::ModelAnimation&) = delete;
     constexpr ModelAnimation(::ModelAnimation&& model) noexcept {
         set(model);
@@ -43,9 +43,7 @@ class ModelAnimation {
         other.m_data.framePoses = nullptr;
     }
 
-    ~ModelAnimation() {
-        Unload();
-    }
+    ~ModelAnimation() { Unload(); }
 
     constexpr ModelAnimation& operator=(const ::ModelAnimation& model) = delete;
     constexpr ModelAnimation& operator=(::ModelAnimation&& model) noexcept {
@@ -70,12 +68,8 @@ class ModelAnimation {
         return *this;
     }
 
-    explicit operator ::ModelAnimation() const {
-        return m_data;
-    }
-    [[nodiscard]] ::ModelAnimation c_raylib() const & {
-        return m_data;
-    }
+    explicit operator ::ModelAnimation() const { return m_data; }
+    [[nodiscard]] ::ModelAnimation c_raylib() const& { return m_data; }
 
     GETTER(int, BoneCount, m_data.boneCount)
     SPAN_GETTER(::BoneInfo, Bones, m_data.bones, m_data.boneCount)
@@ -91,13 +85,19 @@ public:
         assert(std::cmp_less(index, m_data.frameCount));
         assert(m_data.frameCount >= 0);
         assert(m_data.boneCount >= 0);
-        return {std::bit_cast<Transform*>(m_data.framePoses), static_cast<size_t>(m_data.frameCount), static_cast<size_t>(m_data.boneCount)};
+        return {
+            std::bit_cast<Transform*>(m_data.framePoses),
+            static_cast<size_t>(m_data.frameCount),
+            static_cast<size_t>(m_data.boneCount)};
     }
     [[nodiscard]] constexpr ConstTransformMdspan GetFramePose(size_t index) const {
         assert(std::cmp_less(index, m_data.frameCount));
         assert(m_data.frameCount >= 0);
         assert(m_data.boneCount >= 0);
-        return {std::bit_cast<const Transform*>(m_data.framePoses), static_cast<size_t>(m_data.frameCount), static_cast<size_t>(m_data.boneCount)};
+        return {
+            std::bit_cast<const Transform*>(m_data.framePoses),
+            static_cast<size_t>(m_data.frameCount),
+            static_cast<size_t>(m_data.boneCount)};
     }
 #endif
 
@@ -154,23 +154,18 @@ public:
     /**
      * Unload animation data
      */
-    void Unload() noexcept {
-        ::UnloadModelAnimation(m_data);
-    }
+    void Unload() noexcept { ::UnloadModelAnimation(m_data); }
 
     /**
      * Check model animation skeleton match
      */
-    [[nodiscard]] bool IsValid(const ::Model& model) const {
-        return ::IsModelAnimationValid(model, m_data);
-    }
+    [[nodiscard]] bool IsValid(const ::Model& model) const { return ::IsModelAnimationValid(model, m_data); }
     /*
     [[nodiscard]] bool IsValid(const raylib::Model& model) const {
         return IsValid(model.c_raylib());
     }
     */
-
- protected:
+protected:
     constexpr void set(const ::ModelAnimation& model) noexcept {
         m_data.boneCount = model.boneCount;
         m_data.frameCount = model.frameCount;
@@ -185,8 +180,8 @@ public:
 
     ::ModelAnimation m_data;
 };
-}  // namespace raylib
+} // namespace raylib
 
 using RModelAnimation = raylib::ModelAnimation;
 
-#endif  // RAYLIB_CPP_INCLUDE_MODELANIMATION_HPP_
+#endif // RAYLIB_CPP_INCLUDE_MODELANIMATION_HPP_

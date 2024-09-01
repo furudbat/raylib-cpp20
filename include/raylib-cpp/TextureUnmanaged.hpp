@@ -4,9 +4,9 @@
 #include "raylib.hpp"
 
 #include "Image.hpp"
+#include "RaylibError.hpp"
 #include "Vector2.hpp"
 #include "raylib-cpp-utils.hpp"
-#include "RaylibError.hpp"
 #ifdef __cpp_exceptions
 #include "RaylibException.hpp"
 #endif
@@ -25,7 +25,7 @@ class Model;
  * @see raylib::Texture
  */
 class TextureUnmanaged {
- public:
+public:
     static constexpr int DefaultDrawPosX = 0;
     static constexpr int DefaultDrawPosY = 0;
     static constexpr ::Color DefaultDrawTintColor = WHITE;
@@ -42,26 +42,25 @@ class TextureUnmanaged {
     /**
      * Move/Create a texture structure manually.
      */
-    constexpr TextureUnmanaged(unsigned int id,
-            int width, int height,
-            int mipmaps = 1,
-            int format = PIXELFORMAT_UNCOMPRESSED_R8G8B8A8)
-            : m_data{id, width, height, mipmaps, format} {
+    constexpr TextureUnmanaged(
+        unsigned int id,
+        int width,
+        int height,
+        int mipmaps = 1,
+        int format = PIXELFORMAT_UNCOMPRESSED_R8G8B8A8)
+        : m_data{id, width, height, mipmaps, format} {
         // Nothing.
     }
-    constexpr TextureUnmanaged(unsigned int id,
-                      int width, int height,
-                      int mipmaps,
-                      PixelFormat format)
-            : m_data{id, width, height, mipmaps, static_cast<int>(format)} {
+    constexpr TextureUnmanaged(unsigned int id, int width, int height, int mipmaps, PixelFormat format)
+        : m_data{id, width, height, mipmaps, static_cast<int>(format)} {
         // Nothing.
     }
 
     /**
      * Creates a texture object based on the given Texture struct data.
      */
-    explicit constexpr TextureUnmanaged(const ::Texture& texture) :
-            m_data{texture.id, texture.width, texture.height, texture.mipmaps, texture.format} {
+    explicit constexpr TextureUnmanaged(const ::Texture& texture)
+        : m_data{texture.id, texture.width, texture.height, texture.mipmaps, texture.format} {
         // Nothing.
     }
 
@@ -70,12 +69,8 @@ class TextureUnmanaged {
         return *this;
     }
 
-    explicit operator ::Texture() const {
-        return m_data;
-    }
-    [[nodiscard]] ::Texture c_raylib() const & {
-        return m_data;
-    }
+    explicit operator ::Texture() const { return m_data; }
+    [[nodiscard]] ::Texture c_raylib() const& { return m_data; }
 
     GETTER(unsigned int, Id, m_data.id)
     GETTER(int, Width, m_data.width)
@@ -100,7 +95,7 @@ class TextureUnmanaged {
      */
     template<typename T>
     /// @TODO: make T integral (?) ... short, unsigned char, ... ???
-    TextureUnmanaged& Update(const T *pixels) {
+    TextureUnmanaged& Update(const T* pixels) {
         ::UpdateTexture(m_data, pixels);
         return *this;
     }
@@ -110,7 +105,7 @@ class TextureUnmanaged {
      */
     template<typename T>
     /// @TODO: make T integral (?) ... short, unsigned char, ... ???
-    TextureUnmanaged& Update(::Rectangle rec, const T *pixels) {
+    TextureUnmanaged& Update(::Rectangle rec, const T* pixels) {
         ::UpdateTextureRec(m_data, rec, pixels);
         return *this;
     }
@@ -118,16 +113,12 @@ class TextureUnmanaged {
     /**
      * Get pixel data from GPU texture and return an Image
      */
-    [[nodiscard]] Image GetData() const {
-        return Image{::LoadImageFromTexture(m_data)};
-    }
+    [[nodiscard]] Image GetData() const { return Image{::LoadImageFromTexture(m_data)}; }
 
     /**
      * Get pixel data from GPU texture and return an Image
      */
-    explicit operator raylib::Image() const {
-        return GetData();
-    }
+    explicit operator raylib::Image() const { return GetData(); }
 
     /**
      * Set texture scaling filter mode
@@ -169,17 +160,15 @@ class TextureUnmanaged {
      *
      * @see ::DrawTextureV()
      */
-    void Draw(::Vector2 position, ::Color tint = DefaultDrawTintColor) const {
-        ::DrawTextureV(m_data, position, tint);
-    }
+    void Draw(::Vector2 position, ::Color tint = DefaultDrawTintColor) const { ::DrawTextureV(m_data, position, tint); }
 
     /**
      * Draw a Texture2D with extended parameters
      *
      * @see ::DrawTextureEx()
      */
-    void Draw(::Vector2 position, float rotation, float scale = DefaultDrawScale,
-            ::Color tint = DefaultDrawTintColor) const {
+    void Draw(::Vector2 position, float rotation, float scale = DefaultDrawScale, ::Color tint = DefaultDrawTintColor)
+        const {
         ::DrawTextureEx(m_data, position, rotation, scale, tint);
     }
 
@@ -188,8 +177,8 @@ class TextureUnmanaged {
      *
      * @see ::DrawTextureRec()
      */
-    void Draw(::Rectangle sourceRec, ::Vector2 position = DefaultDrawPosition,
-            ::Color tint = DefaultDrawTintColor) const {
+    void
+    Draw(::Rectangle sourceRec, ::Vector2 position = DefaultDrawPosition, ::Color tint = DefaultDrawTintColor) const {
         ::DrawTextureRec(m_data, sourceRec, position, tint);
     }
 
@@ -198,8 +187,12 @@ class TextureUnmanaged {
      *
      * @see ::DrawTexturePro()
      */
-    void Draw(::Rectangle sourceRec, ::Rectangle destRec, ::Vector2 origin = DefaultDrawOrigin,
-            float rotation = DefaultDrawRotation, ::Color tint = DefaultDrawTintColor) const {
+    void Draw(
+        ::Rectangle sourceRec,
+        ::Rectangle destRec,
+        ::Vector2 origin = DefaultDrawOrigin,
+        float rotation = DefaultDrawRotation,
+        ::Color tint = DefaultDrawTintColor) const {
         ::DrawTexturePro(m_data, sourceRec, destRec, origin, rotation, tint);
     }
 
@@ -208,8 +201,12 @@ class TextureUnmanaged {
      *
      * @see ::DrawTextureNPatch()
      */
-    void Draw(::NPatchInfo nPatchInfo, ::Rectangle destRec, ::Vector2 origin = DefaultDrawOrigin,
-            float rotation = DefaultDrawRotation, ::Color tint = DefaultDrawTintColor) const {
+    void Draw(
+        ::NPatchInfo nPatchInfo,
+        ::Rectangle destRec,
+        ::Vector2 origin = DefaultDrawOrigin,
+        float rotation = DefaultDrawRotation,
+        ::Color tint = DefaultDrawTintColor) const {
         ::DrawTextureNPatch(m_data, nPatchInfo, destRec, origin, rotation, tint);
     }
 
@@ -218,9 +215,8 @@ class TextureUnmanaged {
      *
      * @see ::DrawBillboard()
      */
-    void DrawBillboard(const ::Camera& camera,
-            ::Vector3 position, float size,
-            ::Color tint = DefaultDrawTintColor) const {
+    void
+    DrawBillboard(const ::Camera& camera, ::Vector3 position, float size, ::Color tint = DefaultDrawTintColor) const {
         ::DrawBillboard(camera, m_data, position, size, tint);
     }
 
@@ -229,9 +225,12 @@ class TextureUnmanaged {
      *
      * @see ::DrawBillboardRec()
      */
-    void DrawBillboard(const ::Camera& camera,
-            ::Rectangle source, ::Vector3 position, ::Vector2 size,
-            ::Color tint = DefaultDrawTintColor) const {
+    void DrawBillboard(
+        const ::Camera& camera,
+        ::Rectangle source,
+        ::Vector3 position,
+        ::Vector2 size,
+        ::Color tint = DefaultDrawTintColor) const {
         ::DrawBillboardRec(camera, m_data, source, position, size, tint);
     }
 
@@ -240,10 +239,15 @@ class TextureUnmanaged {
      *
      * @see ::DrawBillboardPro()
      */
-    void DrawBillboard(const ::Camera& camera,
-            ::Rectangle source, Vector3 position,
-            ::Vector3 up, Vector2 size, Vector2 origin, float rotation = DefaultDrawRotation,
-            ::Color tint = DefaultDrawTintColor) const {
+    void DrawBillboard(
+        const ::Camera& camera,
+        ::Rectangle source,
+        Vector3 position,
+        ::Vector3 up,
+        Vector2 size,
+        Vector2 origin,
+        float rotation = DefaultDrawRotation,
+        ::Color tint = DefaultDrawTintColor) const {
         ::DrawBillboardPro(camera, m_data, source, position, up, size, origin, rotation, tint);
     }
 
@@ -278,11 +282,8 @@ class TextureUnmanaged {
      *
      * @return True or false depending on whether the Texture has data.
      */
-    [[nodiscard]] bool IsReady() const {
-        return m_data.id != 0;
-    }
-
- protected:
+    [[nodiscard]] bool IsReady() const { return m_data.id != 0; }
+protected:
     constexpr void set(const ::Texture& texture) noexcept {
         m_data.id = texture.id;
         m_data.width = texture.width;
@@ -291,7 +292,7 @@ class TextureUnmanaged {
         m_data.format = texture.format;
     }
 
-    ::Texture m_data {NullTexture};
+    ::Texture m_data{NullTexture};
 
     friend class Texture;
     friend class Model;
@@ -301,10 +302,10 @@ class TextureUnmanaged {
 using Texture2DUnmanaged = TextureUnmanaged;
 using TextureCubemapUnmanaged = TextureUnmanaged;
 
-}  // namespace raylib
+} // namespace raylib
 
 using RTextureUnmanaged = raylib::TextureUnmanaged;
 using RTexture2DUnmanaged = raylib::Texture2DUnmanaged;
 using RTextureCubemapUnmanaged = raylib::TextureCubemapUnmanaged;
 
-#endif  // RAYLIB_CPP_INCLUDE_TEXTUREUNMANAGED_HPP_
+#endif // RAYLIB_CPP_INCLUDE_TEXTUREUNMANAGED_HPP_

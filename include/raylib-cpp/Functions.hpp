@@ -4,9 +4,9 @@
 #ifndef RAYLIB_CPP_INCLUDE_FUNCTIONS_HPP_
 #define RAYLIB_CPP_INCLUDE_FUNCTIONS_HPP_
 
-#include "raylib.hpp"
-#include "raylib-cpp-utils.hpp"
 #include "enums.hpp"
+#include "raylib-cpp-utils.hpp"
+#include "raylib.hpp"
 
 #include <filesystem>
 #include <string>
@@ -21,19 +21,16 @@ class RayDirectoryFilesFilePathList {
 public:
     FilePathList files;
 
-    explicit RayDirectoryFilesFilePathList(const std::filesystem::path& dirPath) : files(::LoadDirectoryFiles(dirPath.c_str())) {}
-    ~RayDirectoryFilesFilePathList() noexcept {
-        ::UnloadDirectoryFiles(files);
-    }
+    explicit RayDirectoryFilesFilePathList(const std::filesystem::path& dirPath)
+        : files(::LoadDirectoryFiles(dirPath.c_str())) {}
+    ~RayDirectoryFilesFilePathList() noexcept { ::UnloadDirectoryFiles(files); }
 };
 class RayDroppedFilesFilePathList {
 public:
     FilePathList files;
 
     RayDroppedFilesFilePathList() : files(::LoadDroppedFiles()) {}
-    ~RayDroppedFilesFilePathList() noexcept {
-        ::UnloadDroppedFiles(files);
-    }
+    ~RayDroppedFilesFilePathList() noexcept { ::UnloadDroppedFiles(files); }
 };
 
 /**
@@ -168,9 +165,12 @@ public:
 /**
  * Get filenames in a directory path
  */
-[[maybe_unused]] RLCPPAPI_INLINE std::vector<std::filesystem::path> LoadDirectoryFiles(const std::filesystem::path& dirPath) {
+[[maybe_unused]] RLCPPAPI_INLINE std::vector<std::filesystem::path>
+LoadDirectoryFiles(const std::filesystem::path& dirPath) {
     auto filesList = RayDirectoryFilesFilePathList(dirPath);
-    return std::vector<std::filesystem::path>(filesList.files.paths, std::next(filesList.files.paths, filesList.files.count));
+    return std::vector<std::filesystem::path>(
+        filesList.files.paths,
+        std::next(filesList.files.paths, filesList.files.count));
 }
 
 /**
@@ -188,13 +188,15 @@ public:
         return {};
     }
     auto filesList = RayDroppedFilesFilePathList();
-    return std::vector<std::filesystem::path>(filesList.files.paths, std::next(filesList.files.paths, filesList.files.count));
+    return std::vector<std::filesystem::path>(
+        filesList.files.paths,
+        std::next(filesList.files.paths, filesList.files.count));
 }
 
 /**
  * Get file modification time (last write time)
  */
-[[maybe_unused]] RLCPPAPI_INLINE  long GetFileModTime(const std::filesystem::path& fileName) { // NOLINT
+[[maybe_unused]] RLCPPAPI_INLINE long GetFileModTime(const std::filesystem::path& fileName) { // NOLINT
     return ::GetFileModTime(fileName.c_str());
 }
 
@@ -206,13 +208,16 @@ public:
 }
 
 
-
-struct LoadImageAnimResult { raylib::Image image; int frames; };
+struct LoadImageAnimResult {
+    raylib::Image image;
+    int frames;
+};
 /**
  * Load animated image data
  */
 #ifdef RAYLIB_CPP_EXPECTED
-[[maybe_unused]] RLCPPAPI_INLINE RAYLIB_CPP_EXPECTED_RESULT(LoadImageAnimResult) LoadImageRaw(const std::filesystem::path& fileName) {
+[[maybe_unused]] RLCPPAPI_INLINE RAYLIB_CPP_EXPECTED_RESULT(LoadImageAnimResult)
+    LoadImageRaw(const std::filesystem::path& fileName) {
     LoadImageAnimResult ret;
     if (auto result = ret.image.LoadAnim(fileName, ret.frames); !result) [[unlikely]] {
         RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(result.error());
@@ -224,7 +229,7 @@ struct LoadImageAnimResult { raylib::Image image; int frames; };
     int frames{0};
     raylib::Image image;
     image.LoadAnim(fileName.c_str(), frames);
-    return { .image = image, .frames = frames };
+    return {.image = image, .frames = frames};
 }
 #endif
 
@@ -232,46 +237,58 @@ struct LoadImageAnimResult { raylib::Image image; int frames; };
 /**
  * Draw text (using default font)
  */
-[[maybe_unused]] RLCPPAPI_INLINE void DrawText(czstring text, int posX, int posY, int fontSize, ::Color color) noexcept {
+[[maybe_unused]] RLCPPAPI_INLINE void
+DrawText(czstring text, int posX, int posY, int fontSize, ::Color color) noexcept {
     ::DrawText(text, posX, posY, fontSize, color);
 }
-[[maybe_unused]] RLCPPAPI_INLINE void DrawText(
-        const std::string& text,
-        int posX, int posY,
-        int fontSize,
-        ::Color color) {
+[[maybe_unused]] RLCPPAPI_INLINE void
+DrawText(const std::string& text, int posX, int posY, int fontSize, ::Color color) {
     ::DrawText(text.c_str(), posX, posY, fontSize, color);
 }
 
 /**
  * Draw text using font and additional parameters
  */
-[[maybe_unused]] RLCPPAPI_INLINE void DrawTextEx(const Font& font, czstring text, ::Vector2 position,
-                                                 float fontSize, float spacing, ::Color tint) {
+[[maybe_unused]] RLCPPAPI_INLINE void
+DrawTextEx(const Font& font, czstring text, ::Vector2 position, float fontSize, float spacing, ::Color tint) {
     ::DrawTextEx(font.c_raylib(), text, position, fontSize, spacing, tint);
 }
 
 /**
  * Draw text using font and additional parameters
  */
-[[maybe_unused]] RLCPPAPI_INLINE void DrawTextEx(const Font& font, const std::string& text, ::Vector2 position,
-        float fontSize, float spacing, ::Color tint) {
+[[maybe_unused]] RLCPPAPI_INLINE void
+DrawTextEx(const Font& font, const std::string& text, ::Vector2 position, float fontSize, float spacing, ::Color tint) {
     ::DrawTextEx(font.c_raylib(), text.c_str(), position, fontSize, spacing, tint);
 }
 
 /**
  * Draw text using Font and pro parameters (rotation)
  */
-[[maybe_unused]] RLCPPAPI_INLINE void DrawTextPro(const Font& font, czstring text, ::Vector2 position,
-        ::Vector2 origin, float rotation, float fontSize, float spacing, ::Color tint) {
+[[maybe_unused]] RLCPPAPI_INLINE void DrawTextPro(
+    const Font& font,
+    czstring text,
+    ::Vector2 position,
+    ::Vector2 origin,
+    float rotation,
+    float fontSize,
+    float spacing,
+    ::Color tint) {
     ::DrawTextPro(font.c_raylib(), text, position, origin, rotation, fontSize, spacing, tint);
 }
 
 /**
  * Draw text using Font and pro parameters (rotation)
  */
-[[maybe_unused]] RLCPPAPI_INLINE void DrawTextPro(const Font& font, const std::string& text, ::Vector2 position,
-        ::Vector2 origin, float rotation, float fontSize, float spacing, ::Color tint) {
+[[maybe_unused]] RLCPPAPI_INLINE void DrawTextPro(
+    const Font& font,
+    const std::string& text,
+    ::Vector2 position,
+    ::Vector2 origin,
+    float rotation,
+    float fontSize,
+    float spacing,
+    ::Color tint) {
     ::DrawTextPro(font.c_raylib(), text.c_str(), position, origin, rotation, fontSize, spacing, tint);
 }
 
@@ -285,7 +302,8 @@ struct LoadImageAnimResult { raylib::Image image; int frames; };
 /**
  * Load font from file (filename must include file extension)
  */
-[[maybe_unused]] RLCPPAPI_INLINE ::Font LoadFontEx(const std::filesystem::path& fileName, int fontSize, std::span<int> fontChars) {
+[[maybe_unused]] RLCPPAPI_INLINE ::Font
+LoadFontEx(const std::filesystem::path& fileName, int fontSize, std::span<int> fontChars) {
     return ::LoadFontEx(fileName.c_str(), fontSize, fontChars.data(), static_cast<int>(fontChars.size()));
 }
 
@@ -341,7 +359,8 @@ struct LoadImageAnimResult { raylib::Image image; int frames; };
 /**
  * Replace text string
  */
-[[maybe_unused]] RLCPPAPI_INLINE std::string TextReplace(const std::string& text, const std::string& replace, const std::string& by) {
+[[maybe_unused]] RLCPPAPI_INLINE std::string
+TextReplace(const std::string& text, const std::string& replace, const std::string& by) {
     const char* input = text.c_str();
     auto output = RayUniquePtr<char>(::TextReplace(const_cast<char*>(input), replace.c_str(), by.c_str()));
     if (output != nullptr) {
@@ -353,7 +372,8 @@ struct LoadImageAnimResult { raylib::Image image; int frames; };
 /**
  * Insert text in a position
  */
-[[maybe_unused]] RLCPPAPI_INLINE std::string TextInsert(const std::string& text, const std::string& insert, int position) {
+[[maybe_unused]] RLCPPAPI_INLINE std::string
+TextInsert(const std::string& text, const std::string& insert, int position) {
     auto output = RayUniquePtr<char>(::TextInsert(text.c_str(), insert.c_str(), position));
     if (output != nullptr) {
         return output.get();
@@ -417,7 +437,8 @@ struct LoadImageAnimResult { raylib::Image image; int frames; };
 
 
 #ifdef RAYLIB_CPP_EXPECTED
-[[maybe_unused]] RLCPPAPI_INLINE RAYLIB_CPP_EXPECTED_RESULT(AutomationEventList) LoadAutomationEventList(const std::filesystem::path& fileName) {
+[[maybe_unused]] RLCPPAPI_INLINE RAYLIB_CPP_EXPECTED_RESULT(AutomationEventList)
+    LoadAutomationEventList(const std::filesystem::path& fileName) {
     AutomationEventList ret;
     if (auto result = ret.Load(fileName); !result) [[unlikely]] {
         RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(result.error());
@@ -430,6 +451,6 @@ struct LoadImageAnimResult { raylib::Image image; int frames; };
     return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::duration<double>{::GetFrameTime()});
 }
 
-}  // namespace raylib
+} // namespace raylib
 
-#endif  // RAYLIB_CPP_INCLUDE_FUNCTIONS_HPP_
+#endif // RAYLIB_CPP_INCLUDE_FUNCTIONS_HPP_

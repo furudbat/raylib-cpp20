@@ -18,15 +18,17 @@ namespace raylib {
  * AutomationEventList management functions
  */
 class AutomationEventList {
- public:
+public:
     static constexpr unsigned int DefaultCapacity = 16384U;
 
     constexpr AutomationEventList() = default;
 
     [[deprecated("Use AutomationEventList(automationEventList)")]]
-    explicit constexpr AutomationEventList(uint32_t capacity,
-                                           uint32_t count = 0,
-                                           owner<AutomationEvent*> events = nullptr) : m_data{capacity, count, events} {
+    explicit constexpr AutomationEventList(
+        uint32_t capacity,
+        uint32_t count = 0,
+        owner<AutomationEvent*> events = nullptr)
+        : m_data{capacity, count, events} {
         // Nothing.
     }
 
@@ -48,20 +50,12 @@ class AutomationEventList {
         other.m_data.events = nullptr;
     }
 
-    ~AutomationEventList() {
-        Unload();
-    }
+    ~AutomationEventList() { Unload(); }
 
-    explicit operator ::AutomationEventList() const {
-        return m_data;
-    }
-    [[nodiscard]] ::AutomationEventList c_raylib() const & {
-        return m_data;
-    }
+    explicit operator ::AutomationEventList() const { return m_data; }
+    [[nodiscard]] ::AutomationEventList c_raylib() const& { return m_data; }
 
-    explicit AutomationEventList(const std::filesystem::path& fileName) RAYLIB_CPP_THROWS {
-        Load(fileName.c_str());
-    }
+    explicit AutomationEventList(const std::filesystem::path& fileName) RAYLIB_CPP_THROWS { Load(fileName.c_str()); }
 
     constexpr AutomationEventList& operator=(const ::AutomationEventList& other) = delete;
     constexpr AutomationEventList& operator=(::AutomationEventList&& other) noexcept {
@@ -119,29 +113,23 @@ class AutomationEventList {
             return;
         }
 
-        // The function signature of UnloadAutomationEventList() changes from raylib 5.0.
-        #if RAYLIB_VERSION_MAJOR == 5
-            #if RAYLIB_VERSION_MINOR == 0
-                ::UnloadAutomationEventList(&m_data);
-            #elif RAYLIB_VERSION_MINOR >= 1
-                ::UnloadAutomationEventList(m_data);
-            #endif
-        #else
-            ::UnloadAutomationEventList(m_data);
-        #endif
+// The function signature of UnloadAutomationEventList() changes from raylib 5.0.
+#if RAYLIB_VERSION_MAJOR == 5
+#if RAYLIB_VERSION_MINOR == 0
+        ::UnloadAutomationEventList(&m_data);
+#elif RAYLIB_VERSION_MINOR >= 1
+        ::UnloadAutomationEventList(m_data);
+#endif
+#else
+        ::UnloadAutomationEventList(m_data);
+#endif
     }
 
-    bool IsReady() {
-        return m_data.events != nullptr;
-    }
+    bool IsReady() { return m_data.events != nullptr; }
 
-    bool Export(const std::filesystem::path& fileName) {
-        return ::ExportAutomationEventList(m_data, fileName.c_str());
-    }
+    bool Export(const std::filesystem::path& fileName) { return ::ExportAutomationEventList(m_data, fileName.c_str()); }
 
-    void Set() {
-        ::SetAutomationEventList(&m_data);
-    }
+    void Set() { ::SetAutomationEventList(&m_data); }
 
     void SetBaseFrame(int frame) {
         Set();
@@ -166,22 +154,21 @@ class AutomationEventList {
         Set();
         ::PlayAutomationEvent(m_data.events[index]);
     }
-
- protected:
+protected:
     constexpr void set(const ::AutomationEventList& other) noexcept {
         m_data.capacity = other.capacity;
         m_data.count = other.count;
         m_data.events = other.events;
     }
 
-    ::AutomationEventList m_data {
+    ::AutomationEventList m_data{
         .capacity = DefaultCapacity,
         .count = 0,
         .events = nullptr,
     };
 };
-}  // namespace raylib
+} // namespace raylib
 
 using RAutomationEventList = raylib::AutomationEventList;
 
-#endif  // RAYLIB_CPP_INCLUDE_AUTOMATIONEVENTLIST_HPP_
+#endif // RAYLIB_CPP_INCLUDE_AUTOMATIONEVENTLIST_HPP_

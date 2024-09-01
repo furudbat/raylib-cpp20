@@ -1,31 +1,31 @@
 /*******************************************************************************************
-*
-*   raylib [shaders] example - deferred rendering
-*
-*   NOTE: This example requires raylib OpenGL 3.3 or OpenGL ES 3.0
-*
-*   Example originally created with raylib 4.5, last time updated with raylib 4.5
-*
-*   Example contributed by Justin Andreas Lacoste (@27justin) and reviewed by Ramon Santamaria (@raysan5)
-*
-*   Example licensed under an unmodified zlib/libpng license, which is an OSI-certified,
-*   BSD-like license that allows static linking with closed source software
-*
-*   Copyright (c) 2023 Justin Andreas Lacoste (@27justin)
-*
-********************************************************************************************/
+ *
+ *   raylib [shaders] example - deferred rendering
+ *
+ *   NOTE: This example requires raylib OpenGL 3.3 or OpenGL ES 3.0
+ *
+ *   Example originally created with raylib 4.5, last time updated with raylib 4.5
+ *
+ *   Example contributed by Justin Andreas Lacoste (@27justin) and reviewed by Ramon Santamaria (@raysan5)
+ *
+ *   Example licensed under an unmodified zlib/libpng license, which is an OSI-certified,
+ *   BSD-like license that allows static linking with closed source software
+ *
+ *   Copyright (c) 2023 Justin Andreas Lacoste (@27justin)
+ *
+ ********************************************************************************************/
 
 #include "raylib-cpp.hpp"
-#include <rlgl.h>
 #include <raymath.h>
+#include <rlgl.h>
 
 #define RLIGHTS_IMPLEMENTATION
 #include "rlights.h"
 
 #if defined(PLATFORM_DESKTOP)
-#define GLSL_VERSION            330
-#else   // PLATFORM_ANDROID, PLATFORM_WEB
-#define GLSL_VERSION            100
+#define GLSL_VERSION 330
+#else // PLATFORM_ANDROID, PLATFORM_WEB
+#define GLSL_VERSION 100
 #endif
 
 #include <cstdlib>
@@ -54,8 +54,7 @@ enum class DeferredMode {
 //------------------------------------------------------------------------------------
 // Program main entry point
 //------------------------------------------------------------------------------------
-int main()
-{
+int main() {
     // Initialization
     // -------------------------------------------------------------------------------------
     constexpr int screenWidth = 800;
@@ -64,29 +63,28 @@ int main()
     InitWindow(screenWidth, screenHeight, "raylib [shaders] example - deferred render");
 
     raylib::Camera camera;
-    camera.position = (Vector3){ 5.0f, 4.0f, 5.0f };    // Camera position
-    camera.target = (Vector3){ 0.0f, 1.0f, 0.0f };      // Camera looking at point
-    camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };          // Camera up vector (rotation towards target)
-    camera.fovy = 60.0f;                                // Camera field-of-view Y
-    camera.projection = CAMERA_PERSPECTIVE;             // Camera projection type
+    camera.position = (Vector3){5.0f, 4.0f, 5.0f}; // Camera position
+    camera.target = (Vector3){0.0f, 1.0f, 0.0f}; // Camera looking at point
+    camera.up = (Vector3){0.0f, 1.0f, 0.0f}; // Camera up vector (rotation towards target)
+    camera.fovy = 60.0f; // Camera field-of-view Y
+    camera.projection = CAMERA_PERSPECTIVE; // Camera projection type
 
     // Load plane model from a generated mesh
-    raylib::Model model (LoadModelFromMesh(GenMeshPlane(10.0f, 10.0f, 3, 3)));
-    raylib::Model cube (LoadModelFromMesh(GenMeshCube(2.0f, 2.0f, 2.0f)));
+    raylib::Model model(LoadModelFromMesh(GenMeshPlane(10.0f, 10.0f, 3, 3)));
+    raylib::Model cube(LoadModelFromMesh(GenMeshCube(2.0f, 2.0f, 2.0f)));
 
     // Load geometry buffer (G-buffer) shader and deferred shader
-    raylib::Shader gbufferShader (LoadShader("resources/shaders/glsl330/gbuffer.vs",
-                                      "resources/shaders/glsl330/gbuffer.fs"));
+    raylib::Shader gbufferShader(
+        LoadShader("resources/shaders/glsl330/gbuffer.vs", "resources/shaders/glsl330/gbuffer.fs"));
 
-    raylib::Shader deferredShader (LoadShader("resources/shaders/glsl330/deferred_shading.vs",
-                                       "resources/shaders/glsl330/deferred_shading.fs"));
+    raylib::Shader deferredShader(
+        LoadShader("resources/shaders/glsl330/deferred_shading.vs", "resources/shaders/glsl330/deferred_shading.fs"));
     deferredShader.SetLocFromLocation(raylib::ShaderLocationIndex::VectorView, "viewPosition");
 
     // Initialize the G-buffer
     GBuffer gBuffer;
     gBuffer.framebuffer = rlLoadFramebuffer(screenWidth, screenHeight);
-    if (!gBuffer.framebuffer)
-    {
+    if (!gBuffer.framebuffer) {
         TraceLog(LOG_WARNING, "Failed to create framebuffer");
         exit(1);
     }
@@ -105,19 +103,38 @@ int main()
     rlActiveDrawBuffers(3);
 
     // Now we attach our textures to the framebuffer.
-    rlFramebufferAttach(gBuffer.framebuffer, gBuffer.positionTexture, RL_ATTACHMENT_COLOR_CHANNEL0, RL_ATTACHMENT_TEXTURE2D, 0);
-    rlFramebufferAttach(gBuffer.framebuffer, gBuffer.normalTexture, RL_ATTACHMENT_COLOR_CHANNEL1, RL_ATTACHMENT_TEXTURE2D, 0);
-    rlFramebufferAttach(gBuffer.framebuffer, gBuffer.albedoSpecTexture, RL_ATTACHMENT_COLOR_CHANNEL2, RL_ATTACHMENT_TEXTURE2D, 0);
+    rlFramebufferAttach(
+        gBuffer.framebuffer,
+        gBuffer.positionTexture,
+        RL_ATTACHMENT_COLOR_CHANNEL0,
+        RL_ATTACHMENT_TEXTURE2D,
+        0);
+    rlFramebufferAttach(
+        gBuffer.framebuffer,
+        gBuffer.normalTexture,
+        RL_ATTACHMENT_COLOR_CHANNEL1,
+        RL_ATTACHMENT_TEXTURE2D,
+        0);
+    rlFramebufferAttach(
+        gBuffer.framebuffer,
+        gBuffer.albedoSpecTexture,
+        RL_ATTACHMENT_COLOR_CHANNEL2,
+        RL_ATTACHMENT_TEXTURE2D,
+        0);
 
     // Finally we attach the depth buffer.
     gBuffer.depthRenderbuffer = rlLoadTextureDepth(screenWidth, screenHeight, true);
-    rlFramebufferAttach(gBuffer.framebuffer, gBuffer.depthRenderbuffer, RL_ATTACHMENT_DEPTH, RL_ATTACHMENT_RENDERBUFFER, 0);
+    rlFramebufferAttach(
+        gBuffer.framebuffer,
+        gBuffer.depthRenderbuffer,
+        RL_ATTACHMENT_DEPTH,
+        RL_ATTACHMENT_RENDERBUFFER,
+        0);
 
     // Make sure our framebuffer is complete.
     // NOTE: rlFramebufferComplete() automatically unbinds the framebuffer, so we don't have
     // to rlDisableFramebuffer() here.
-    if (!rlFramebufferComplete(gBuffer.framebuffer))
-    {
+    if (!rlFramebufferComplete(gBuffer.framebuffer)) {
         TraceLog(LOG_WARNING, "Framebuffer is not complete");
         exit(1);
     }
@@ -139,37 +156,35 @@ int main()
 
     // Create lights
     //--------------------------------------------------------------------------------------
-    std::array<Light, 4> lights {{
-        CreateLight(LIGHT_POINT, Vector3 {-2, 1, -2}, Vector3Zero(), YELLOW, deferredShader.c_raylib()),
-        CreateLight(LIGHT_POINT, Vector3{ 2, 1, 2 }, Vector3Zero(), RED, deferredShader.c_raylib()),
-        CreateLight(LIGHT_POINT, Vector3{ -2, 1, 2 }, Vector3Zero(), GREEN, deferredShader.c_raylib()),
-        CreateLight(LIGHT_POINT, Vector3{ 2, 1, -2 }, Vector3Zero(), BLUE, deferredShader.c_raylib()),
+    std::array<Light, 4> lights{{
+        CreateLight(LIGHT_POINT, Vector3{-2, 1, -2}, Vector3Zero(), YELLOW, deferredShader.c_raylib()),
+        CreateLight(LIGHT_POINT, Vector3{2, 1, 2}, Vector3Zero(), RED, deferredShader.c_raylib()),
+        CreateLight(LIGHT_POINT, Vector3{-2, 1, 2}, Vector3Zero(), GREEN, deferredShader.c_raylib()),
+        CreateLight(LIGHT_POINT, Vector3{2, 1, -2}, Vector3Zero(), BLUE, deferredShader.c_raylib()),
     }};
 
     constexpr float CUBE_SCALE = 0.25;
     std::array<raylib::Vector3, MaxCubes> cubePositions;
     std::array<float, MaxCubes> cubeRotations;
-    for (size_t i = 0; i < cubePositions.size() && i < cubeRotations.size(); i++)
-    {
+    for (size_t i = 0; i < cubePositions.size() && i < cubeRotations.size(); i++) {
         cubePositions[i] = (Vector3){
-                .x = (float)(rand()%10) - 5,
-                .y = (float)(rand()%5),
-                .z = (float)(rand()%10) - 5,
+            .x = (float)(rand() % 10) - 5,
+            .y = (float)(rand() % 5),
+            .z = (float)(rand() % 10) - 5,
         };
 
-        cubeRotations[i] = (float)(rand()%360);
+        cubeRotations[i] = (float)(rand() % 360);
     }
 
-    DeferredMode mode {DeferredMode::Shading};
+    DeferredMode mode{DeferredMode::Shading};
 
     rlEnableDepthTest();
 
-    SetTargetFPS(60);                   // Set our game to run at 60 frames-per-second
+    SetTargetFPS(60); // Set our game to run at 60 frames-per-second
     //---------------------------------------------------------------------------------------
 
     // Main game loop
-    while (!WindowShouldClose())
-    {
+    while (!WindowShouldClose()) {
         // Update
         //----------------------------------------------------------------------------------
         camera.Update(CAMERA_ORBITAL);
@@ -178,10 +193,18 @@ int main()
         deferredShader.SetValueFromLoc(raylib::ShaderLocationIndex::VectorView, camera.position);
 
         // Check key inputs to enable/disable lights
-        if (IsKeyPressed(KEY_Y)) { lights[0].enabled = !lights[0].enabled; }
-        if (IsKeyPressed(KEY_R)) { lights[1].enabled = !lights[1].enabled; }
-        if (IsKeyPressed(KEY_G)) { lights[2].enabled = !lights[2].enabled; }
-        if (IsKeyPressed(KEY_B)) { lights[3].enabled = !lights[3].enabled; }
+        if (IsKeyPressed(KEY_Y)) {
+            lights[0].enabled = !lights[0].enabled;
+        }
+        if (IsKeyPressed(KEY_R)) {
+            lights[1].enabled = !lights[1].enabled;
+        }
+        if (IsKeyPressed(KEY_G)) {
+            lights[2].enabled = !lights[2].enabled;
+        }
+        if (IsKeyPressed(KEY_B)) {
+            lights[3].enabled = !lights[3].enabled;
+        }
 
         // Check key inputs to switch between G-buffer textures
         if (IsKeyPressed(KEY_ONE)) mode = DeferredMode::Position;
@@ -201,7 +224,7 @@ int main()
 
         // Draw to the geometry buffer by first activating it
         rlEnableFramebuffer(gBuffer.framebuffer);
-        rlClearScreenBuffers();  // Clear color and depth buffer
+        rlClearScreenBuffers(); // Clear color and depth buffer
 
         rlDisableColorBlend();
         BeginMode3D(camera);
@@ -211,12 +234,11 @@ int main()
         // When drawing a model here, make sure that the material's shaders
         // are set to the gbuffer shader!
         model.Draw(Vector3Zero(), 1.0f, WHITE);
-        cube.Draw((Vector3) { 0.0, 1.0f, 0.0 }, 1.0f, WHITE);
+        cube.Draw((Vector3){0.0, 1.0f, 0.0}, 1.0f, WHITE);
 
-        for (size_t i = 0; i < cubePositions.size() && i < cubeRotations.size(); i++)
-        {
+        for (size_t i = 0; i < cubePositions.size() && i < cubeRotations.size(); i++) {
             Vector3 position = cubePositions[i];
-            cube.Draw(position, Vector3{ 1, 1, 1 }, cubeRotations[i], Vector3{ CUBE_SCALE, CUBE_SCALE, CUBE_SCALE }, WHITE);
+            cube.Draw(position, Vector3{1, 1, 1}, cubeRotations[i], Vector3{CUBE_SCALE, CUBE_SCALE, CUBE_SCALE}, WHITE);
         }
 
         rlDisableShader();
@@ -227,8 +249,7 @@ int main()
         rlDisableFramebuffer();
         rlClearScreenBuffers(); // Clear color & depth buffer
 
-        switch (mode)
-        {
+        switch (mode) {
             case DeferredMode::Shading:
             {
                 BeginMode3D(camera);
@@ -253,19 +274,29 @@ int main()
 
                 // As a last step, we now copy over the depth buffer from our g-buffer to the default framebuffer.
                 /// @FIXME: rlBindFramebuffer not found
-                //rlBindFramebuffer(GL_READ_FRAMEBUFFER, gBuffer.framebuffer);
-                //rlBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-                rlBlitFramebuffer(0, 0, screenWidth, screenHeight, 0, 0, screenWidth, screenHeight, 0x00000100);    // GL_DEPTH_BUFFER_BIT
+                // rlBindFramebuffer(GL_READ_FRAMEBUFFER, gBuffer.framebuffer);
+                // rlBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+                rlBlitFramebuffer(
+                    0,
+                    0,
+                    screenWidth,
+                    screenHeight,
+                    0,
+                    0,
+                    screenWidth,
+                    screenHeight,
+                    0x00000100); // GL_DEPTH_BUFFER_BIT
                 rlDisableFramebuffer();
 
                 // Since our shader is now done and disabled, we can draw our lights in default
                 // forward rendering
                 BeginMode3D(camera);
                 rlEnableShader(rlGetShaderIdDefault());
-                for(const auto& light : lights)
-                {
-                    if (light.enabled) DrawSphereEx(light.position, 0.2f, 8, 8, light.color);
-                    else DrawSphereWires(light.position, 0.2f, 8, 8, ColorAlpha(light.color, 0.3f));
+                for (const auto& light : lights) {
+                    if (light.enabled)
+                        DrawSphereEx(light.position, 0.2f, 8, 8, light.color);
+                    else
+                        DrawSphereWires(light.position, 0.2f, 8, 8, ColorAlpha(light.color, 0.3f));
                 }
                 rlDisableShader();
                 EndMode3D();
@@ -274,31 +305,43 @@ int main()
             } break;
             case DeferredMode::Position:
             {
-                DrawTextureRec((Texture2D){
+                DrawTextureRec(
+                    (Texture2D){
                         .id = gBuffer.positionTexture,
                         .width = screenWidth,
                         .height = screenHeight,
-                }, (Rectangle) { 0, 0, (float)screenWidth, (float)-screenHeight }, Vector2Zero(), RAYWHITE);
+                    },
+                    (Rectangle){0, 0, (float)screenWidth, (float)-screenHeight},
+                    Vector2Zero(),
+                    RAYWHITE);
 
                 DrawText("POSITION TEXTURE", 10, screenHeight - 30, 20, DARKGREEN);
             } break;
             case DeferredMode::Normal:
             {
-                DrawTextureRec((Texture2D){
+                DrawTextureRec(
+                    (Texture2D){
                         .id = gBuffer.normalTexture,
                         .width = screenWidth,
                         .height = screenHeight,
-                }, (Rectangle) { 0, 0, (float)screenWidth, (float)-screenHeight }, Vector2Zero(), RAYWHITE);
+                    },
+                    (Rectangle){0, 0, (float)screenWidth, (float)-screenHeight},
+                    Vector2Zero(),
+                    RAYWHITE);
 
                 DrawText("NORMAL TEXTURE", 10, screenHeight - 30, 20, DARKGREEN);
             } break;
             case DeferredMode::Albedo:
             {
-                DrawTextureRec((Texture2D){
+                DrawTextureRec(
+                    (Texture2D){
                         .id = gBuffer.albedoSpecTexture,
                         .width = screenWidth,
                         .height = screenHeight,
-                }, (Rectangle) { 0, 0, (float)screenWidth, (float)-screenHeight }, Vector2Zero(), RAYWHITE);
+                    },
+                    (Rectangle){0, 0, (float)screenWidth, (float)-screenHeight},
+                    Vector2Zero(),
+                    RAYWHITE);
 
                 DrawText("ALBEDO TEXTURE", 10, screenHeight - 30, 20, DARKGREEN);
             } break;
@@ -317,10 +360,10 @@ int main()
     // De-Initialization
     //--------------------------------------------------------------------------------------
     //UnloadModel(model);     // Unload the models
-    //UnloadModel(cube);
+    // UnloadModel(cube);
 
     //UnloadShader(deferredShader); // Unload shaders
-    //UnloadShader(gbufferShader);
+    // UnloadShader(gbufferShader);
 
     // Unload geometry buffer and all attached textures
     rlUnloadFramebuffer(gBuffer.framebuffer);
@@ -329,7 +372,7 @@ int main()
     rlUnloadTexture(gBuffer.albedoSpecTexture);
     rlUnloadTexture(gBuffer.depthRenderbuffer);
 
-    CloseWindow();          // Close window and OpenGL context
+    CloseWindow(); // Close window and OpenGL context
     //--------------------------------------------------------------------------------------
 
     return 0;

@@ -38,9 +38,12 @@
 #include "raylib-cpp/Camera2D.hpp"
 #include "raylib-cpp/Camera3D.hpp"
 #include "raylib-cpp/Color.hpp"
+#include "raylib-cpp/FileData.hpp"
+#include "raylib-cpp/FileText.hpp"
 #include "raylib-cpp/Font.hpp"
 #include "raylib-cpp/Functions.hpp"
 #include "raylib-cpp/Gamepad.hpp"
+#include "raylib-cpp/Guards.hpp"
 #include "raylib-cpp/Image.hpp"
 #include "raylib-cpp/Keyboard.hpp"
 #include "raylib-cpp/Material.hpp"
@@ -52,6 +55,7 @@
 #include "raylib-cpp/Music.hpp"
 #include "raylib-cpp/Ray.hpp"
 #include "raylib-cpp/RayCollision.hpp"
+#include "raylib-cpp/RaylibError.hpp"
 #include "raylib-cpp/Rectangle.hpp"
 #include "raylib-cpp/RenderTexture.hpp"
 #include "raylib-cpp/Shader.hpp"
@@ -67,21 +71,16 @@
 #include "raylib-cpp/VrStereoConfig.hpp"
 #include "raylib-cpp/Wave.hpp"
 #include "raylib-cpp/Window.hpp"
-#include "raylib-cpp/FileData.hpp"
-#include "raylib-cpp/FileText.hpp"
+#include "raylib-cpp/enums.hpp"
 #ifdef __cpp_exceptions
 #include "raylib-cpp/RaylibException.hpp"
 #endif
-#include "raylib-cpp/RaylibError.hpp"
-#include "raylib-cpp/Functions.hpp"
-#include "raylib-cpp/Guards.hpp"
-#include "raylib-cpp/enums.hpp"
 
 /**
  * All raylib-cpp classes and functions appear in the raylib namespace.
  */
 namespace raylib {
-    // Nothing.
-}  // namespace raylib
+// Nothing.
+} // namespace raylib
 
-#endif  // RAYLIB_CPP_INCLUDE_RAYLIB_CPP_HPP_
+#endif // RAYLIB_CPP_INCLUDE_RAYLIB_CPP_HPP_

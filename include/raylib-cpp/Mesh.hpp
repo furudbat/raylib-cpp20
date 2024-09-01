@@ -17,7 +17,7 @@ namespace raylib {
  * @see raylib::MeshUnmanaged
  */
 class Mesh {
- public:
+public:
     constexpr Mesh() = default;
 
     constexpr explicit Mesh(const ::Mesh& mesh) = delete;
@@ -62,63 +62,47 @@ class Mesh {
         other.m_mesh.m_data.vboId = nullptr;
     }
 
-    explicit operator ::Mesh() const noexcept {
-        return m_mesh.m_data;
-    }
-    [[nodiscard]] ::Mesh c_raylib() const & noexcept {
-        return m_mesh.c_raylib();
-    }
+    explicit operator ::Mesh() const noexcept { return m_mesh.m_data; }
+    [[nodiscard]] ::Mesh c_raylib() const& noexcept { return m_mesh.c_raylib(); }
 
     GETTER(int, VertexCount, m_mesh.m_data.vertexCount)
     GETTER(int, TriangleCount, m_mesh.m_data.triangleCount)
-    CONST_GETTER(float *, Vertices, m_mesh.m_data.vertices)
-    CONST_GETTER(float *, TexCoords, m_mesh.m_data.texcoords)
-    CONST_GETTER(float *, TexCoords2, m_mesh.m_data.texcoords2)
-    CONST_GETTER(float *, Normals, m_mesh.m_data.normals)
-    CONST_GETTER(float *, Tangents, m_mesh.m_data.tangents)
-    CONST_GETTER(unsigned char *, Colors, m_mesh.m_data.colors)
-    CONST_GETTER(unsigned short *, Indices, m_mesh.m_data.indices) // NOLINT
-    CONST_GETTER(float *, AnimVertices, m_mesh.m_data.animVertices)
-    CONST_GETTER(float *, AnimNormals, m_mesh.m_data.animNormals)
-    CONST_GETTER(unsigned char *, BoneIds, m_mesh.m_data.boneIds)
-    CONST_GETTER(float *, BoneWeights, m_mesh.m_data.boneWeights)
+    CONST_GETTER(float*, Vertices, m_mesh.m_data.vertices)
+    CONST_GETTER(float*, TexCoords, m_mesh.m_data.texcoords)
+    CONST_GETTER(float*, TexCoords2, m_mesh.m_data.texcoords2)
+    CONST_GETTER(float*, Normals, m_mesh.m_data.normals)
+    CONST_GETTER(float*, Tangents, m_mesh.m_data.tangents)
+    CONST_GETTER(unsigned char*, Colors, m_mesh.m_data.colors)
+    CONST_GETTER(unsigned short*, Indices, m_mesh.m_data.indices) // NOLINT
+    CONST_GETTER(float*, AnimVertices, m_mesh.m_data.animVertices)
+    CONST_GETTER(float*, AnimNormals, m_mesh.m_data.animNormals)
+    CONST_GETTER(unsigned char*, BoneIds, m_mesh.m_data.boneIds)
+    CONST_GETTER(float*, BoneWeights, m_mesh.m_data.boneWeights)
     GETTER(unsigned int, VaoId, m_mesh.m_data.vaoId)
-    CONST_GETTER(unsigned int *, VboId, m_mesh.m_data.vboId)
+    CONST_GETTER(unsigned int*, VboId, m_mesh.m_data.vboId)
 
     void ReallocTexCoords(size_t count) {
         if (m_mesh.m_data.texcoords != nullptr) {
             RL_FREE(m_mesh.m_data.texcoords);
             m_mesh.m_data.texcoords = nullptr;
         }
-        m_mesh.m_data.texcoords = (float *)RL_MALLOC(count*1*sizeof(float));
+        m_mesh.m_data.texcoords = (float*)RL_MALLOC(count * 1 * sizeof(float));
     }
     void ReallocTexCoords2(size_t count) {
         if (m_mesh.m_data.texcoords2 != nullptr) {
             RL_FREE(m_mesh.m_data.texcoords2);
             m_mesh.m_data.texcoords2 = nullptr;
         }
-        m_mesh.m_data.texcoords2 = (float *)RL_MALLOC(count*2*sizeof(float));
+        m_mesh.m_data.texcoords2 = (float*)RL_MALLOC(count * 2 * sizeof(float));
     }
 
-    float& GetTexCoord(size_t index) {
-        return m_mesh.m_data.texcoords2[index];
-    }
-    float GetTexCoord(size_t index) const {
-        return m_mesh.m_data.texcoords2[index];
-    }
-    float& GetTexCoord2(size_t index) {
-        return m_mesh.m_data.texcoords2[index];
-    }
-    float GetTexCoord2(size_t index) const {
-        return m_mesh.m_data.texcoords2[index];
-    }
+    float& GetTexCoord(size_t index) { return m_mesh.m_data.texcoords2[index]; }
+    float GetTexCoord(size_t index) const { return m_mesh.m_data.texcoords2[index]; }
+    float& GetTexCoord2(size_t index) { return m_mesh.m_data.texcoords2[index]; }
+    float GetTexCoord2(size_t index) const { return m_mesh.m_data.texcoords2[index]; }
 
-    unsigned int& GetVboId(size_t index) {
-        return m_mesh.m_data.vboId[index];
-    }
-    unsigned int GetVboId(size_t index) const {
-        return m_mesh.m_data.vboId[index];
-    }
+    unsigned int& GetVboId(size_t index) { return m_mesh.m_data.vboId[index]; }
+    unsigned int GetVboId(size_t index) const { return m_mesh.m_data.vboId[index]; }
 
     Mesh& SetVboId(size_t index, unsigned int value) {
         m_mesh.m_data.vboId[index] = value;
@@ -129,9 +113,7 @@ class Mesh {
     /**
      * Generate polygonal mesh
      */
-    static Mesh Poly(int sides, float radius) {
-        return Mesh{::GenMeshPoly(sides, radius)};
-    }
+    static Mesh Poly(int sides, float radius) { return Mesh{::GenMeshPoly(sides, radius)}; }
 
     /**
      * Generate plane mesh (with subdivisions)
@@ -143,16 +125,12 @@ class Mesh {
     /**
      * Generate cuboid mesh
      */
-    static Mesh Cube(float width, float height, float length) {
-        return Mesh{::GenMeshCube(width, height, length)};
-    }
+    static Mesh Cube(float width, float height, float length) { return Mesh{::GenMeshCube(width, height, length)}; }
 
     /**
      * Generate sphere mesh (standard sphere)
      */
-    static Mesh Sphere(float radius, int rings, int slices) {
-        return Mesh{::GenMeshSphere(radius, rings, slices)};
-    }
+    static Mesh Sphere(float radius, int rings, int slices) { return Mesh{::GenMeshSphere(radius, rings, slices)}; }
 
     /**
      * Generate half-sphere mesh (no bottom cap)
@@ -171,9 +149,7 @@ class Mesh {
     /**
      * Generate cone/pyramid mesh
      */
-    static Mesh Cone(float radius, float height, int slices) {
-        return Mesh{::GenMeshCone(radius, height, slices)};
-    }
+    static Mesh Cone(float radius, float height, int slices) { return Mesh{::GenMeshCone(radius, height, slices)}; }
 
     /**
      * Generate torus mesh
@@ -260,9 +236,7 @@ class Mesh {
         return *this;
     }
 
-    ~Mesh() {
-        Unload();
-    }
+    ~Mesh() { Unload(); }
 
     /**
      * Unload mesh from memory (RAM and/or VRAM)
@@ -277,9 +251,7 @@ class Mesh {
     /**
      * Compute mesh bounding box limits
      */
-    explicit operator raylib::BoundingBox() const {
-        return m_mesh.BoundingBox();
-    }
+    explicit operator raylib::BoundingBox() const { return m_mesh.BoundingBox(); }
 
 
     /**
@@ -316,7 +288,10 @@ class Mesh {
         ::UploadMesh(&m_mesh.m_data, dynamic);
     }
 
-    enum class UploadOption : bool { Static = false, Dynamic = true};
+    enum class UploadOption : bool {
+        Static = false,
+        Dynamic = true
+    };
     void Upload(UploadOption dynamic = UploadOption::Static) {
         ::UploadMesh(&m_mesh.m_data, dynamic == UploadOption::Dynamic);
     }
@@ -326,14 +301,13 @@ class Mesh {
 
     CONST_COMPOSITION_METHODE_CALL(Export, m_mesh)
     CONST_COMPOSITION_METHODE_CALL(BoundingBox, m_mesh)
-
- protected:
+protected:
     MeshUnmanaged m_mesh;
 
     friend class Model;
 };
-}  // namespace raylib
+} // namespace raylib
 
 using RMesh = raylib::Mesh;
 
-#endif  // RAYLIB_CPP_INCLUDE_MESH_HPP_
+#endif // RAYLIB_CPP_INCLUDE_MESH_HPP_

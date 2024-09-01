@@ -5,9 +5,9 @@
 
 #include "raylib-cpp-utils.hpp"
 
-#include <string>
-#include <span>
 #include <filesystem>
+#include <span>
+#include <string>
 
 namespace raylib {
 
@@ -27,12 +27,8 @@ public:
     }
     ~FileData() noexcept { Unload(); }
 
-    explicit FileData(czstring fileName) {
-        Load(fileName);
-    }
-    explicit FileData(const std::filesystem::path& fileName) {
-        Load(fileName);
-    }
+    explicit FileData(czstring fileName) { Load(fileName); }
+    explicit FileData(const std::filesystem::path& fileName) { Load(fileName); }
 
     GETTER(const unsigned char*, Data, m_data)
     GETTER(int, BytesRead, m_bytesRead)
@@ -51,9 +47,7 @@ public:
         return std::as_bytes(std::span<const unsigned char>{m_data, static_cast<size_t>(m_bytesRead)});
     }
 
-    void Load(czstring fileName) noexcept {
-        m_data = ::LoadFileData(fileName, &m_bytesRead);
-    }
+    void Load(czstring fileName) noexcept { m_data = ::LoadFileData(fileName, &m_bytesRead); }
     void Load(const std::filesystem::path& fileName) { Load(fileName.c_str()); }
     /// @TODO: add LoadFileData error handling exception AND expected
 
@@ -64,14 +58,13 @@ public:
             m_bytesRead = 0;
         }
     }
-
 private:
     owner<unsigned char*> m_data{nullptr};
     int m_bytesRead{0};
 };
 
-}  // namespace raylib
+} // namespace raylib
 
 using RFileData = raylib::FileData;
 
-#endif  // RAYLIB_CPP_INCLUDE_FILEDATA_HPP_
+#endif // RAYLIB_CPP_INCLUDE_FILEDATA_HPP_

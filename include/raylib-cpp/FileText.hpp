@@ -5,9 +5,9 @@
 
 #include "raylib-cpp-utils.hpp"
 
+#include <filesystem>
 #include <string>
 #include <string_view>
-#include <filesystem>
 
 namespace raylib {
 
@@ -27,12 +27,8 @@ public:
     }
     ~FileText() { Unload(); }
 
-    explicit FileText(const std::filesystem::path& fileName) {
-        Load(fileName);
-    }
-    explicit FileText(czstring fileName) {
-        Load(fileName);
-    }
+    explicit FileText(const std::filesystem::path& fileName) { Load(fileName); }
+    explicit FileText(czstring fileName) { Load(fileName); }
 
     GETTER(const char*, Data, m_data)
     GETTER(unsigned int, Length, m_length)
@@ -40,14 +36,10 @@ public:
     [[nodiscard]] const char* c_str() const { return m_data; }
 
     [[nodiscard]] std::string_view ToStringView() const { return std::string_view(m_data, m_length); }
-    explicit operator std::string_view() const {
-        return std::string_view(m_data, m_length);
-    }
+    explicit operator std::string_view() const { return std::string_view(m_data, m_length); }
 
     [[nodiscard]] std::string ToString() const { return m_data; }
-    explicit operator std::string() const {
-        return m_data;
-    }
+    explicit operator std::string() const { return m_data; }
 
     void Load(czstring fileName) {
         m_data = ::LoadFileText(fileName);
@@ -63,14 +55,13 @@ public:
             m_length = 0;
         }
     }
-
 private:
     owner<char*> m_data{nullptr};
     unsigned int m_length{0};
 };
 
-}  // namespace raylib
+} // namespace raylib
 
 using RFileText = raylib::FileText;
 
-#endif  // RAYLIB_CPP_INCLUDE_FILETEXT_HPP_
+#endif // RAYLIB_CPP_INCLUDE_FILETEXT_HPP_

@@ -2,9 +2,9 @@
 #define RAYLIB_CPP_INCLUDE_SHADER_HPP_
 
 
-#include "raylib.hpp"
-#include "raylib-cpp-utils.hpp"
 #include "ShaderUnmanaged.hpp"
+#include "raylib-cpp-utils.hpp"
+#include "raylib.hpp"
 
 #include <string>
 #include <string_view>
@@ -38,7 +38,8 @@ public:
     explicit Shader(LoadShaderOptionsC options) : m_shader(options) {}
 
     [[deprecated("Use Shader(LoadShaderOptionsC), named and strong typed parameters")]]
-    Shader(czstring vsFileName, czstring fsFileName) : m_shader(ShaderUnmanaged::LoadShaderOptionsC{ .vsFileName = vsFileName, .fsFileName = fsFileName }) {}
+    Shader(czstring vsFileName, czstring fsFileName)
+        : m_shader(ShaderUnmanaged::LoadShaderOptionsC{.vsFileName = vsFileName, .fsFileName = fsFileName}) {}
 
 
     constexpr Shader(const Shader&) = delete;
@@ -54,13 +55,9 @@ public:
      *
      * @see ::LoadShader
      */
-    static Shader Load(LoadShaderOptions options) {
-        return Shader(std::move(options));
-    }
+    static Shader Load(LoadShaderOptions options) { return Shader(std::move(options)); }
 
-    static Shader Load(LoadShaderOptionsC options) {
-        return Shader(options);
-    }
+    static Shader Load(LoadShaderOptionsC options) { return Shader(options); }
 
     /**
      * Load a shader from memory.
@@ -115,25 +112,20 @@ public:
     /**
      * Unload shader from GPU memory (VRAM)
      */
-    ~Shader() {
-        Unload();
-    }
+    ~Shader() { Unload(); }
 
-    explicit operator ::Shader() const {
-        return m_shader.m_data;
-    }
-    [[nodiscard]] ::Shader c_raylib() const & {
-        return m_shader.m_data;
-    }
+    explicit operator ::Shader() const { return m_shader.m_data; }
+    [[nodiscard]] ::Shader c_raylib() const& { return m_shader.m_data; }
 
     /**
      * Unload shader from GPU memory (VRAM)
      */
     void Unload() {
         if (m_shader.m_data.locs != nullptr) {
-            if(m_shader.m_data.id != rlGetShaderIdDefault()) {
+            if (m_shader.m_data.id != rlGetShaderIdDefault()) {
                 ::UnloadShader(m_shader.m_data);
-            } else {
+            }
+            else {
                 RL_FREE(m_shader.m_data.locs);
             }
             m_shader.m_data.id = rlGetShaderIdDefault();
@@ -152,7 +144,6 @@ public:
     COMPOSITION_METHODE_CALL_RETURN_THIS(SetValueFromLoc, m_shader)
 
     CONST_COMPOSITION_METHODE_CALL(IsReady, m_shader)
-
 private:
     ShaderUnmanaged m_shader;
 
@@ -160,8 +151,8 @@ private:
     friend class Model;
 };
 
-}  // namespace raylib
+} // namespace raylib
 
 using RShader = raylib::Shader;
 
-#endif  // RAYLIB_CPP_INCLUDE_SHADER_HPP_
+#endif // RAYLIB_CPP_INCLUDE_SHADER_HPP_

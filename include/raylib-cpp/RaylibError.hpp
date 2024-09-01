@@ -6,8 +6,8 @@
 
 #include "raylib-cpp-utils.hpp"
 
-#include <string>
 #include <optional>
+#include <string>
 
 namespace raylib {
 
@@ -20,7 +20,7 @@ enum class RaylibErrorCode {
  * Exception used for most raylib-related exceptions.
  */
 class RaylibError {
- public:
+public:
     /**
      * Construct a runtime exception with the given message.
      *
@@ -39,16 +39,13 @@ class RaylibError {
      *
      * @param logLevel The output status to use when outputing.
      */
-    void TraceLog(int logLevel = LOG_ERROR) {
-        ::TraceLog(logLevel, message.c_str());
-    }
+    void TraceLog(int logLevel = LOG_ERROR) { ::TraceLog(logLevel, message.c_str()); }
 
     const std::string& what() const noexcept { return message; }
     RaylibErrorCode GetCode() const noexcept { return code; }
 
-    const std::string& GetMessage() const & noexcept { return message; }
+    const std::string& GetMessage() const& noexcept { return message; }
     std::string GetMessage() && noexcept { return std::move(message); }
-
 private:
     RaylibErrorCode code{RaylibErrorCode::Unknown};
     std::string message;
@@ -67,8 +64,8 @@ using RaylibExpectedError = expected<R, RaylibError>;
 #define RAYLIB_CPP_EXPECTED_RESULT_VOID void
 #endif
 
-}  // namespace raylib
+} // namespace raylib
 
 using RRaylibError = raylib::RaylibError;
 
-#endif  // RAYLIB_CPP_INCLUDE_RAYLIBEXCEPTION_HPP_
+#endif // RAYLIB_CPP_INCLUDE_RAYLIBEXCEPTION_HPP_

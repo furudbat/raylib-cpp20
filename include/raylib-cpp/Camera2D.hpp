@@ -12,18 +12,19 @@ namespace raylib {
  * Camera2D type, defines a 2d camera
  */
 class Camera2D : public ::Camera2D {
- public:
+public:
     static constexpr float DefaultRotation = 0.0F;
     static constexpr float DefaultZoom = 1.0F;
 
-    explicit constexpr Camera2D(const ::Camera2D& camera) {
-        set(camera);
-    }
+    explicit constexpr Camera2D(const ::Camera2D& camera) { set(camera); }
 
     constexpr Camera2D() = default;
-    constexpr Camera2D(::Vector2 pOffset, ::Vector2 pTarget,
-                       float pRotation = DefaultRotation,
-                       float pZoom = DefaultZoom) : ::Camera2D{pOffset, pTarget, pRotation, pZoom} {}
+    constexpr Camera2D(
+        ::Vector2 pOffset,
+        ::Vector2 pTarget,
+        float pRotation = DefaultRotation,
+        float pZoom = DefaultZoom)
+        : ::Camera2D{pOffset, pTarget, pRotation, pZoom} {}
 
     /*
     explicit(false) operator ::Camera2D() const {
@@ -58,9 +59,7 @@ class Camera2D : public ::Camera2D {
     /**
      * Returns camera 2d transform matrix
      */
-    [[nodiscard]] Matrix GetMatrix() const noexcept {
-        return ::GetCameraMatrix2D(*this);
-    }
+    [[nodiscard]] Matrix GetMatrix() const noexcept { return ::GetCameraMatrix2D(*this); }
 
     /**
      * Returns the world space position for a 2d camera screen space position
@@ -75,8 +74,7 @@ class Camera2D : public ::Camera2D {
     [[nodiscard]] Vector2 GetWorldToScreen(::Vector2 position) const noexcept {
         return ::GetWorldToScreen2D(position, *this);
     }
-
- protected:
+protected:
     constexpr void set(const ::Camera2D& camera) noexcept {
         offset = camera.offset;
         target = camera.target;
@@ -84,8 +82,8 @@ class Camera2D : public ::Camera2D {
         zoom = camera.zoom;
     }
 };
-}  // namespace raylib
+} // namespace raylib
 
 using RCamera2D = raylib::Camera2D;
 
-#endif  // RAYLIB_CPP_INCLUDE_CAMERA2D_HPP_
+#endif // RAYLIB_CPP_INCLUDE_CAMERA2D_HPP_

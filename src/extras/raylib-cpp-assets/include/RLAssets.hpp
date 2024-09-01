@@ -50,15 +50,15 @@
 #endif
 #endif
 
-#include <filesystem>     // for path
-#include <memory>         // for shared_ptr
-#include <cstddef>       // for size_t
-#include <cstdint>       // for uint8_t
-#include <string>         // for string, hash, operator==
-#include <string_view>
-#include <unordered_map>  // for unordered_map
-#include <vector>         // for vector
+#include <cstddef> // for size_t
+#include <cstdint> // for uint8_t
+#include <filesystem> // for path
+#include <memory> // for shared_ptr
 #include <optional>
+#include <string> // for string, hash, operator==
+#include <string_view>
+#include <unordered_map> // for unordered_map
+#include <vector> // for vector
 
 #ifdef __cplusplus
 extern "C" {
@@ -79,24 +79,24 @@ extern "C" {
 namespace raylib::rlas {
 
 struct AssetMeta {
-  std::filesystem::path RelativeName;
-  std::filesystem::path PathOnDisk;
-  std::shared_ptr<miniz_cpp::zip_file> ArchiveFile;
-  miniz_cpp::zip_info ArchiveInfo;
+    std::filesystem::path RelativeName;
+    std::filesystem::path PathOnDisk;
+    std::shared_ptr<miniz_cpp::zip_file> ArchiveFile;
+    miniz_cpp::zip_info ArchiveInfo;
 };
 
 using MetaMap = std::unordered_map<std::string, AssetMeta>;
 using TempMap = std::unordered_map<std::string, std::filesystem::path>;
 
 struct RLASContext {
-  MetaMap AssetMap;
-  TempMap TempFiles;
+    MetaMap AssetMap;
+    TempMap TempFiles;
 
-  std::vector<std::filesystem::path> AssetRootPaths;
-  std::filesystem::path AssetTempPath;
+    std::vector<std::filesystem::path> AssetRootPaths;
+    std::filesystem::path AssetTempPath;
 };
 
-RLASContext &GetRLASContext();
+RLASContext& GetRLASContext();
 
 void InitLoadFileCallback();
 
@@ -114,7 +114,10 @@ std::filesystem::path GetApplicationBasePath();
 /// <param name="subpath">the sub path to append</param>
 std::filesystem::path AppendPath(std::filesystem::path path, std::filesystem::path subpath);
 
-enum class relative_to_app_t : bool { Yes = true, No = false};
+enum class relative_to_app_t : bool {
+    Yes = true,
+    No = false
+};
 /// <summary>
 /// Sets the initial asset path on disk
 /// </summary>
@@ -176,7 +179,10 @@ std::filesystem::path GetAssetRootPath(const RLASContext& rlasContext);
 /// <returns>The path on disk of the asset</returns>
 std::filesystem::path GetAssetPath(RLASContext& rlasContext, std::filesystem::path path);
 
-enum class include_sub_directories_t : bool { Yes = true, No = false };
+enum class include_sub_directories_t : bool {
+    Yes = true,
+    No = false
+};
 /// <summary>
 /// Returns a list of all relative asset names in a resource path
 /// Call once with results as NULL to get the count to allocate a result buffer
@@ -184,8 +190,9 @@ enum class include_sub_directories_t : bool { Yes = true, No = false };
 /// </summary>
 /// <param name="path">The relative path to search </param>
 /// <param name="includeSubDirectories">Search into subdirectories</param>
-/// 
-std::vector<std::filesystem::path> GetAssetsInPath(std::filesystem::path path, include_sub_directories_t includeSubDirectories);
+///
+std::vector<std::filesystem::path>
+GetAssetsInPath(std::filesystem::path path, include_sub_directories_t includeSubDirectories);
 
 /// <summary>
 /// Returns true if the asset is part of an archive (zip) file
@@ -203,8 +210,8 @@ size_t GetFileSize(const RLASContext& rlasContext, std::filesystem::path path);
 
 bool IsFileExist(const RLASContext& rlasContext, std::filesystem::path path);
 
-std::vector<uint8_t> LoadFile(const RLASContext& rlasContext, const char *fileName);
+std::vector<uint8_t> LoadFile(const RLASContext& rlasContext, const char* fileName);
 
-}
+} // namespace raylib::rlas
 
 #endif // RLASSETS_H

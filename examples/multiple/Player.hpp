@@ -1,7 +1,7 @@
 #include "raylib-cpp.hpp"
 
 class Player {
-    public:
+public:
     Player();
 
     void Draw() const;

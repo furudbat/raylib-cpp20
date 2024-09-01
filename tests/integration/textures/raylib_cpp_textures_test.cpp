@@ -1,12 +1,12 @@
 #include <tl/expected.hpp>
 
-#include "raylib-cpp.hpp"
 #include "raylib-assert.h"
-#include <string>
-#include <vector>
-#include <filesystem>
+#include "raylib-cpp.hpp"
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
+#include <filesystem>
+#include <string>
+#include <vector>
 
 class Bunny {
 public:
@@ -14,20 +14,19 @@ public:
         position = ::GetMousePosition();
         speed.x = static_cast<float>(::GetRandomValue(-250, 250)) / 60.0f;
         speed.y = static_cast<float>(::GetRandomValue(-250, 250)) / 60.0f;
-        color = raylib::Color(
-                ::GetRandomValue(50, 240),
-                ::GetRandomValue(80, 240),
-                ::GetRandomValue(100, 240));
+        color = raylib::Color(::GetRandomValue(50, 240), ::GetRandomValue(80, 240), ::GetRandomValue(100, 240));
     }
 
     void Update(const raylib::Texture2D& texBunny) {
         position.x += speed.x;
         position.y += speed.y;
 
-        if (((position.x + texBunny.GetWidth()/2) > ::GetScreenWidth()) ||
-            ((position.x + texBunny.GetWidth()/2) < 0)) speed.x *= -1;
-        if (((position.y + texBunny.GetHeight()/2) > ::GetScreenHeight()) ||
-            ((position.y + texBunny.GetHeight()/2 - 40) < 0)) speed.y *= -1;
+        if (((position.x + texBunny.GetWidth() / 2) > ::GetScreenWidth()) ||
+            ((position.x + texBunny.GetWidth() / 2) < 0))
+            speed.x *= -1;
+        if (((position.y + texBunny.GetHeight() / 2) > ::GetScreenHeight()) ||
+            ((position.y + texBunny.GetHeight() / 2 - 40) < 0))
+            speed.y *= -1;
     }
 
     raylib::Vector2 position;
@@ -35,7 +34,7 @@ public:
     raylib::Color color;
 };
 
-TEST_CASE( "image loading", "[textures]" ) {
+TEST_CASE("image loading", "[textures]") {
     // Initialization
     //--------------------------------------------------------------------------------------
     constexpr int ScreenWidth = 800;
@@ -70,7 +69,7 @@ TEST_CASE( "image loading", "[textures]" ) {
 }
 
 
-TEST_CASE( "bunnymark", "[textures]" ) {
+TEST_CASE("bunnymark", "[textures]") {
     // Initialization
     //--------------------------------------------------------------------------------------
     constexpr int ScreenWidth = 800;
@@ -90,7 +89,7 @@ TEST_CASE( "bunnymark", "[textures]" ) {
         bunnies.emplace_back();
     }
 
-    SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
+    SetTargetFPS(60); // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
 
     // Main game loop
@@ -98,7 +97,7 @@ TEST_CASE( "bunnymark", "[textures]" ) {
     // Update
     //----------------------------------------------------------------------------------
     // Update bunnies
-    for (Bunny& bunny: bunnies) {
+    for (Bunny& bunny : bunnies) {
         bunny.Update(texBunny);
     }
     //----------------------------------------------------------------------------------
@@ -121,7 +120,12 @@ TEST_CASE( "bunnymark", "[textures]" ) {
 
         DrawRectangle(0, 0, ScreenWidth, 40, BLACK);
         raylib::DrawText(TextFormat("bunnies: %i", bunnies.size()), 120, 10, 20, GREEN);
-        raylib::DrawText(TextFormat("batched draw calls: %i", 1 + bunnies.size()/MaxBatchElements), 320, 10, 20, MAROON);
+        raylib::DrawText(
+            TextFormat("batched draw calls: %i", 1 + bunnies.size() / MaxBatchElements),
+            320,
+            10,
+            20,
+            MAROON);
 
         DrawFPS(10, 10);
     }

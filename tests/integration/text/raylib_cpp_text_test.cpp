@@ -1,14 +1,14 @@
 #include <tl/expected.hpp>
 
-#include "raylib-cpp.hpp"
 #include "raylib-assert.h"
-#include <string>
-#include <vector>
-#include <filesystem>
+#include "raylib-cpp.hpp"
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
+#include <filesystem>
+#include <string>
+#include <vector>
 
-TEST_CASE( "font loading", "[text]" ) {
+TEST_CASE("font loading", "[text]") {
     // Initialization
     //--------------------------------------------------------------------------------------
     constexpr int ScreenWidth = 800;
@@ -19,7 +19,9 @@ TEST_CASE( "font loading", "[text]" ) {
 
     // Define characters to draw
     // NOTE: raylib supports UTF-8 encoding, following list is actually codified as UTF8 internally
-    const std::string msg = "!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHI\nJKLMNOPQRSTUVWXYZ[]^_`abcdefghijklmn\nopqrstuvwxyz{|}~¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓ\nÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷\nøùúûüýþÿ";
+    const std::string msg = "!\"#$%&'()*+,-./"
+                            "0123456789:;<=>?@ABCDEFGHI\nJKLMNOPQRSTUVWXYZ[]^_`abcdefghijklmn\nopqrstuvwxyz{|}~"
+                            "¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓ\nÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷\nøùúûüýþÿ";
 
     // NOTE: Textures/Fonts MUST be loaded after Window initialization (OpenGL context is required)
 
@@ -32,7 +34,7 @@ TEST_CASE( "font loading", "[text]" ) {
     raylib::Font fontTtf;
     REQUIRE(fontTtf.Load("resources/pixantiqua.ttf", 32, nullptr, 250));
 
-    window.SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
+    window.SetTargetFPS(60); // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
 
     // Main game loop
@@ -43,7 +45,6 @@ TEST_CASE( "font loading", "[text]" ) {
         //----------------------------------------------------------------------------------
         window.BeginDrawing();
         {
-
             window.ClearBackground(RAYWHITE);
 
             raylib::DrawText("Hold SPACE to use TTF generated font", 20, 20, 20, LIGHTGRAY);
@@ -60,7 +61,6 @@ TEST_CASE( "font loading", "[text]" ) {
         //----------------------------------------------------------------------------------
         window.BeginDrawing();
         {
-
             window.ClearBackground(RAYWHITE);
 
             raylib::DrawText("Hold SPACE to use TTF generated font", 20, 20, 20, LIGHTGRAY);
@@ -75,7 +75,7 @@ TEST_CASE( "font loading", "[text]" ) {
     window.Close();
 }
 
-TEST_CASE( "font loading into vector", "[text]" ) {
+TEST_CASE("font loading into vector", "[text]") {
     // Initialization
     //--------------------------------------------------------------------------------------
     constexpr int ScreenWidth = 800;
@@ -86,12 +86,15 @@ TEST_CASE( "font loading into vector", "[text]" ) {
 
     // Define characters to draw
     // NOTE: raylib supports UTF-8 encoding, following list is actually codified as UTF8 internally
-    const std::string msg = "!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHI\nJKLMNOPQRSTUVWXYZ[]^_`abcdefghijklmn\nopqrstuvwxyz{|}~¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓ\nÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷\nøùúûüýþÿ";
+    const std::string msg = "!\"#$%&'()*+,-./"
+                            "0123456789:;<=>?@ABCDEFGHI\nJKLMNOPQRSTUVWXYZ[]^_`abcdefghijklmn\nopqrstuvwxyz{|}~"
+                            "¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓ\nÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷\nøùúûüýþÿ";
 
     // NOTE: Textures/Fonts MUST be loaded after Window initialization (OpenGL context is required)
 
     SECTION("load fonts") {
-        auto fonts = []() -> std::vector<raylib::Font> {
+        auto fonts = []() -> std::vector<raylib::Font>
+        {
             std::vector<raylib::Font> ret;
             // BMFont (AngelCode) : Font data and image atlas have been generated using external program
             raylib::Font fontBm;
@@ -110,7 +113,7 @@ TEST_CASE( "font loading into vector", "[text]" ) {
         REQUIRE(fonts.size() == 2);
     }
 
-    window.SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
+    window.SetTargetFPS(60); // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
 
     // Main game loop

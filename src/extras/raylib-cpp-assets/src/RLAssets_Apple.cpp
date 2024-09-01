@@ -29,9 +29,9 @@
  **********************************************************************************************/
 
 #include <array>
-#include <cstdint>     // for uint32_t
-#include <filesystem>  // for path
-#include <string>      // for allocator, string
+#include <cstdint> // for uint32_t
+#include <filesystem> // for path
+#include <string> // for allocator, string
 
 #include <mach-o/dyld.h>
 #include <sys/syslimits.h>
@@ -41,25 +41,26 @@ namespace raylib::rlas {
 constexpr char PathDelim = '/';
 
 std::filesystem::path GetApplicationBasePath() {
-  static const std::filesystem::path appDir = [](){
-    std::filesystem::path appDir = "/"; // default for everyone to start out with
+    static const std::filesystem::path appDir = []()
+    {
+        std::filesystem::path appDir = "/"; // default for everyone to start out with
 
-    std::array<char, PATH_MAX + 1> path;
-    uint32_t size = path.size();
+        std::array<char, PATH_MAX + 1> path;
+        uint32_t size = path.size();
 
-    if (_NSGetExecutablePath(path, &size) == 0) {
-      uint32_t len = strlen(path);
-      for (uint32_t i = len; i >= 0; i--) {
-        if (path[i] == '/' && path[i + 1] == '.') {
-          path[i + 1] = 0;
-          break;
+        if (_NSGetExecutablePath(path, &size) == 0) {
+            uint32_t len = strlen(path);
+            for (uint32_t i = len; i >= 0; i--) {
+                if (path[i] == '/' && path[i + 1] == '.') {
+                    path[i + 1] = 0;
+                    break;
+                }
+            }
+            appDir = path;
         }
-      }
-      appDir = path;
-    }
-  }();
+    }();
 
-  return appDir;
+    return appDir;
 }
 
-}
+} // namespace raylib::rlas

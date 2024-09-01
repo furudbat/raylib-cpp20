@@ -1,16 +1,16 @@
 #ifndef RAYLIB_CPP_INCLUDE_SOUND_HPP_
 #define RAYLIB_CPP_INCLUDE_SOUND_HPP_
 
-#include "raylib.hpp"
-#include "raylib-cpp-utils.hpp"
 #include "RaylibError.hpp"
+#include "raylib-cpp-utils.hpp"
+#include "raylib.hpp"
 #ifdef __cpp_exceptions
 #include "RaylibException.hpp"
 #endif
 
+#include <filesystem>
 #include <string>
 #include <string_view>
-#include <filesystem>
 
 namespace raylib {
 
@@ -23,11 +23,11 @@ namespace raylib {
  * @endcode
  */
 class Sound {
- public:
+public:
     static constexpr float DefaultSetPan = 0.5f; ///< center
 
     constexpr Sound() {
-        m_data.stream = { nullptr, nullptr, 0, 0, 0 };
+        m_data.stream = {nullptr, nullptr, 0, 0, 0};
         m_data.frameCount = 0;
     }
 
@@ -39,7 +39,7 @@ class Sound {
     constexpr Sound(::Sound&& other) noexcept {
         set(other);
 
-        other.stream = { nullptr, nullptr, 0, 0, 0 };
+        other.stream = {nullptr, nullptr, 0, 0, 0};
         other.frameCount = 0;
     }
 
@@ -47,7 +47,7 @@ class Sound {
     constexpr Sound(Sound&& other) noexcept {
         set(other.m_data);
 
-        other.m_data.stream = { nullptr, nullptr, 0, 0, 0 };
+        other.m_data.stream = {nullptr, nullptr, 0, 0, 0};
         other.m_data.frameCount = 0;
     }
 
@@ -56,32 +56,20 @@ class Sound {
      *
      * @throws raylib::RaylibException Throws if the Sound failed to load.
      */
-    explicit Sound(czstring fileName) {
-        Load(fileName);
-    }
-    explicit Sound(const std::filesystem::path& fileName) {
-        Load(fileName);
-    }
+    explicit Sound(czstring fileName) { Load(fileName); }
+    explicit Sound(const std::filesystem::path& fileName) { Load(fileName); }
 
     /**
      * Loads a sound from the given Wave.
      *
      * @throws raylib::RaylibException Throws if the Sound failed to load.
      */
-    explicit Sound(const ::Wave& wave) {
-        LoadFromWave(wave);
-    }
+    explicit Sound(const ::Wave& wave) { LoadFromWave(wave); }
 
-    ~Sound() noexcept {
-        Unload();
-    }
+    ~Sound() noexcept { Unload(); }
 
-    explicit operator ::Sound() const {
-        return m_data;
-    }
-    [[nodiscard]] ::Sound c_raylib() const & {
-        return m_data;
-    }
+    explicit operator ::Sound() const { return m_data; }
+    [[nodiscard]] ::Sound c_raylib() const& { return m_data; }
 
     GETTER(unsigned int, FrameCount, m_data.frameCount)
     GETTER(::AudioStream, Stream, m_data.stream)
@@ -95,7 +83,7 @@ class Sound {
         Unload();
         set(other.m_data);
         other.m_data.frameCount = 0;
-        other.m_data.stream = { nullptr, nullptr, 0, 0, 0 };
+        other.m_data.stream = {nullptr, nullptr, 0, 0, 0};
 
         return *this;
     }
@@ -105,7 +93,7 @@ class Sound {
      */
     template<typename T>
     /// @TODO: make T integral (?) ... short, unsigned char, ... ???
-    Sound& Update(const T *data, int samplesCount) {
+    Sound& Update(const T* data, int samplesCount) {
         ::UpdateSound(m_data, data, samplesCount);
         return *this;
     }
@@ -115,7 +103,7 @@ class Sound {
      */
     template<typename T>
     /// @TODO: make T integral (?) ... short, unsigned char, ... ???
-    Sound& Update(const T *data) {
+    Sound& Update(const T* data) {
         ::UpdateSound(m_data, data, static_cast<int>(m_data.frameCount));
         return *this;
     }
@@ -165,9 +153,7 @@ class Sound {
     /**
      * Check if a sound is currently playing
      */
-    [[nodiscard]] bool IsPlaying() const {
-        return ::IsSoundPlaying(m_data);
-    }
+    [[nodiscard]] bool IsPlaying() const { return ::IsSoundPlaying(m_data); }
 
     /**
      * Set volume for a sound (1.0 is max level)
@@ -205,9 +191,8 @@ class Sound {
         }
         RAYLIB_CPP_RETURN_EXPECTED();
     }
-    RAYLIB_CPP_EXPECTED_RESULT_VOID Load(const std::filesystem::path& fileName) RAYLIB_CPP_THROWS {
-        RAYLIB_CPP_RETURN_EXPECTED_VOID_VALUE(Load(fileName.c_str()))
-    }
+    RAYLIB_CPP_EXPECTED_RESULT_VOID Load(const std::filesystem::path& fileName) RAYLIB_CPP_THROWS{
+        RAYLIB_CPP_RETURN_EXPECTED_VOID_VALUE(Load(fileName.c_str()))}
 
     /**
      * Loads the given Wave object into the Sound.
@@ -227,11 +212,8 @@ class Sound {
      *
      * @return True or false depending on whether the Sound buffer is loaded.
      */
-    [[nodiscard]] bool IsReady() const {
-        return ::IsSoundReady(m_data);
-    }
-
- protected:
+    [[nodiscard]] bool IsReady() const { return ::IsSoundReady(m_data); }
+protected:
     constexpr void set(const ::Sound& sound) noexcept {
         m_data.frameCount = sound.frameCount;
         m_data.stream = sound.stream;
@@ -239,8 +221,8 @@ class Sound {
 
     ::Sound m_data;
 };
-}  // namespace raylib
+} // namespace raylib
 
 using RSound = raylib::Sound;
 
-#endif  // RAYLIB_CPP_INCLUDE_SOUND_HPP_
+#endif // RAYLIB_CPP_INCLUDE_SOUND_HPP_

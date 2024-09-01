@@ -29,8 +29,8 @@
  **********************************************************************************************/
 
 #include <array>
-#include <filesystem>  // for path
-#include <string>      // for allocator, string
+#include <filesystem> // for path
+#include <string> // for allocator, string
 
 #include <unistd.h>
 
@@ -41,25 +41,26 @@ constexpr char PathDelim = '/';
 constexpr size_t PathMaxLength = 4096;
 
 std::filesystem::path GetApplicationBasePath() {
-  static const std::filesystem::path appDir = [](){
-    std::filesystem::path appDir = "/"; // default for everyone to start out with
+    static const std::filesystem::path appDir = []()
+    {
+        std::filesystem::path appDir = "/"; // default for everyone to start out with
 
-    std::array<char, PathMaxLength + 1> path;
-    const ssize_t len = readlink("/proc/self/exe", path.data(), path.size());
-    if (len > 0) {
-      for (ssize_t i = len; i >= 0; --i) {
-        if (path[i] == '/') {
-          path[i + 1] = '\0';
-          i = -1;
+        std::array<char, PathMaxLength + 1> path;
+        const ssize_t len = readlink("/proc/self/exe", path.data(), path.size());
+        if (len > 0) {
+            for (ssize_t i = len; i >= 0; --i) {
+                if (path[i] == '/') {
+                    path[i + 1] = '\0';
+                    i = -1;
+                }
+            }
+            appDir = std::string_view{path.data(), path.size()};
         }
-      }
-      appDir = std::string_view{path.data(), path.size()};
-    }
+
+        return appDir;
+    }();
 
     return appDir;
-  }();
-
-  return appDir;
 }
 
-}
+} // namespace raylib::rlas

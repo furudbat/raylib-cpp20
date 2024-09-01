@@ -1,36 +1,36 @@
 /**********************************************************************************************
-*
-*   raylib-assert - Assertion library for raylib.
-*   https://github.com/robloach/raylib-assert
-*
-*   Version: v2.0.0
-*
-*   Copyright 2023 Rob Loach (@RobLoach)
-*
-*   DEPENDENCIES:
-*       raylib 4.5+ https://www.raylib.com
-*
-*   LICENSE: zlib/libpng
-*
-*   raylib-assert is licensed under an unmodified zlib/libpng license, which is an OSI-certified,
-*   BSD-like license that allows static linking with closed source software:
-*
-*   This software is provided "as-is", without any express or implied warranty. In no event
-*   will the authors be held liable for any damages arising from the use of this software.
-*
-*   Permission is granted to anyone to use this software for any purpose, including commercial
-*   applications, and to alter it and redistribute it freely, subject to the following restrictions:
-*
-*     1. The origin of this software must not be misrepresented; you must not claim that you
-*     wrote the original software. If you use this software in a product, an acknowledgment
-*     in the product documentation would be appreciated but is not required.
-*
-*     2. Altered source versions must be plainly marked as such, and must not be misrepresented
-*     as being the original software.
-*
-*     3. This notice may not be removed or altered from any source distribution.
-*
-**********************************************************************************************/
+ *
+ *   raylib-assert - Assertion library for raylib.
+ *   https://github.com/robloach/raylib-assert
+ *
+ *   Version: v2.0.0
+ *
+ *   Copyright 2023 Rob Loach (@RobLoach)
+ *
+ *   DEPENDENCIES:
+ *       raylib 4.5+ https://www.raylib.com
+ *
+ *   LICENSE: zlib/libpng
+ *
+ *   raylib-assert is licensed under an unmodified zlib/libpng license, which is an OSI-certified,
+ *   BSD-like license that allows static linking with closed source software:
+ *
+ *   This software is provided "as-is", without any express or implied warranty. In no event
+ *   will the authors be held liable for any damages arising from the use of this software.
+ *
+ *   Permission is granted to anyone to use this software for any purpose, including commercial
+ *   applications, and to alter it and redistribute it freely, subject to the following restrictions:
+ *
+ *     1. The origin of this software must not be misrepresented; you must not claim that you
+ *     wrote the original software. If you use this software in a product, an acknowledgment
+ *     in the product documentation would be appreciated but is not required.
+ *
+ *     2. Altered source versions must be plainly marked as such, and must not be misrepresented
+ *     as being the original software.
+ *
+ *     3. This notice may not be removed or altered from any source distribution.
+ *
+ **********************************************************************************************/
 
 #ifndef RAYLIB_ASSERT_H
 #define RAYLIB_ASSERT_H
@@ -78,11 +78,11 @@ extern "C" {
 #endif
 
 // Variadic Arguments
-#define RAYLIB_ASSERT_CAT( A, B ) A ## B
-#define RAYLIB_ASSERT_SELECT( NAME, NUM ) RAYLIB_ASSERT_CAT( NAME ## _, NUM )
-#define RAYLIB_ASSERT_GET_COUNT( _1, _2, _3, _4, _5, _6, _7, RAYLIB_ASSERT_COUNT, ... ) RAYLIB_ASSERT_COUNT
-#define RAYLIB_ASSERT_VA_SIZE( ... ) RAYLIB_ASSERT_GET_COUNT( __VA_ARGS__, 7, 6, 5, 4, 3, 2, 1 )
-#define RAYLIB_ASSERT_VA_SELECT( NAME, ... ) RAYLIB_ASSERT_SELECT( NAME, RAYLIB_ASSERT_VA_SIZE(__VA_ARGS__) )(__VA_ARGS__)
+#define RAYLIB_ASSERT_CAT(A, B) A##B
+#define RAYLIB_ASSERT_SELECT(NAME, NUM) RAYLIB_ASSERT_CAT(NAME##_, NUM)
+#define RAYLIB_ASSERT_GET_COUNT(_1, _2, _3, _4, _5, _6, _7, RAYLIB_ASSERT_COUNT, ...) RAYLIB_ASSERT_COUNT
+#define RAYLIB_ASSERT_VA_SIZE(...) RAYLIB_ASSERT_GET_COUNT(__VA_ARGS__, 7, 6, 5, 4, 3, 2, 1)
+#define RAYLIB_ASSERT_VA_SELECT(NAME, ...) RAYLIB_ASSERT_SELECT(NAME, RAYLIB_ASSERT_VA_SIZE(__VA_ARGS__))(__VA_ARGS__)
 
 /**
  * Assert whether the given condition is true.
@@ -214,33 +214,45 @@ extern "C" {
 #else
 #define Assert_0() AssertFail_1("No condition provided for Assert()")
 #define Assert_1(condition) Assert_2(condition, #condition)
-#define Assert_2(condition, message) do { if (!((bool)(condition))) { RAYLIB_ASSERT_TRACELOG(RAYLIB_ASSERT_LOG, "ASSERT: %s (%s:%i)", message, __FILE__, __LINE__); } } while(0)
+#define Assert_2(condition, message)                                                                      \
+    do {                                                                                                  \
+        if (!((bool)(condition))) {                                                                       \
+            RAYLIB_ASSERT_TRACELOG(RAYLIB_ASSERT_LOG, "ASSERT: %s (%s:%i)", message, __FILE__, __LINE__); \
+        }                                                                                                 \
+    }                                                                                                     \
+    while (0)
 #define Assert_3(condition, message, p1) Assert_2(condition, RAYLIB_ASSERT_TEXTFORMAT(message, p1))
 #define Assert_4(condition, message, p1, p2) Assert_2(condition, RAYLIB_ASSERT_TEXTFORMAT(message, p1, p2))
 #define Assert_5(condition, message, p1, p2, p3) Assert_2(condition, RAYLIB_ASSERT_TEXTFORMAT(message, p1, p2, p3))
-#define Assert_6(condition, message, p1, p2, p3, p4) Assert_2(condition, RAYLIB_ASSERT_TEXTFORMAT(message, p1, p2, p3, p4))
-#define Assert_7(condition, message, p1, p2, p3, p4, p5) Assert_2(condition, RAYLIB_ASSERT_TEXTFORMAT(message, p1, p2, p3, p4, p5))
+#define Assert_6(condition, message, p1, p2, p3, p4) \
+    Assert_2(condition, RAYLIB_ASSERT_TEXTFORMAT(message, p1, p2, p3, p4))
+#define Assert_7(condition, message, p1, p2, p3, p4, p5) \
+    Assert_2(condition, RAYLIB_ASSERT_TEXTFORMAT(message, p1, p2, p3, p4, p5))
 #endif
 
 // AssertEqual()
 #define AssertEqual_0() AssertFail_1("No condition provided for AssertEqual()")
 #define AssertEqual_1(condition) Assert_2(condition, #condition)
-#define AssertEqual_2(actual, expected) Assert_4((actual) == (expected), "AssertEqual(%s, %s) - Provided arguments are not equal", #actual, #expected)
+#define AssertEqual_2(actual, expected) \
+    Assert_4((actual) == (expected), "AssertEqual(%s, %s) - Provided arguments are not equal", #actual, #expected)
 #define AssertEqual_3(actual, expected, message) Assert_2((actual) == (expected), message)
 #define AssertEqual_4(actual, expected, message, p1) Assert_3((actual) == (expected), message, p1)
 #define AssertEqual_5(actual, expected, message, p1, p2) Assert_4((actual) == (expected), message, p1, p2)
 #define AssertEqual_6(actual, expected, message, p1, p2, p3) Assert_5((actual) == (expected), message, p1, p2, p3)
-#define AssertEqual_7(actual, expected, message, p1, p2, p3, p4) Assert_6((actual) == (expected), message, p1, p2, p3, p4)
+#define AssertEqual_7(actual, expected, message, p1, p2, p3, p4) \
+    Assert_6((actual) == (expected), message, p1, p2, p3, p4)
 
 // AssertNotEqual()
 #define AssertNotEqual_0() AssertFail_1("No condition provided for AssertNotEqual()")
 #define AssertNotEqual_1(condition) AssertNot_2(condition, #condition)
-#define AssertNotEqual_2(actual, expected) Assert_4((actual) != (expected), "AssertNotEqual(%s, %s) - Provided arguments are equal", #actual, #expected)
+#define AssertNotEqual_2(actual, expected) \
+    Assert_4((actual) != (expected), "AssertNotEqual(%s, %s) - Provided arguments are equal", #actual, #expected)
 #define AssertNotEqual_3(actual, expected, message) Assert_2((actual) != (expected), message)
 #define AssertNotEqual_4(actual, expected, message, p1) Assert_3((actual) != (expected), message, p1)
 #define AssertNotEqual_5(actual, expected, message, p1, p2) Assert_4((actual) != (expected), message, p1, p2)
 #define AssertNotEqual_6(actual, expected, message, p1, p2, p3) Assert_5((actual) != (expected), message, p1, p2, p3)
-#define AssertNotEqual_7(actual, expected, message, p1, p2, p3, p4) Assert_6((actual) != (expected), message, p1, p2, p3, p4)
+#define AssertNotEqual_7(actual, expected, message, p1, p2, p3, p4) \
+    Assert_6((actual) != (expected), message, p1, p2, p3, p4)
 
 // AssertNot()
 #define AssertNot_0() AssertFail_1("No condition provided for AssertNot()")
@@ -264,13 +276,15 @@ extern "C" {
 #define AssertFail_7(message, p1, p2, p3, p4, p5, p6)
 #else
 #define AssertFail_0() RAYLIB_ASSERT_TRACELOG(RAYLIB_ASSERT_LOG, "ASSERT: AssertFail() (%s:%i)", __FILE__, __LINE__)
-#define AssertFail_1(message) RAYLIB_ASSERT_TRACELOG(RAYLIB_ASSERT_LOG, "ASSERT: %s (%s:%i)", message, __FILE__, __LINE__)
+#define AssertFail_1(message) \
+    RAYLIB_ASSERT_TRACELOG(RAYLIB_ASSERT_LOG, "ASSERT: %s (%s:%i)", message, __FILE__, __LINE__)
 #define AssertFail_2(message, p1) AssertFail_1(RAYLIB_ASSERT_TEXTFORMAT(message, p1))
 #define AssertFail_3(message, p1, p2) AssertFail_1(RAYLIB_ASSERT_TEXTFORMAT(message, p1, p2))
 #define AssertFail_4(message, p1, p2, p3) AssertFail_1(RAYLIB_ASSERT_TEXTFORMAT(message, p1, p2, p3))
 #define AssertFail_5(message, p1, p2, p3, p4) AssertFail_1(RAYLIB_ASSERT_TEXTFORMAT(message, p1, p2, p3, p4))
 #define AssertFail_6(message, p1, p2, p3, p4, p5) AssertFail_1(RAYLIB_ASSERT_TEXTFORMAT(message, p1, p2, p3, p4, p5))
-#define AssertFail_7(message, p1, p2, p3, p4, p5, p6) AssertFail_1(RAYLIB_ASSERT_TEXTFORMAT(message, p1, p2, p3, p4, p5, p6))
+#define AssertFail_7(message, p1, p2, p3, p4, p5, p6) \
+    AssertFail_1(RAYLIB_ASSERT_TEXTFORMAT(message, p1, p2, p3, p4, p5, p6))
 #endif
 
 // AssertImage()
@@ -304,33 +318,40 @@ extern "C" {
 #else
 #define AssertImageSame_0() AssertFail_1("AssertImageSame(): No images provided to AssertImageSame(), expected 2")
 #define AssertImageSame_1(image) AssertFail_1("Only one image provided for AssertImageSame()")
-#define AssertImageSame_2(image1, image2) AssertImageSame_5(image1, image2, "AssertImageSame(%s, %s) - Images do not match", #image1, #image2)
-#define AssertImageSame_3(image1, image2, message) do { \
-    if (image1.width != image2.width || image1.height != image2.height || image1.format != image2.format) { \
-        AssertFail_1(message); \
-        break; \
-    } \
-    Color* colors1 = LoadImageColors(image1); \
-    Color* colors2 = LoadImageColors(image2); \
-    bool failure = false; \
-    for (int i = 0; i < image1.width * image1.height; i++) { \
-        Color color1 = colors1[i]; \
-        Color color2 = colors2[i]; \
-        if (color1.r != color2.r || color1.g != color2.g || color1.b != color2.b || color1.a != color2.a) { \
-            failure = true; \
-            break; \
-        } \
-    } \
-    UnloadImageColors(colors1); \
-    UnloadImageColors(colors2); \
-    if (failure) { \
-        AssertFail_1(message); \
-    } \
-} while(0)
-#define AssertImageSame_4(image1, image2, message, p1) AssertImageSame_3(image1, image2, RAYLIB_ASSERT_TEXTFORMAT(message, p1))
-#define AssertImageSame_5(image1, image2, message, p1, p2) AssertImageSame_3(image1, image2, RAYLIB_ASSERT_TEXTFORMAT(message, p1, p2))
-#define AssertImageSame_6(image1, image2, message, p1, p2, p3) AssertImageSame_3(image1, image2, RAYLIB_ASSERT_TEXTFORMAT(message, p1, p2, p3))
-#define AssertImageSame_7(image1, image2, message, p1, p2, p3, p4) AssertImageSame_3(image1, image2, RAYLIB_ASSERT_TEXTFORMAT(message, p1, p2, p3, p4))
+#define AssertImageSame_2(image1, image2) \
+    AssertImageSame_5(image1, image2, "AssertImageSame(%s, %s) - Images do not match", #image1, #image2)
+#define AssertImageSame_3(image1, image2, message)                                                              \
+    do {                                                                                                        \
+        if (image1.width != image2.width || image1.height != image2.height || image1.format != image2.format) { \
+            AssertFail_1(message);                                                                              \
+            break;                                                                                              \
+        }                                                                                                       \
+        Color* colors1 = LoadImageColors(image1);                                                               \
+        Color* colors2 = LoadImageColors(image2);                                                               \
+        bool failure = false;                                                                                   \
+        for (int i = 0; i < image1.width * image1.height; i++) {                                                \
+            Color color1 = colors1[i];                                                                          \
+            Color color2 = colors2[i];                                                                          \
+            if (color1.r != color2.r || color1.g != color2.g || color1.b != color2.b || color1.a != color2.a) { \
+                failure = true;                                                                                 \
+                break;                                                                                          \
+            }                                                                                                   \
+        }                                                                                                       \
+        UnloadImageColors(colors1);                                                                             \
+        UnloadImageColors(colors2);                                                                             \
+        if (failure) {                                                                                          \
+            AssertFail_1(message);                                                                              \
+        }                                                                                                       \
+    }                                                                                                           \
+    while (0)
+#define AssertImageSame_4(image1, image2, message, p1) \
+    AssertImageSame_3(image1, image2, RAYLIB_ASSERT_TEXTFORMAT(message, p1))
+#define AssertImageSame_5(image1, image2, message, p1, p2) \
+    AssertImageSame_3(image1, image2, RAYLIB_ASSERT_TEXTFORMAT(message, p1, p2))
+#define AssertImageSame_6(image1, image2, message, p1, p2, p3) \
+    AssertImageSame_3(image1, image2, RAYLIB_ASSERT_TEXTFORMAT(message, p1, p2, p3))
+#define AssertImageSame_7(image1, image2, message, p1, p2, p3, p4) \
+    AssertImageSame_3(image1, image2, RAYLIB_ASSERT_TEXTFORMAT(message, p1, p2, p3, p4))
 #endif
 
 // AssertColorSame()
@@ -346,16 +367,23 @@ extern "C" {
 #else
 #define AssertColorSame_0() AssertFail_1("Colors not provided to AssertColorSame()")
 #define AssertColorSame_1(color) AssertFail_1("Expected two colors for AssertColorSame()")
-#define AssertColorSame_2(color1, color2) AssertColorSame_5(color1, color2, "AssertColorSame(%s, %s) - Colors do not match", #color1, #color2)
-#define AssertColorSame_3(color1, color2, message) do { \
-    if (color1.r != color2.r || color1.g != color2.g || color1.b != color2.b || color1.a != color2.a) { \
-        AssertFail_1(message); \
-    }\
-} while (0)
-#define AssertColorSame_4(color1, color2, message, p1) AssertColorSame_3(color1, color2, RAYLIB_ASSERT_TEXTFORMAT(message, p1))
-#define AssertColorSame_5(color1, color2, message, p1, p2) AssertColorSame_3(color1, color2, RAYLIB_ASSERT_TEXTFORMAT(message, p1, p2))
-#define AssertColorSame_6(color1, color2, message, p1, p2, p3) AssertColorSame_3(color1, color2, RAYLIB_ASSERT_TEXTFORMAT(message, p1, p2, p3))
-#define AssertColorSame_7(color1, color2, message, p1, p2, p3, p4) AssertColorSame_3(color1, color2, RAYLIB_ASSERT_TEXTFORMAT(message, p1, p2, p3, p4))
+#define AssertColorSame_2(color1, color2) \
+    AssertColorSame_5(color1, color2, "AssertColorSame(%s, %s) - Colors do not match", #color1, #color2)
+#define AssertColorSame_3(color1, color2, message)                                                          \
+    do {                                                                                                    \
+        if (color1.r != color2.r || color1.g != color2.g || color1.b != color2.b || color1.a != color2.a) { \
+            AssertFail_1(message);                                                                          \
+        }                                                                                                   \
+    }                                                                                                       \
+    while (0)
+#define AssertColorSame_4(color1, color2, message, p1) \
+    AssertColorSame_3(color1, color2, RAYLIB_ASSERT_TEXTFORMAT(message, p1))
+#define AssertColorSame_5(color1, color2, message, p1, p2) \
+    AssertColorSame_3(color1, color2, RAYLIB_ASSERT_TEXTFORMAT(message, p1, p2))
+#define AssertColorSame_6(color1, color2, message, p1, p2, p3) \
+    AssertColorSame_3(color1, color2, RAYLIB_ASSERT_TEXTFORMAT(message, p1, p2, p3))
+#define AssertColorSame_7(color1, color2, message, p1, p2, p3, p4) \
+    AssertColorSame_3(color1, color2, RAYLIB_ASSERT_TEXTFORMAT(message, p1, p2, p3, p4))
 #endif
 
 // AssertVector2Same()
@@ -371,20 +399,27 @@ extern "C" {
 #else
 #define AssertVector2Same_0() AssertFail_1("Vectors not provided to AssertVector2Same()")
 #define AssertVector2Same_1(vector) AssertFail_1("Expected two vectors for AssertVector2Same()")
-#define AssertVector2Same_2(vector1, vector2) AssertVector2Same_5(vector1, vector2, "AssertVector2Same(%s, %s) - vectors do not match", #vector1, #vector2)
-#define AssertVector2Same_3(vector1, vector2, message) do { \
-    if (vector1.x != vector2.x || vector1.y != vector2.y) { \
-        AssertFail_1(message); \
-    }\
-} while (0)
-#define AssertVector2Same_4(vector1, vector2, message, p1) AssertVector2Same_3(vector1, vector2, RAYLIB_ASSERT_TEXTFORMAT(message, p1))
-#define AssertVector2Same_5(vector1, vector2, message, p1, p2) AssertVector2Same_3(vector1, vector2, RAYLIB_ASSERT_TEXTFORMAT(message, p1, p2))
-#define AssertVector2Same_6(vector1, vector2, message, p1, p2, p3) AssertVector2Same_3(vector1, vector2, RAYLIB_ASSERT_TEXTFORMAT(message, p1, p2, p3))
-#define AssertVector2Same_7(vector1, vector2, message, p1, p2, p3, p4) AssertVector2Same_3(vector1, vector2, RAYLIB_ASSERT_TEXTFORMAT(message, p1, p2, p3, p4))
+#define AssertVector2Same_2(vector1, vector2) \
+    AssertVector2Same_5(vector1, vector2, "AssertVector2Same(%s, %s) - vectors do not match", #vector1, #vector2)
+#define AssertVector2Same_3(vector1, vector2, message)          \
+    do {                                                        \
+        if (vector1.x != vector2.x || vector1.y != vector2.y) { \
+            AssertFail_1(message);                              \
+        }                                                       \
+    }                                                           \
+    while (0)
+#define AssertVector2Same_4(vector1, vector2, message, p1) \
+    AssertVector2Same_3(vector1, vector2, RAYLIB_ASSERT_TEXTFORMAT(message, p1))
+#define AssertVector2Same_5(vector1, vector2, message, p1, p2) \
+    AssertVector2Same_3(vector1, vector2, RAYLIB_ASSERT_TEXTFORMAT(message, p1, p2))
+#define AssertVector2Same_6(vector1, vector2, message, p1, p2, p3) \
+    AssertVector2Same_3(vector1, vector2, RAYLIB_ASSERT_TEXTFORMAT(message, p1, p2, p3))
+#define AssertVector2Same_7(vector1, vector2, message, p1, p2, p3, p4) \
+    AssertVector2Same_3(vector1, vector2, RAYLIB_ASSERT_TEXTFORMAT(message, p1, p2, p3, p4))
 #endif
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif  // RAYLIB_ASSERT_H
+#endif // RAYLIB_ASSERT_H

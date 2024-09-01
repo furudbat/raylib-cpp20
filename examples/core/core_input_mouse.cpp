@@ -1,13 +1,13 @@
 /*******************************************************************************************
-*
-*   raylib [core] example - Mouse input
-*
-*   This example has been created using raylib 1.0 (www.raylib.com)
-*   raylib is licensed under an unmodified zlib/libpng license (View raylib.h for details)
-*
-*   Copyright (c) 2014 Ramon Santamaria (@raysan5)
-*
-********************************************************************************************/
+ *
+ *   raylib [core] example - Mouse input
+ *
+ *   This example has been created using raylib 1.0 (www.raylib.com)
+ *   raylib is licensed under an unmodified zlib/libpng license (View raylib.h for details)
+ *
+ *   Copyright (c) 2014 Ramon Santamaria (@raysan5)
+ *
+ ********************************************************************************************/
 
 #include "raylib-cpp.hpp"
 
@@ -19,22 +19,25 @@ int main() {
 
     raylib::Window window(ScreenWidth, ScreenHeight, "raylib [core] example - mouse input");
 
-    raylib::Vector2 ballPosition {{.x = -100.0F ,.y = -100.0F}};
+    raylib::Vector2 ballPosition{{.x = -100.0F, .y = -100.0F}};
     auto ballColor = raylib::Color::DarkBlue();
     auto textColor = raylib::Color::DarkGray();
 
-    SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
+    SetTargetFPS(60); // Set our game to run at 60 frames-per-second
     //---------------------------------------------------------------------------------------
 
     // Main game loop
-    while (!window.ShouldClose()) {    // Detect window close button or ESC key
+    while (!window.ShouldClose()) { // Detect window close button or ESC key
         // Update
         //----------------------------------------------------------------------------------
         ballPosition = GetMousePosition();
 
-        if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) ballColor = MAROON;
-        else if (IsMouseButtonPressed(MOUSE_MIDDLE_BUTTON)) ballColor = LIME;
-        else if (IsMouseButtonPressed(MOUSE_RIGHT_BUTTON)) ballColor = DARKBLUE;
+        if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+            ballColor = MAROON;
+        else if (IsMouseButtonPressed(MOUSE_MIDDLE_BUTTON))
+            ballColor = LIME;
+        else if (IsMouseButtonPressed(MOUSE_RIGHT_BUTTON))
+            ballColor = DARKBLUE;
         //----------------------------------------------------------------------------------
 
         // Draw

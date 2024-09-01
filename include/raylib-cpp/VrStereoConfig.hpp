@@ -8,12 +8,10 @@ namespace raylib {
  * VR stereo config functions for VR simulator
  */
 class VrStereoConfig {
- public:
+public:
     constexpr VrStereoConfig() = default;
 
-    explicit VrStereoConfig(const ::VrDeviceInfo& info) {
-        Load(info);
-    }
+    explicit VrStereoConfig(const ::VrDeviceInfo& info) { Load(info); }
     explicit VrStereoConfig(::VrDeviceInfo&& info) noexcept {
         Load(info);
         info = {};
@@ -22,16 +20,12 @@ class VrStereoConfig {
     /**
      * Load VR stereo config for VR simulator device parameters
      */
-    void Load(const ::VrDeviceInfo& info) {
-        set(::LoadVrStereoConfig(info));
-    }
+    void Load(const ::VrDeviceInfo& info) { set(::LoadVrStereoConfig(info)); }
 
     /**
      * Unload VR stereo config
      */
-    ~VrStereoConfig() {
-        Unload();
-    }
+    ~VrStereoConfig() { Unload(); }
 
     /**
      * Begin stereo rendering
@@ -52,11 +46,8 @@ class VrStereoConfig {
     /**
      * Unload VR stereo config
      */
-    void Unload() {
-        ::UnloadVrStereoConfig(m_data);
-    }
-
- protected:
+    void Unload() { ::UnloadVrStereoConfig(m_data); }
+protected:
     constexpr void set(const ::VrStereoConfig& config) noexcept {
         m_data.projection[0] = config.projection[0];
         m_data.projection[1] = config.projection[1];
@@ -78,8 +69,8 @@ class VrStereoConfig {
 
     ::VrStereoConfig m_data;
 };
-}  // namespace raylib
+} // namespace raylib
 
 using RVrStereoConfig = raylib::VrStereoConfig;
 
-#endif  // RAYLIB_CPP_INCLUDE_VRSTEREOCONFIG_HPP_
+#endif // RAYLIB_CPP_INCLUDE_VRSTEREOCONFIG_HPP_

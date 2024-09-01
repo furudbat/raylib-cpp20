@@ -15,7 +15,7 @@ namespace raylib {
  * AudioStream management functions
  */
 class AudioStream {
- public:
+public:
     static constexpr uint32_t LoadDefaultChannels = 2;
     static constexpr float SetDefaultVolume = 1.0F;
     static constexpr float SetDefaultPan = 0.5F;
@@ -33,11 +33,13 @@ class AudioStream {
     }
 
     [[deprecated("Use AudioStream(music)")]]
-    explicit constexpr AudioStream(owner<rAudioBuffer*> buffer,
-            owner<rAudioProcessor*> processor = nullptr,
-            unsigned int sampleRate = 0,
-            unsigned int sampleSize = 0,
-            unsigned int channels = 0) : m_data{buffer, processor, sampleRate, sampleSize, channels} {
+    explicit constexpr AudioStream(
+        owner<rAudioBuffer*> buffer,
+        owner<rAudioProcessor*> processor = nullptr,
+        unsigned int sampleRate = 0,
+        unsigned int sampleSize = 0,
+        unsigned int channels = 0)
+        : m_data{buffer, processor, sampleRate, sampleSize, channels} {
         // Nothing.
     }
 
@@ -46,7 +48,8 @@ class AudioStream {
      *
      * @throws raylib::RaylibException Throws if the AudioStream failed to load.
      */
-    AudioStream(unsigned int sampleRate, unsigned int sampleSize, unsigned int channels = LoadDefaultChannels) RAYLIB_CPP_THROWS {
+    AudioStream(unsigned int sampleRate, unsigned int sampleSize, unsigned int channels = LoadDefaultChannels)
+        RAYLIB_CPP_THROWS {
         Load(sampleRate, sampleSize, channels);
     }
 
@@ -60,19 +63,13 @@ class AudioStream {
         other.m_data.sampleSize = 0;
         other.m_data.channels = 0;
     }
-    ~AudioStream() {
-        Unload();
-    }
+    ~AudioStream() { Unload(); }
 
-    explicit operator ::AudioStream() const noexcept {
-        return m_data;
-    }
-    [[nodiscard]] ::AudioStream c_raylib() const & noexcept {
-        return m_data;
-    }
+    explicit operator ::AudioStream() const noexcept { return m_data; }
+    [[nodiscard]] ::AudioStream c_raylib() const& noexcept { return m_data; }
 
-    GETTER(rAudioBuffer *, Buffer, m_data.buffer)
-    GETTER(rAudioProcessor *, Processor, m_data.processor)
+    GETTER(rAudioBuffer*, Buffer, m_data.buffer)
+    GETTER(rAudioProcessor*, Processor, m_data.processor)
     GETTER(unsigned int, SampleRate, m_data.sampleRate)
     GETTER(unsigned int, SampleSize, m_data.sampleSize)
     GETTER(unsigned int, Channels, m_data.channels)
@@ -112,7 +109,7 @@ class AudioStream {
      */
     template<typename T>
     /// @TODO: require data must be integral (?), short, unsigned char, ... ???
-    AudioStream& Update(const T *data, int samplesCount) {
+    AudioStream& Update(const T* data, int samplesCount) {
         ::UpdateAudioStream(m_data, data, samplesCount);
         return *this;
     }
@@ -130,9 +127,7 @@ class AudioStream {
     /**
      * Check if any audio stream buffers requires refill
      */
-    [[nodiscard]] bool IsProcessed() const {
-        return ::IsAudioStreamProcessed(m_data);
-    }
+    [[nodiscard]] bool IsProcessed() const { return ::IsAudioStreamProcessed(m_data); }
 
     /**
      * Play audio stream
@@ -164,9 +159,7 @@ class AudioStream {
     /**
      * Check if audio stream is playing
      */
-    [[nodiscard]] bool IsPlaying() const {
-        return ::IsAudioStreamPlaying(m_data);
-    }
+    [[nodiscard]] bool IsPlaying() const { return ::IsAudioStreamPlaying(m_data); }
 
     /**
      * Stop audio stream
@@ -207,44 +200,35 @@ class AudioStream {
     /**
      * Default size for new audio streams
      */
-    static void SetBufferSizeDefault(int size) {
-        ::SetAudioStreamBufferSizeDefault(size);
-    }
+    static void SetBufferSizeDefault(int size) { ::SetAudioStreamBufferSizeDefault(size); }
 
     /**
      * Audio thread callback to request new data
      */
-    void SetCallback(::AudioCallback callback) {
-        ::SetAudioStreamCallback(m_data, callback);
-    }
+    void SetCallback(::AudioCallback callback) { ::SetAudioStreamCallback(m_data, callback); }
 
     /**
      * Attach audio stream processor to stream
      */
-    void AttachProcessor(::AudioCallback processor) {
-        ::AttachAudioStreamProcessor(m_data, processor);
-    }
+    void AttachProcessor(::AudioCallback processor) { ::AttachAudioStreamProcessor(m_data, processor); }
 
     /**
      * Detach audio stream processor from stream
      */
-    void DetachProcessor(::AudioCallback processor) {
-        ::DetachAudioStreamProcessor(m_data, processor);
-    }
+    void DetachProcessor(::AudioCallback processor) { ::DetachAudioStreamProcessor(m_data, processor); }
 
     /**
      * Retrieve whether or not the audio stream is ready.
      */
-    [[nodiscard]] bool IsReady() const {
-        return ::IsAudioStreamReady(m_data);
-    }
+    [[nodiscard]] bool IsReady() const { return ::IsAudioStreamReady(m_data); }
 
     /**
      * Load audio stream (to stream raw audio pcm data)
      *
      * @throws raylib::RaylibException Throws if the AudioStream failed to load.
      */
-    RAYLIB_CPP_EXPECTED_RESULT_VOID Load(unsigned int sampleRate, unsigned int sampleSize, unsigned int channels = LoadDefaultChannels) {
+    RAYLIB_CPP_EXPECTED_RESULT_VOID
+    Load(unsigned int sampleRate, unsigned int sampleSize, unsigned int channels = LoadDefaultChannels) {
         Unload();
         set(::LoadAudioStream(sampleRate, sampleSize, channels));
         if (!IsReady()) {
@@ -252,8 +236,7 @@ class AudioStream {
         }
         RAYLIB_CPP_RETURN_EXPECTED();
     }
-
- protected:
+protected:
     constexpr void set(const ::AudioStream& stream) noexcept {
         m_data.buffer = stream.buffer;
         m_data.processor = stream.processor;
@@ -262,7 +245,7 @@ class AudioStream {
         m_data.channels = stream.channels;
     }
 
-    ::AudioStream m_data {
+    ::AudioStream m_data{
         .buffer = nullptr,
         .processor = nullptr,
         .sampleRate = 0,
@@ -270,8 +253,8 @@ class AudioStream {
         .channels = 0,
     };
 };
-}  // namespace raylib
+} // namespace raylib
 
 using RAudioStream = raylib::AudioStream;
 
-#endif  // RAYLIB_CPP_INCLUDE_AUDIOSTREAM_HPP_
+#endif // RAYLIB_CPP_INCLUDE_AUDIOSTREAM_HPP_

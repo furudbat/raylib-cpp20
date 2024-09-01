@@ -2,16 +2,16 @@
 #define RAYLIB_CPP_INCLUDE_SHADERUNMANAGED_HPP_
 
 
-#include "raylib.hpp"
-#include "raylib-cpp-utils.hpp"
 #include "Texture.hpp"
 #include "enums.hpp"
+#include "raylib-cpp-utils.hpp"
+#include "raylib.hpp"
 
 #include <rlgl.h>
 
-#include <string>
 #include <filesystem>
 #include <optional>
+#include <string>
 #include <utility>
 #include <variant>
 
@@ -25,7 +25,7 @@ class Model;
  * Shader type (generic)
  */
 class ShaderUnmanaged {
- public:
+public:
     constexpr ShaderUnmanaged() : m_data{NullShader} {}
 
     constexpr explicit ShaderUnmanaged(const ::Shader& shader) = delete;
@@ -43,16 +43,16 @@ class ShaderUnmanaged {
         std::optional<std::filesystem::path> fsFileName;
     };
     explicit ShaderUnmanaged(LoadShaderOptions options) {
-        set(::LoadShader(options.vsFileName ? options.vsFileName.value().c_str() : nullptr, options.fsFileName ? options.fsFileName.value().c_str() : nullptr));
+        set(::LoadShader(
+            options.vsFileName ? options.vsFileName.value().c_str() : nullptr,
+            options.fsFileName ? options.fsFileName.value().c_str() : nullptr));
     }
 
     struct LoadShaderOptionsC {
         czstring vsFileName{nullptr};
         czstring fsFileName{nullptr};
     };
-    explicit ShaderUnmanaged(LoadShaderOptionsC options) {
-        set(::LoadShader(options.vsFileName, options.fsFileName));
-    }
+    explicit ShaderUnmanaged(LoadShaderOptionsC options) { set(::LoadShader(options.vsFileName, options.fsFileName)); }
 
     [[deprecated("Use ShaderUnmanaged(LoadShaderOptionsC), named and strong typed parameters")]]
     ShaderUnmanaged(czstring vsFileName, czstring fsFileName) {
@@ -64,13 +64,9 @@ class ShaderUnmanaged {
      *
      * @see ::LoadShader
      */
-    static ShaderUnmanaged Load(LoadShaderOptions options) {
-        return ShaderUnmanaged(std::move(options));
-    }
+    static ShaderUnmanaged Load(LoadShaderOptions options) { return ShaderUnmanaged(std::move(options)); }
 
-    static ShaderUnmanaged Load(LoadShaderOptionsC options) {
-        return ShaderUnmanaged(options);
-    }
+    static ShaderUnmanaged Load(LoadShaderOptionsC options) { return ShaderUnmanaged(options); }
 
     /**
      * Load a shader from memory.
@@ -83,8 +79,9 @@ class ShaderUnmanaged {
     };
     RAYLIB_CPP_EXPECTED_STATIC_RESULT(ShaderUnmanaged) LoadFromMemory(LoadFromMemoryOptions options) RAYLIB_CPP_THROWS {
         auto shader = ::LoadShaderFromMemory(options.vsCode.get().c_str(), options.fsCode.get().c_str());
-        if(!::IsShaderReady(shader)) {
-            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Shader from memory: " + options.vsCode.get() + ", " + options.fsCode.get()));
+        if (!::IsShaderReady(shader)) {
+            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError(
+                "Failed to load Shader from memory: " + options.vsCode.get() + ", " + options.fsCode.get()));
         }
         RAYLIB_CPP_RETURN_EXPECTED_VALUE(ShaderUnmanaged(std::move(shader)));
     }
@@ -93,10 +90,13 @@ class ShaderUnmanaged {
         czstring vsCode;
         czstring fsCode;
     };
-    RAYLIB_CPP_EXPECTED_STATIC_RESULT(ShaderUnmanaged) LoadFromMemory(LoadFromMemoryOptionsC options) RAYLIB_CPP_THROWS {
+    RAYLIB_CPP_EXPECTED_STATIC_RESULT(ShaderUnmanaged)
+    LoadFromMemory(LoadFromMemoryOptionsC options) RAYLIB_CPP_THROWS {
         auto shader = ::LoadShaderFromMemory(options.vsCode, options.fsCode);
-        if(!::IsShaderReady(shader)) {
-            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError("Failed to load Shader from memory: " + std::string{options.vsCode} + ", " + std::string{options.fsCode}));
+        if (!::IsShaderReady(shader)) {
+            RAYLIB_CPP_RETURN_UNEXPECTED_OR_THROW(RaylibError(
+                "Failed to load Shader from memory: " + std::string{options.vsCode} + ", " +
+                std::string{options.fsCode}));
         }
         RAYLIB_CPP_RETURN_EXPECTED_VALUE(ShaderUnmanaged(std::move(shader)));
     }
@@ -104,24 +104,28 @@ class ShaderUnmanaged {
     GETTERSETTER(unsigned int, Id, m_data.id)
     CONST_GETTER(int*, Locs, m_data.locs)
     int GetLoc(size_t index) const {
-        if(m_data.locs != nullptr) {
+        if (m_data.locs != nullptr) {
             return m_data.locs[index];
         }
         return -1;
     }
     int GetLoc(ShaderLocationIndexT index) const {
-        if(m_data.locs != nullptr) {
+        if (m_data.locs != nullptr) {
             return m_data.locs[static_cast<size_t>(index)];
         }
         return -1;
     }
-    //SPAN_GETTER(int, LocsSpan, m_data.locs, RL_MAX_SHADER_LOCATIONS)
-    std::span<const int> GetLocsSpan() const { return { m_data.locs, m_data.locs != nullptr ? static_cast<size_t>(RL_MAX_SHADER_LOCATIONS) : 0}; }
-    std::span<int> GetLocsSpan() { return { m_data.locs, m_data.locs != nullptr ? static_cast<size_t>(RL_MAX_SHADER_LOCATIONS) : 0}; }
+    // SPAN_GETTER(int, LocsSpan, m_data.locs, RL_MAX_SHADER_LOCATIONS)
+    std::span<const int> GetLocsSpan() const {
+        return {m_data.locs, m_data.locs != nullptr ? static_cast<size_t>(RL_MAX_SHADER_LOCATIONS) : 0};
+    }
+    std::span<int> GetLocsSpan() {
+        return {m_data.locs, m_data.locs != nullptr ? static_cast<size_t>(RL_MAX_SHADER_LOCATIONS) : 0};
+    }
     void SetLocs(std::span<const int> value) {
-        if(m_data.id != 0) {
+        if (m_data.id != 0) {
             if (m_data.locs == nullptr) {
-                m_data.locs = (int *) RL_CALLOC(RL_MAX_SHADER_LOCATIONS, sizeof(int));
+                m_data.locs = (int*)RL_CALLOC(RL_MAX_SHADER_LOCATIONS, sizeof(int));
                 // All locations reset to -1 (no location)
                 for (size_t i = 0; i < RL_MAX_SHADER_LOCATIONS; i++) {
                     m_data.locs[i] = -1;
@@ -134,23 +138,23 @@ class ShaderUnmanaged {
     }
     [[deprecated("Use SetLoc(ShaderLocationIndex)")]]
     void SetLoc(int index, int value) {
-        if(m_data.locs != nullptr) {
+        if (m_data.locs != nullptr) {
             m_data.locs[static_cast<size_t>(index)] = value;
         }
     }
     void SetLoc(ShaderLocationIndexT index, int value) {
-        if(m_data.locs != nullptr) {
+        if (m_data.locs != nullptr) {
             m_data.locs[static_cast<size_t>(index)] = value;
         }
     }
     [[deprecated("Use SetLocFromLocation(ShaderLocationIndex)")]]
     void SetLocFromLocation(int index, czstring uniformName) {
-        if(m_data.locs != nullptr) {
+        if (m_data.locs != nullptr) {
             m_data.locs[static_cast<size_t>(index)] = ::GetShaderLocation(m_data, uniformName);
         }
     }
     void SetLocFromLocation(ShaderLocationIndexT index, czstring uniformName) {
-        if(m_data.locs != nullptr) {
+        if (m_data.locs != nullptr) {
             m_data.locs[static_cast<size_t>(index)] = ::GetShaderLocation(m_data, uniformName);
         }
     }
@@ -163,12 +167,8 @@ class ShaderUnmanaged {
         return *this;
     }
 
-    explicit operator ::Shader() const noexcept {
-        return m_data;
-    }
-    [[nodiscard]] ::Shader c_raylib() const & noexcept {
-        return m_data;
-    }
+    explicit operator ::Shader() const noexcept { return m_data; }
+    [[nodiscard]] ::Shader c_raylib() const& noexcept { return m_data; }
 
     /**
      * Begin custom shader drawing.
@@ -191,9 +191,7 @@ class ShaderUnmanaged {
      *
      * @see GetShaderLocation()
      */
-    [[nodiscard]] int GetLocation(czstring uniformName) const {
-        return ::GetShaderLocation(m_data, uniformName);
-    }
+    [[nodiscard]] int GetLocation(czstring uniformName) const { return ::GetShaderLocation(m_data, uniformName); }
     [[nodiscard]] int GetLocation(const std::string& uniformName) const {
         return ::GetShaderLocation(m_data, uniformName.c_str());
     }
@@ -234,101 +232,119 @@ class ShaderUnmanaged {
         ::SetShaderValue(m_data, uniformLoc, &value, uniformType);
         return *this;
     }
-    ShaderUnmanaged& SetValue(int uniformLoc, std::variant<float,
-                     std::array<float, 2>, ///< vec2 (2 float)
-                     std::array<float, 3>, ///< vec3 (3 float)
-                     std::array<float, 4>, ///< vec4 (4 float)
-                     ::Vector2,            ///< vec2 (2 float)
-                     ::Vector3,            ///< vec3 (3 float)
-                     ::Vector4,            ///< vec4 (4 float)
-                     int,
-                     std::array<int, 2>,   ///< ivec2 (2 int)
-                     std::array<int, 3>,   ///< ivec3 (3 int)
-                     std::array<int, 4>,   ///< ivec4 (4 int)
-                     ::Texture2D> value) {
-        std::visit([&](auto&& val) {
-           using T = std::decay_t<decltype(val)>;
-           if constexpr (std::is_same_v<T, float>)
-               ::SetShaderValue(m_data, uniformLoc, &val, SHADER_UNIFORM_FLOAT);
-           else if constexpr (std::is_same_v<T, ::Vector2>)
-               ::SetShaderValue(m_data, uniformLoc, &val, SHADER_UNIFORM_VEC2);
-           else if constexpr (std::is_same_v<T, std::array<float, 2>>)
-               ::SetShaderValue(m_data, uniformLoc, val.data(), SHADER_UNIFORM_VEC2);
-           else if constexpr (std::is_same_v<T, ::Vector3>)
-               ::SetShaderValue(m_data, uniformLoc, &val, SHADER_UNIFORM_VEC3);
-           else if constexpr (std::is_same_v<T, std::array<float, 3>>)
-               ::SetShaderValue(m_data, uniformLoc, val.data(), SHADER_UNIFORM_VEC3);
-           else if constexpr (std::is_same_v<T, ::Vector4>)
-               ::SetShaderValue(m_data, uniformLoc, &val, SHADER_UNIFORM_VEC4);
-           else if constexpr (std::is_same_v<T, std::array<float, 4>>)
-               ::SetShaderValue(m_data, uniformLoc, val.data(), SHADER_UNIFORM_VEC4);
-           else if constexpr (std::is_same_v<T, int>)
-               ::SetShaderValue(m_data, uniformLoc, &val, SHADER_UNIFORM_INT);
-           else if constexpr (std::is_same_v<T, std::array<int, 2>>)
-               ::SetShaderValue(m_data, uniformLoc, val.data(), SHADER_UNIFORM_IVEC2);
-           else if constexpr (std::is_same_v<T, std::array<int, 3>>)
-               ::SetShaderValue(m_data, uniformLoc, val.data(), SHADER_UNIFORM_IVEC3);
-           else if constexpr (std::is_same_v<T, std::array<int, 4>>)
-               ::SetShaderValue(m_data, uniformLoc, val.data(), SHADER_UNIFORM_IVEC4);
-           else if constexpr (std::is_same_v<T, ::Texture2D>)
-               ::SetShaderValue(m_data, uniformLoc, &val.id, SHADER_UNIFORM_SAMPLER2D);
-       }, value);
-       return *this;
-    }
-    ShaderUnmanaged& SetValueFromLocation(czstring uniformName, std::variant<float,
+    ShaderUnmanaged& SetValue(
+        int uniformLoc,
+        std::variant<
+            float,
             std::array<float, 2>, ///< vec2 (2 float)
             std::array<float, 3>, ///< vec3 (3 float)
             std::array<float, 4>, ///< vec4 (4 float)
-            ::Vector2,            ///< vec2 (2 float)
-            ::Vector3,            ///< vec3 (3 float)
-            ::Vector4,            ///< vec4 (4 float)
+            ::Vector2, ///< vec2 (2 float)
+            ::Vector3, ///< vec3 (3 float)
+            ::Vector4, ///< vec4 (4 float)
             int,
-            std::array<int, 2>,   ///< ivec2 (2 int)
-            std::array<int, 3>,   ///< ivec3 (3 int)
-            std::array<int, 4>,   ///< ivec4 (4 int)
+            std::array<int, 2>, ///< ivec2 (2 int)
+            std::array<int, 3>, ///< ivec3 (3 int)
+            std::array<int, 4>, ///< ivec4 (4 int)
+            ::Texture2D> value) {
+        std::visit(
+            [&](auto&& val)
+            {
+                using T = std::decay_t<decltype(val)>;
+                if constexpr (std::is_same_v<T, float>)
+                    ::SetShaderValue(m_data, uniformLoc, &val, SHADER_UNIFORM_FLOAT);
+                else if constexpr (std::is_same_v<T, ::Vector2>)
+                    ::SetShaderValue(m_data, uniformLoc, &val, SHADER_UNIFORM_VEC2);
+                else if constexpr (std::is_same_v<T, std::array<float, 2>>)
+                    ::SetShaderValue(m_data, uniformLoc, val.data(), SHADER_UNIFORM_VEC2);
+                else if constexpr (std::is_same_v<T, ::Vector3>)
+                    ::SetShaderValue(m_data, uniformLoc, &val, SHADER_UNIFORM_VEC3);
+                else if constexpr (std::is_same_v<T, std::array<float, 3>>)
+                    ::SetShaderValue(m_data, uniformLoc, val.data(), SHADER_UNIFORM_VEC3);
+                else if constexpr (std::is_same_v<T, ::Vector4>)
+                    ::SetShaderValue(m_data, uniformLoc, &val, SHADER_UNIFORM_VEC4);
+                else if constexpr (std::is_same_v<T, std::array<float, 4>>)
+                    ::SetShaderValue(m_data, uniformLoc, val.data(), SHADER_UNIFORM_VEC4);
+                else if constexpr (std::is_same_v<T, int>)
+                    ::SetShaderValue(m_data, uniformLoc, &val, SHADER_UNIFORM_INT);
+                else if constexpr (std::is_same_v<T, std::array<int, 2>>)
+                    ::SetShaderValue(m_data, uniformLoc, val.data(), SHADER_UNIFORM_IVEC2);
+                else if constexpr (std::is_same_v<T, std::array<int, 3>>)
+                    ::SetShaderValue(m_data, uniformLoc, val.data(), SHADER_UNIFORM_IVEC3);
+                else if constexpr (std::is_same_v<T, std::array<int, 4>>)
+                    ::SetShaderValue(m_data, uniformLoc, val.data(), SHADER_UNIFORM_IVEC4);
+                else if constexpr (std::is_same_v<T, ::Texture2D>)
+                    ::SetShaderValue(m_data, uniformLoc, &val.id, SHADER_UNIFORM_SAMPLER2D);
+            },
+            value);
+        return *this;
+    }
+    ShaderUnmanaged& SetValueFromLocation(
+        czstring uniformName,
+        std::variant<
+            float,
+            std::array<float, 2>, ///< vec2 (2 float)
+            std::array<float, 3>, ///< vec3 (3 float)
+            std::array<float, 4>, ///< vec4 (4 float)
+            ::Vector2, ///< vec2 (2 float)
+            ::Vector3, ///< vec3 (3 float)
+            ::Vector4, ///< vec4 (4 float)
+            int,
+            std::array<int, 2>, ///< ivec2 (2 int)
+            std::array<int, 3>, ///< ivec3 (3 int)
+            std::array<int, 4>, ///< ivec4 (4 int)
             ::Texture2D> value) {
         return SetValue(GetLocation(uniformName), value);
     }
-    ShaderUnmanaged& SetValueFromLocation(const std::string& uniformName, std::variant<float,
+    ShaderUnmanaged& SetValueFromLocation(
+        const std::string& uniformName,
+        std::variant<
+            float,
             std::array<float, 2>, ///< vec2 (2 float)
             std::array<float, 3>, ///< vec3 (3 float)
             std::array<float, 4>, ///< vec4 (4 float)
-            ::Vector2,            ///< vec2 (2 float)
-            ::Vector3,            ///< vec3 (3 float)
-            ::Vector4,            ///< vec4 (4 float)
+            ::Vector2, ///< vec2 (2 float)
+            ::Vector3, ///< vec3 (3 float)
+            ::Vector4, ///< vec4 (4 float)
             int,
-            std::array<int, 2>,   ///< ivec2 (2 int)
-            std::array<int, 3>,   ///< ivec3 (3 int)
-            std::array<int, 4>,   ///< ivec4 (4 int)
+            std::array<int, 2>, ///< ivec2 (2 int)
+            std::array<int, 3>, ///< ivec3 (3 int)
+            std::array<int, 4>, ///< ivec4 (4 int)
             ::Texture2D> value) {
         return SetValue(GetLocation(uniformName), value);
     }
     [[deprecated("Use SetValueFromLoc(ShaderLocationIndex, ...)")]]
-    ShaderUnmanaged& SetValueFromLoc(size_t loc_index, std::variant<float,
+    ShaderUnmanaged& SetValueFromLoc(
+        size_t loc_index,
+        std::variant<
+            float,
             std::array<float, 2>, ///< vec2 (2 float)
             std::array<float, 3>, ///< vec3 (3 float)
             std::array<float, 4>, ///< vec4 (4 float)
-            ::Vector2,            ///< vec2 (2 float)
-            ::Vector3,            ///< vec3 (3 float)
-            ::Vector4,            ///< vec4 (4 float)
+            ::Vector2, ///< vec2 (2 float)
+            ::Vector3, ///< vec3 (3 float)
+            ::Vector4, ///< vec4 (4 float)
             int,
-            std::array<int, 2>,   ///< ivec2 (2 int)
-            std::array<int, 3>,   ///< ivec3 (3 int)
-            std::array<int, 4>,   ///< ivec4 (4 int)
+            std::array<int, 2>, ///< ivec2 (2 int)
+            std::array<int, 3>, ///< ivec3 (3 int)
+            std::array<int, 4>, ///< ivec4 (4 int)
             ::Texture2D> value) {
         return SetValue(GetLoc(loc_index), value);
     }
-    ShaderUnmanaged& SetValueFromLoc(ShaderLocationIndexT loc_index, std::variant<float,
+    ShaderUnmanaged& SetValueFromLoc(
+        ShaderLocationIndexT loc_index,
+        std::variant<
+            float,
             std::array<float, 2>, ///< vec2 (2 float)
             std::array<float, 3>, ///< vec3 (3 float)
             std::array<float, 4>, ///< vec4 (4 float)
-            ::Vector2,            ///< vec2 (2 float)
-            ::Vector3,            ///< vec3 (3 float)
-            ::Vector4,            ///< vec4 (4 float)
+            ::Vector2, ///< vec2 (2 float)
+            ::Vector3, ///< vec3 (3 float)
+            ::Vector4, ///< vec4 (4 float)
             int,
-            std::array<int, 2>,   ///< ivec2 (2 int)
-            std::array<int, 3>,   ///< ivec3 (3 int)
-            std::array<int, 4>,   ///< ivec4 (4 int)
+            std::array<int, 2>, ///< ivec2 (2 int)
+            std::array<int, 3>, ///< ivec3 (3 int)
+            std::array<int, 4>, ///< ivec4 (4 int)
             ::Texture2D> value) {
         return SetValue(GetLoc(loc_index), value);
     }
@@ -349,39 +365,83 @@ class ShaderUnmanaged {
         ::SetShaderValueV(m_data, uniformLoc, value.data(), uniformType, value.size());
         return *this;
     }
-    ShaderUnmanaged& SetValueV(int uniformLoc, std::variant<std::span<float>,
+    ShaderUnmanaged& SetValueV(
+        int uniformLoc,
+        std::variant<
+            std::span<float>,
             std::span<std::array<float, 2>>, ///< vec2 (2 float)
             std::span<std::array<float, 3>>, ///< vec3 (3 float)
             std::span<std::array<float, 4>>, ///< vec4 (4 float)
-            std::span<::Vector2>,            ///< vec2 (2 float)
-            std::span<::Vector3>,            ///< vec3 (3 float)
-            std::span<::Vector4>,            ///< vec4 (4 float)
+            std::span<::Vector2>, ///< vec2 (2 float)
+            std::span<::Vector3>, ///< vec3 (3 float)
+            std::span<::Vector4>, ///< vec4 (4 float)
             std::span<int>,
-            std::span<std::array<int, 2>>,   ///< ivec2 (2 int)
-            std::span<std::array<int, 3>>,   ///< ivec3 (3 int)
-            std::span<std::array<int, 4>>    ///< ivec4 (4 int)
+            std::span<std::array<int, 2>>, ///< ivec2 (2 int)
+            std::span<std::array<int, 3>>, ///< ivec3 (3 int)
+            std::span<std::array<int, 4>> ///< ivec4 (4 int)
             /// @TODO: add mdspan for vecX and ivecX
             /// @TODO: Shader uniform type: sampler2d
             > value) {
-        std::visit([&](auto&& val) {
-            using T = std::decay_t<decltype(val)>;
-            if constexpr (std::is_same_v<T, std::span<float>>)
-                ::SetShaderValueV(m_data, uniformLoc, val.data(), SHADER_UNIFORM_FLOAT, static_cast<int>(val.size()));
-            else if constexpr (std::is_same_v<T, std::span<::Vector2>> || std::is_same_v<T, std::span<std::array<float, 2>>>)
-                ::SetShaderValueV(m_data, uniformLoc, val.data(), SHADER_UNIFORM_VEC2, static_cast<int>(val.size()));
-            else if constexpr (std::is_same_v<T, std::span<::Vector3>> || std::is_same_v<T, std::span<std::array<float, 3>>>)
-                ::SetShaderValueV(m_data, uniformLoc, val.data(), SHADER_UNIFORM_VEC3, static_cast<int>(val.size()));
-            else if constexpr (std::is_same_v<T, std::span<::Vector4>> || std::is_same_v<T, std::span<std::array<float, 4>>>)
-                ::SetShaderValueV(m_data, uniformLoc, val.data(), SHADER_UNIFORM_VEC4, static_cast<int>(val.size()));
-            else if constexpr (std::is_same_v<T, std::span<int>>)
-                ::SetShaderValueV(m_data, uniformLoc, val.data(), SHADER_UNIFORM_INT, static_cast<int>(val.size()));
-            else if constexpr (std::is_same_v<T, std::span<std::array<int, 2>>>)
-                ::SetShaderValueV(m_data, uniformLoc, val.data(), SHADER_UNIFORM_IVEC2, static_cast<int>(val.size()));
-            else if constexpr (std::is_same_v<T, std::span<std::array<int, 3>>>)
-                ::SetShaderValueV(m_data, uniformLoc, val.data(), SHADER_UNIFORM_IVEC3, static_cast<int>(val.size()));
-            else if constexpr (std::is_same_v<T, std::span<std::array<int, 4>>>)
-                ::SetShaderValueV(m_data, uniformLoc, val.data(), SHADER_UNIFORM_IVEC4, static_cast<int>(val.size()));
-        }, value);
+        std::visit(
+            [&](auto&& val)
+            {
+                using T = std::decay_t<decltype(val)>;
+                if constexpr (std::is_same_v<T, std::span<float>>)
+                    ::SetShaderValueV(
+                        m_data,
+                        uniformLoc,
+                        val.data(),
+                        SHADER_UNIFORM_FLOAT,
+                        static_cast<int>(val.size()));
+                else if constexpr (
+                    std::is_same_v<T, std::span<::Vector2>> || std::is_same_v<T, std::span<std::array<float, 2>>>)
+                    ::SetShaderValueV(
+                        m_data,
+                        uniformLoc,
+                        val.data(),
+                        SHADER_UNIFORM_VEC2,
+                        static_cast<int>(val.size()));
+                else if constexpr (
+                    std::is_same_v<T, std::span<::Vector3>> || std::is_same_v<T, std::span<std::array<float, 3>>>)
+                    ::SetShaderValueV(
+                        m_data,
+                        uniformLoc,
+                        val.data(),
+                        SHADER_UNIFORM_VEC3,
+                        static_cast<int>(val.size()));
+                else if constexpr (
+                    std::is_same_v<T, std::span<::Vector4>> || std::is_same_v<T, std::span<std::array<float, 4>>>)
+                    ::SetShaderValueV(
+                        m_data,
+                        uniformLoc,
+                        val.data(),
+                        SHADER_UNIFORM_VEC4,
+                        static_cast<int>(val.size()));
+                else if constexpr (std::is_same_v<T, std::span<int>>)
+                    ::SetShaderValueV(m_data, uniformLoc, val.data(), SHADER_UNIFORM_INT, static_cast<int>(val.size()));
+                else if constexpr (std::is_same_v<T, std::span<std::array<int, 2>>>)
+                    ::SetShaderValueV(
+                        m_data,
+                        uniformLoc,
+                        val.data(),
+                        SHADER_UNIFORM_IVEC2,
+                        static_cast<int>(val.size()));
+                else if constexpr (std::is_same_v<T, std::span<std::array<int, 3>>>)
+                    ::SetShaderValueV(
+                        m_data,
+                        uniformLoc,
+                        val.data(),
+                        SHADER_UNIFORM_IVEC3,
+                        static_cast<int>(val.size()));
+                else if constexpr (std::is_same_v<T, std::span<std::array<int, 4>>>)
+                    ::SetShaderValueV(
+                        m_data,
+                        uniformLoc,
+                        val.data(),
+                        SHADER_UNIFORM_IVEC4,
+                        static_cast<int>(val.size()));
+            },
+            value);
         return *this;
     }
 
@@ -412,11 +472,8 @@ class ShaderUnmanaged {
     /**
      * Retrieves whether or not the shader is ready.
      */
-    [[nodiscard]] constexpr bool IsReady() const noexcept {
-        return m_data.id != 0 && m_data.locs != nullptr;
-    }
-
- protected:
+    [[nodiscard]] constexpr bool IsReady() const noexcept { return m_data.id != 0 && m_data.locs != nullptr; }
+protected:
     constexpr void set(const ::Shader& shader) noexcept {
         m_data.id = shader.id;
         m_data.locs = shader.locs;
@@ -429,8 +486,8 @@ class ShaderUnmanaged {
     friend class Model;
 };
 
-}  // namespace raylib
+} // namespace raylib
 
 using RShaderUnmanaged = raylib::ShaderUnmanaged;
 
-#endif  // RAYLIB_CPP_INCLUDE_SHADERUNMANAGED_HPP_
+#endif // RAYLIB_CPP_INCLUDE_SHADERUNMANAGED_HPP_

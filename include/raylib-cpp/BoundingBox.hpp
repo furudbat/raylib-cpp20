@@ -11,7 +11,7 @@ namespace raylib {
  * Bounding box type
  */
 class BoundingBox : public ::BoundingBox {
- public:
+public:
     /*
      * Copy a bounding box from another bounding box.
      */
@@ -24,9 +24,7 @@ class BoundingBox : public ::BoundingBox {
     /**
      * Compute mesh bounding box limits
      */
-    explicit BoundingBox(const ::Mesh& mesh) {
-        set(::GetMeshBoundingBox(mesh));
-    }
+    explicit BoundingBox(const ::Mesh& mesh) { set(::GetMeshBoundingBox(mesh)); }
     explicit constexpr BoundingBox(::Vector3 minMax) : ::BoundingBox{minMax, minMax} {}
     constexpr BoundingBox(::Vector3 pMin, ::Vector3 pMax) : ::BoundingBox{pMin, pMax} {}
 
@@ -47,16 +45,12 @@ class BoundingBox : public ::BoundingBox {
     /**
      * Draw a bounding box with wires
      */
-    void Draw(::Color color = WHITE) const {
-        ::DrawBoundingBox(*this, color);
-    }
+    void Draw(::Color color = WHITE) const { ::DrawBoundingBox(*this, color); }
 
     /**
      * Detect collision between two boxes
      */
-    [[nodiscard]] bool CheckCollision(const ::BoundingBox& box2) const {
-        return ::CheckCollisionBoxes(*this, box2);
-    }
+    [[nodiscard]] bool CheckCollision(const ::BoundingBox& box2) const { return ::CheckCollisionBoxes(*this, box2); }
 
     /**
      * Detect collision between box and sphere
@@ -68,18 +62,13 @@ class BoundingBox : public ::BoundingBox {
     /**
      * Detect collision between ray and bounding box
      */
-    [[nodiscard]] bool CheckCollision(const ::Ray& ray) const {
-        return ::GetRayCollisionBox(ray, *this).hit;
-    }
+    [[nodiscard]] bool CheckCollision(const ::Ray& ray) const { return ::GetRayCollisionBox(ray, *this).hit; }
 
     /**
      * Get collision information between ray and bounding box
      */
-    [[nodiscard]] RayCollision GetCollision(const ::Ray& ray) const {
-        return ::GetRayCollisionBox(ray, *this);
-    }
-
- protected:
+    [[nodiscard]] RayCollision GetCollision(const ::Ray& ray) const { return ::GetRayCollisionBox(ray, *this); }
+protected:
     constexpr void set(const ::BoundingBox& box) {
         this->min = box.min;
         this->max = box.max;
@@ -89,8 +78,8 @@ class BoundingBox : public ::BoundingBox {
         this->max = pMax;
     }
 };
-}  // namespace raylib
+} // namespace raylib
 
 using RBoundingBox = raylib::BoundingBox;
 
-#endif  // RAYLIB_CPP_INCLUDE_BOUNDINGBOX_HPP_
+#endif // RAYLIB_CPP_INCLUDE_BOUNDINGBOX_HPP_

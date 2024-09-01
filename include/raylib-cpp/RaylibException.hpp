@@ -2,8 +2,8 @@
 #define RAYLIB_CPP_INCLUDE_RAYLIBEXCEPTION_HPP_
 
 
-#include "raylib.hpp"
 #include "RaylibError.hpp"
+#include "raylib.hpp"
 
 #include <stdexcept>
 #include <string>

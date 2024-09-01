@@ -3,11 +3,11 @@
 
 #include "raylib.hpp"
 
-#include "raylib-cpp-utils.hpp"
 #include "BoundingBox.hpp"
+#include "raylib-cpp-utils.hpp"
 
-#include <string>
 #include <cassert>
+#include <string>
 
 namespace raylib {
 
@@ -18,7 +18,7 @@ class Model;
  * Vertex data defining a mesh, that is not managed by the C++ RAII.
  */
 class MeshUnmanaged {
- public:
+public:
     constexpr MeshUnmanaged() {
         m_data.vertexCount = 0;
         m_data.triangleCount = 0;
@@ -37,13 +37,9 @@ class MeshUnmanaged {
         m_data.vboId = nullptr;
     }
 
-    constexpr explicit MeshUnmanaged(const ::Mesh& mesh) {
-        set(mesh);
-    }
+    constexpr explicit MeshUnmanaged(const ::Mesh& mesh) { set(mesh); }
 
-    constexpr MeshUnmanaged(const MeshUnmanaged& other) {
-        set(other.m_data);
-    }
+    constexpr MeshUnmanaged(const MeshUnmanaged& other) { set(other.m_data); }
 
     constexpr MeshUnmanaged& operator=(const ::Mesh& mesh) {
         set(mesh);
@@ -55,47 +51,41 @@ class MeshUnmanaged {
         return *this;
     }
 
-    explicit operator ::Mesh() const noexcept {
-        return m_data;
-    }
-    [[nodiscard]] ::Mesh c_raylib() const & noexcept {
-        return m_data;
-    }
+    explicit operator ::Mesh() const noexcept { return m_data; }
+    [[nodiscard]] ::Mesh c_raylib() const& noexcept { return m_data; }
 
     GETTER(int, VertexCount, m_data.vertexCount)
     GETTER(int, TriangleCount, m_data.triangleCount)
     CONST_GETTER(float*, Vertices, m_data.vertices)
-    CONST_GETTER(float *, TexCoords, m_data.texcoords)
-    CONST_GETTER(float *, TexCoords2, m_data.texcoords2)
-    CONST_GETTER(float *, Normals, m_data.normals)
-    CONST_GETTER(float *, Tangents, m_data.tangents)
-    CONST_GETTER(unsigned char *, Colors, m_data.colors)
-    CONST_GETTER(unsigned short *, Indices, m_data.indices) // NOLINT
-    CONST_GETTER(float *, AnimVertices, m_data.animVertices)
-    CONST_GETTER(float *, AnimNormals, m_data.animNormals)
-    CONST_GETTER(unsigned char *, BoneIds, m_data.boneIds)
-    CONST_GETTER(float *, BoneWeights, m_data.boneWeights)
+    CONST_GETTER(float*, TexCoords, m_data.texcoords)
+    CONST_GETTER(float*, TexCoords2, m_data.texcoords2)
+    CONST_GETTER(float*, Normals, m_data.normals)
+    CONST_GETTER(float*, Tangents, m_data.tangents)
+    CONST_GETTER(unsigned char*, Colors, m_data.colors)
+    CONST_GETTER(unsigned short*, Indices, m_data.indices) // NOLINT
+    CONST_GETTER(float*, AnimVertices, m_data.animVertices)
+    CONST_GETTER(float*, AnimNormals, m_data.animNormals)
+    CONST_GETTER(unsigned char*, BoneIds, m_data.boneIds)
+    CONST_GETTER(float*, BoneWeights, m_data.boneWeights)
     GETTER(unsigned int, VaoId, m_data.vaoId)
-    CONST_GETTER(unsigned int *, VboId, m_data.vboId)
+    CONST_GETTER(unsigned int*, VboId, m_data.vboId)
 
     /**
      * Upload mesh vertex data to GPU (VRAM)
      */
-    void UpdateBuffer(int index, void *data, int dataSize, int offset = 0) {
+    void UpdateBuffer(int index, void* data, int dataSize, int offset = 0) {
         ::UpdateMeshBuffer(m_data, index, data, dataSize, offset);
     }
     template<class T>
     void UpdateBuffer(int index, std::span<T> data, int offset = 0) {
         assert(data.size() <= std::numeric_limits<int>::max());
-        ::UpdateMeshBuffer(*this, index, data.data(), data.size()*sizeof(T), offset);
+        ::UpdateMeshBuffer(*this, index, data.data(), data.size() * sizeof(T), offset);
     }
 
     /**
      * Draw a 3d mesh with material and transform
      */
-    void Draw(const ::Material& material, const ::Matrix& transform) const {
-        ::DrawMesh(m_data, material, transform);
-    }
+    void Draw(const ::Material& material, const ::Matrix& transform) const { ::DrawMesh(m_data, material, transform); }
     /*
     void Draw(const raylib::Material& material, const ::Matrix& transform) const {
         ::DrawMesh(m_data, material.c_raylib(), transform);
@@ -131,16 +121,12 @@ class MeshUnmanaged {
     /**
      * Compute mesh bounding box limits
      */
-    [[nodiscard]] raylib::BoundingBox BoundingBox() const {
-        return raylib::BoundingBox{::GetMeshBoundingBox(m_data)};
-    }
+    [[nodiscard]] raylib::BoundingBox BoundingBox() const { return raylib::BoundingBox{::GetMeshBoundingBox(m_data)}; }
 
     /**
      * Compute mesh bounding box limits
      */
-    explicit operator raylib::BoundingBox() const {
-        return BoundingBox();
-    }
+    explicit operator raylib::BoundingBox() const { return BoundingBox(); }
 
 
     /**
@@ -160,8 +146,7 @@ class MeshUnmanaged {
         return raylib::Model{::LoadModelFromMesh(m_data)};
     }
     */
-
- protected:
+protected:
     constexpr void set(const ::Mesh& mesh) noexcept {
         m_data.vertexCount = mesh.vertexCount;
         m_data.triangleCount = mesh.triangleCount;
@@ -185,8 +170,8 @@ class MeshUnmanaged {
     friend class Mesh;
     friend class Model;
 };
-}  // namespace raylib
+} // namespace raylib
 
 using RMeshUnmanaged = raylib::MeshUnmanaged;
 
-#endif  // RAYLIB_CPP_INCLUDE_MESHUNMANAGED_HPP_
+#endif // RAYLIB_CPP_INCLUDE_MESHUNMANAGED_HPP_

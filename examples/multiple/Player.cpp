@@ -2,12 +2,11 @@
 #include "raylib-cpp.hpp"
 
 Player::Player() {
-    position = raylib::Rectangle{{
-        .x = static_cast<float>(::GetScreenWidth()) / 2.0F - 50.0F,
-        .y = static_cast<float>(::GetScreenHeight()) / 2.0F - 50.0F,
-        .width = 100,
-        .height = 100
-    }};
+    position = raylib::Rectangle{
+        {.x = static_cast<float>(::GetScreenWidth()) / 2.0F - 50.0F,
+         .y = static_cast<float>(::GetScreenHeight()) / 2.0F - 50.0F,
+         .width = 100,
+         .height = 100}};
 }
 
 void Player::Draw() const {

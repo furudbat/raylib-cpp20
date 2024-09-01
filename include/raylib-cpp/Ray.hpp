@@ -1,28 +1,24 @@
 #ifndef RAYLIB_CPP_INCLUDE_RAY_HPP_
 #define RAYLIB_CPP_INCLUDE_RAY_HPP_
 
-#include "raylib.hpp"
-#include "raylib-cpp-utils.hpp"
 #include "RayCollision.hpp"
+#include "raylib-cpp-utils.hpp"
+#include "raylib.hpp"
 
 namespace raylib {
 /**
  * Ray type (useful for raycast)
  */
 class Ray : public ::Ray {
- public:
-    explicit constexpr Ray(const ::Ray& ray) {
-        set(ray);
-    }
+public:
+    explicit constexpr Ray(const ::Ray& ray) { set(ray); }
 
-    explicit constexpr Ray(::Vector3 _position = {0.0f, 0.0f, 0.0f}, const ::Vector3& _direction = {0.0f, 0.0f, 0.0f}) :
-            ::Ray{_position, _direction} {
+    explicit constexpr Ray(::Vector3 _position = {0.0f, 0.0f, 0.0f}, const ::Vector3& _direction = {0.0f, 0.0f, 0.0f})
+        : ::Ray{_position, _direction} {
         // Nothing.
     }
 
-    Ray(::Vector2 mousePosition, const ::Camera& camera) noexcept {
-        set(::GetMouseRay(mousePosition, camera));
-    }
+    Ray(::Vector2 mousePosition, const ::Camera& camera) noexcept { set(::GetMouseRay(mousePosition, camera)); }
 
     constexpr Ray& operator=(const ::Ray& ray) noexcept {
         set(ray);
@@ -41,9 +37,7 @@ class Ray : public ::Ray {
     /**
      * Draw a ray line
      */
-    void Draw(::Color color) const noexcept {
-        ::DrawRay(*this, color);
-    }
+    void Draw(::Color color) const noexcept { ::DrawRay(*this, color); }
 
     /**
      * Get collision information between ray and sphere
@@ -90,19 +84,16 @@ class Ray : public ::Ray {
     /**
      * Get a ray trace from mouse position
      */
-    static Ray GetMouse(const ::Camera& camera) noexcept {
-        return Ray{::GetMouseRay(::GetMousePosition(), camera)};
-    }
-
- protected:
+    static Ray GetMouse(const ::Camera& camera) noexcept { return Ray{::GetMouseRay(::GetMousePosition(), camera)}; }
+protected:
     constexpr void set(const ::Ray& ray) noexcept {
         position = ray.position;
         direction = ray.direction;
     }
 };
 
-}  // namespace raylib
+} // namespace raylib
 
 using RRay = raylib::Ray;
 
-#endif  // RAYLIB_CPP_INCLUDE_RAY_HPP_
+#endif // RAYLIB_CPP_INCLUDE_RAY_HPP_
